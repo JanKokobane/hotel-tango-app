@@ -36,7 +36,7 @@ Hotel Tango is built for clarity, speed, and trust—whether you're booking a we
 
 ```bash
 # Clone the repo
-git clone https://github.com/your-username/hotel-tango.git
+git clone https://github.com/JanKokobane/hotel-tango-app.git
 cd hotel-tango
 git checkout dev 
 
