@@ -1,43 +1,73 @@
-# Hotel Tango – Full-Stack Hotel Booking App
+# React + TypeScript + Vite
 
-Hotel Tango is a responsive full-stack hotel booking platform designed for seamless user experience and scalable performance. Built with **React**, **TypeScript**, and **CSS Modules**, the frontend delivers clean, modular UI styling across devices. The app supports full CRUD operations and integrates robust **OAuth-based authentication**, allowing users to securely register, log in, and manage their profiles.
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-Users can browse dynamic accommodation listings featuring photo galleries, interactive maps, pricing details, amenities, and hotel policies. Each listing includes call-to-action buttons for booking, sharing, and saving favourites. The booking flow supports date selection, room and guest configuration, and payment integration via a customizable gateway.
+Currently, two official plugins are available:
 
-The admin panel empowers hotel managers to add and update accommodations, manage availability, view reservations, and approve or modify bookings. Admins can also monitor guest details and adjust pricing or descriptions in real time.
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-The backend is powered by **Node.ts**, with RESTful API endpoints following best practices. Data is stored in a **PostgreSQL** database with well-structured relationships to prevent redundancy and ensure integrity. **Redux** handles global state management, keeping UI components in sync with backend data.
+## React Compiler
 
-## Features
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
--  Advanced search filters by location, price, and amenities  
--  User-generated reviews and ratings  
--  Real-time notifications for bookings and updates  
--  Security measures for data protection and safe HTTP methods  
--  Responsive design for mobile, tablet, and desktop  
--  Scalable architecture for high traffic and performance  
--  Compliance with data regulations and transaction standards  
+## Expanding the ESLint configuration
 
-Hotel Tango is built for clarity, speed, and trust—whether you're booking a weekend getaway or managing a portfolio of properties. Ideal for developers, hospitality teams, and anyone seeking a modern, full-featured hotel booking solution.
+If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
 
-## Tech Stack
+```js
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
 
-| Layer        | Technology                     |
-|--------------|--------------------------------|
-| Frontend     | React, TypeScript, CSS Modules |
-| Backend      | Node.ts, Express               |
-| Database     | PostgreSQL                     |
-| State Mgmt   | Redux                          |
-| Auth         | OAuth                          |
-| Styling      | CSS Modules                    |
-| API          | RESTful endpoints              |
+      // Remove tseslint.configs.recommended and replace with this
+      tseslint.configs.recommendedTypeChecked,
+      // Alternatively, use this for stricter rules
+      tseslint.configs.strictTypeChecked,
+      // Optionally, add this for stylistic rules
+      tseslint.configs.stylisticTypeChecked,
 
-## Setup Instructions
+      // Other configs...
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
+```
 
-```bash
-# Clone the repo
-git clone https://github.com/JanKokobane/hotel-tango-app.git
-cd hotel-tango
-git checkout dev 
+You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
 
+```js
+// eslint.config.js
+import reactX from 'eslint-plugin-react-x'
+import reactDom from 'eslint-plugin-react-dom'
 
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
+      // Enable lint rules for React
+      reactX.configs['recommended-typescript'],
+      // Enable lint rules for React DOM
+      reactDom.configs.recommended,
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
+```
