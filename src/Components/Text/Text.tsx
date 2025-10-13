@@ -1,16 +1,12 @@
-import React from "react";
+import styles from './Text.module.css';
 
-type Props = {
-  children?: React.ReactNode;
-  variant?: string;
-  style?: React.CSSProperties;
-};
-export const Text: React.FC<Props> = ({ children, variant, style }) => {
-  if (variant === "h1") return <h1 style={style}>{children}</h1>;
-  if (variant === "h2") return <h2 style={style}>{children}</h2>;
-  if (variant === "h3") return <h3 style={style}>{children}</h3>;
-  if (variant === "p") return <p style={style}>{children}</p>;
-  if (variant === "span") return <span style={style}>{children}</span>;
+interface TextProps {
+  variant: 'h1' | 'h2' | 'p';
+  children: React.ReactNode;
+  className?: string;
+}
 
-  return <div style={style}>{children}</div>;
+export const Text = ({ variant, children, className = '' }: TextProps) => {
+  const Component = variant;
+  return <Component className={`${styles[variant]} ${className}`}>{children}</Component>;
 };

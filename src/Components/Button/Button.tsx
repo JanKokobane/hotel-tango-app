@@ -1,13 +1,14 @@
-import React from 'react'
+import styles from './Button.module.css';
 
-type ButtonProps ={
-    children?:React.ReactNode
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  children: React.ReactNode;
+  variant?: 'primary' | 'secondary';
 }
 
-export const Button : React.FC<ButtonProps> = ({children}) => {
+export const Button = ({ children, variant = 'primary', ...props }: ButtonProps) => {
   return (
-    <div>
-        <button>{children}</button>
-    </div>
-  )
-}
+    <button className={`${styles.button} ${styles[variant]}`} {...props}>
+      {children}
+    </button>
+  );
+};

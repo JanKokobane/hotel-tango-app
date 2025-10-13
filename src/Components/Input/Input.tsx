@@ -1,24 +1,42 @@
-import React from 'react'
+import { type LucideIcon, Eye, EyeOff } from 'lucide-react';
+import styles from './Input.module.css';
 
-type InputProps = {
-    id?: string,
-    type: string,
-    value?: string | number,
-    onChange?: React.ChangeEventHandler<HTMLInputElement>,
-    style?: React.CSSProperties,
-    label?: string,
-    error?: string,
-    name?: string,
-    placeholder?: string
+interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+  label: string;
+  icon?: LucideIcon;
+  error?: string;
+  rightIcon?: 'eye' | 'eye-off';
+  onRightIconClick?: () => void;
 }
 
-export const Input: React.FC<InputProps> = ({id, type, value, onChange, style, label, error, name, placeholder }) => {
+export const Input = ({
+  label,
+  icon: Icon,
+  error,
+  rightIcon,
+  onRightIconClick,
+  ...props
+}: InputProps) => {
   return (
-   
-    <div>
-        <label>{label}</label>
-        <input id={id} type={type} style={style} value={value} onChange={onChange} name={name} placeholder={placeholder}/>
-        {error && <span>{error}  </span>}
+    <div className={styles.inputGroup}>
+      <label className={styles.label}>{label}</label>
+      <div className={styles.inputWrapper}>
+        {Icon && <Icon className={styles.icon} size={20} />}
+        <input
+          className={`${styles.input} ${Icon ? styles.inputWithIcon : ''} ${error ? styles.inputError : ''}`}
+          {...props}
+        />
+        {rightIcon && (
+          <button
+            type="button"
+            className={styles.togglePassword}
+            onClick={onRightIconClick}
+          >
+            {rightIcon === 'eye' ? <Eye size={20} /> : <EyeOff size={20} />}
+          </button>
+        )}
+      </div>
+      {error && <span className={styles.error}>{error}</span>}
     </div>
-  )
-}
+  );
+};
