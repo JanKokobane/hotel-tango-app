@@ -35,10 +35,24 @@ export const Register = ({ onNavigateToLogin }: RegisterProps) => {
       newErrors['conf_password'] = 'Passwords do not match';
     }
 
-    setErrors(newErrors);
     if (Object.keys(newErrors).length === 0) {
-      console.log('Form submitted:', Object.fromEntries(data));
+      const payload = Object.fromEntries(data);
+
+      fetch('http://localhost:3000/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+        .then(res => res.json())
+        .then(data => {
+          console.log('User registered:', data);
+          onNavigateToLogin(); // navigate to login after success
+        })
+        .catch(err => {
+          console.error('Registration error:', err);
+        });
     }
+
   };
 
   return (
