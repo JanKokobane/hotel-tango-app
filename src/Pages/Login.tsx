@@ -5,6 +5,7 @@ import { Text } from '../Components/Text/Text';
 import { Sparkles, Mail, Lock } from 'lucide-react';
 import styles from './Login.module.css';
 import { Link } from 'react-router-dom';
+import React from 'react';
 
 interface LoginProps {
   onNavigateToRegister: () => void;
@@ -30,7 +31,6 @@ export const Login = ({ onNavigateToRegister }: LoginProps) => {
 
     if (Object.keys(newErrors).length === 0) {
       console.log('Login submitted:', Object.fromEntries(data));
-      // Proceed with login logic
     }
   };
 

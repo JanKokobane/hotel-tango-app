@@ -5,7 +5,7 @@ import { Text } from '../Components/Text/Text';
 import { Sparkles, User, Mail, Phone, Lock } from 'lucide-react';
 import styles from './Register.module.css';
 import { Link } from 'react-router-dom';
-
+import React from 'react';
 
 interface RegisterProps {
   onNavigateToLogin: () => void;
@@ -15,9 +15,14 @@ export const Register = ({ onNavigateToLogin }: RegisterProps) => {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [generalError, setGeneralError] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setGeneralError('');
+    setLoading(true);
+
     const form = e.target as HTMLFormElement;
     const data = new FormData(form);
 
@@ -35,9 +40,36 @@ export const Register = ({ onNavigateToLogin }: RegisterProps) => {
       newErrors['conf_password'] = 'Passwords do not match';
     }
 
-    setErrors(newErrors);
-    if (Object.keys(newErrors).length === 0) {
-      console.log('Form submitted:', Object.fromEntries(data));
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      setLoading(false);
+      return;
+    }
+
+    const payload = Object.fromEntries(data);
+
+    try {
+      const res = await fetch('http://localhost:3000/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      const result = await res.json();
+
+      if (!res.ok) {
+        setGeneralError(result.error || 'Registration failed');
+        setLoading(false);
+        return;
+      }
+
+      console.log('User registered:', result);
+      onNavigateToLogin();
+    } catch (err) {
+      console.error('Registration error:', err);
+      setGeneralError('Network error. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -46,9 +78,6 @@ export const Register = ({ onNavigateToLogin }: RegisterProps) => {
       <div className={styles.backgroundOverlay}></div>
       <div className={styles.contentWrapper}>
         <div className={styles.brandSection}>
-          {/* <div className={styles.logoWrapper}>
-            <Hotel className={styles.logoIcon} size={48} />
-          </div> */}
           <Text variant="h1" className={styles.brandTitle}>Tango Hotel</Text>
           <div className={styles.tagline}>
             <Sparkles size={16} className={styles.sparkleIcon} />
@@ -64,6 +93,8 @@ export const Register = ({ onNavigateToLogin }: RegisterProps) => {
           </div>
 
           <form onSubmit={handleSubmit} className={styles.form}>
+            {generalError && <p className={styles.generalError}>{generalError}</p>}
+
             <Input type="text" label="First Name" name="firstName" placeholder="Please Enter First Name" icon={User} error={errors.firstName} />
             <Input type="text" label="Last Name" name="lastName" placeholder="Please Enter Last Name" icon={User} error={errors.lastName} />
             <Input type="email" label="Email" name="email" placeholder="user@email.com" icon={Mail} error={errors.email} />
@@ -89,7 +120,9 @@ export const Register = ({ onNavigateToLogin }: RegisterProps) => {
               onRightIconClick={() => setShowConfirm(!showConfirm)}
             />
 
-            <Button type="submit" className={styles.SubmitButton}>Create Account</Button>
+            <Button type="submit" className={styles.SubmitButton} disabled={loading}>
+              {loading ? 'Creating Account...' : 'Create Account'}
+            </Button>
 
             <div className={styles.divider}>
               <span>Already a member?</span>
@@ -98,7 +131,6 @@ export const Register = ({ onNavigateToLogin }: RegisterProps) => {
             <Link to="/login" className={styles.switchButton}>
               Sign In
             </Link>
-
           </form>
         </div>
 
