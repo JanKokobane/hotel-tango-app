@@ -3,6 +3,7 @@ import { IoSearchSharp } from "react-icons/io5";
 import { Text } from "../Components/Text/Text";
 import { Input } from "../Components/Input/Input";
 import { Button } from "../Components/Button/Button";
+import { RoomsSection } from "../Components/RoomsSection/RoomsSection";
 
 const LandingPage: React.FC = () => {
   return (
@@ -42,6 +43,7 @@ const LandingPage: React.FC = () => {
           </div>
         </div>
       </section>
+      <RoomsSection/>
     </div>
   );
 };
