@@ -1,26 +1,30 @@
+
 import { useState } from 'react';
 import { Button } from '../Components/Button/Button';
 import { Input } from '../Components/Input/Input';
 import { Text } from '../Components/Text/Text';
 import { Sparkles, Mail, Lock } from 'lucide-react';
 import styles from './Login.module.css';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import React from 'react';
 
-interface LoginProps {
-  onNavigateToRegister: () => void;
-}
-
-export const Login = ({ onNavigateToRegister }: LoginProps) => {
+export const Login = () => {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [generalError, setGeneralError] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setGeneralError('');
+    setLoading(true);
+
     const form = e.target as HTMLFormElement;
     const data = new FormData(form);
-
     const newErrors: { [key: string]: string } = {};
+
     const email = data.get('email')?.toString().trim();
     const password = data.get('password')?.toString().trim();
 
@@ -29,8 +33,38 @@ export const Login = ({ onNavigateToRegister }: LoginProps) => {
 
     setErrors(newErrors);
 
-    if (Object.keys(newErrors).length === 0) {
-      console.log('Login submitted:', Object.fromEntries(data));
+    if (Object.keys(newErrors).length > 0) {
+      setLoading(false);
+      return;
+    }
+
+    const payload = { email, password };
+
+    try {
+      const res = await fetch('http://localhost:3000/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      const result = await res.json();
+
+      if (!res.ok) {
+        setGeneralError(result.error || 'Invalid email or password');
+        setLoading(false);
+        return;
+      }
+
+   
+      alert('Login successful! Welcome back.');
+
+    
+      navigate('/dashboard'); 
+    } catch (err) {
+      console.error('Login error:', err);
+      setGeneralError('Network error. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -54,6 +88,8 @@ export const Login = ({ onNavigateToRegister }: LoginProps) => {
           </div>
 
           <form onSubmit={handleSubmit} className={styles.form}>
+            {generalError && <p className={styles.generalError}>{generalError}</p>}
+
             <Input
               type="email"
               label="Email"
@@ -81,17 +117,17 @@ export const Login = ({ onNavigateToRegister }: LoginProps) => {
               <a href="#" className={styles.forgotLink}>Forgot password?</a>
             </div>
 
-            <Button type="submit" className={styles.SubmitButton}>Sign In</Button>
+            <Button type="submit" className={styles.SubmitButton} disabled={loading}>
+              {loading ? 'Signing In...' : 'Sign In'}
+            </Button>
 
             <div className={styles.divider}>
               <span>New to Tango?</span>
             </div>
-            
+
             <Link to="/" className={styles.switchButton}>
               Create Account
             </Link>
-
-            
           </form>
         </div>
 
