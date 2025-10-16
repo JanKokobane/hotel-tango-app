@@ -4,19 +4,17 @@ import { Input } from '../Components/Input/Input';
 import { Text } from '../Components/Text/Text';
 import { Sparkles, User, Mail, Phone, Lock } from 'lucide-react';
 import styles from './Register.module.css';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import React from 'react';
 
-interface RegisterProps {
-  onNavigateToLogin: () => void;
-}
-
-export const Register = ({ onNavigateToLogin }: RegisterProps) => {
+export const Register = () => {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [generalError, setGeneralError] = useState('');
+  
+  const navigate = useNavigate(); 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -64,7 +62,7 @@ export const Register = ({ onNavigateToLogin }: RegisterProps) => {
       }
 
       console.log('User registered:', result);
-      onNavigateToLogin();
+      navigate('/login');
     } catch (err) {
       console.error('Registration error:', err);
       setGeneralError('Network error. Please try again.');
