@@ -1,38 +1,39 @@
-import React from "react";
-import { Button } from "../Button/Button";
-import { Link } from "react-router-dom";
-import { Text } from "../Text/Text";
+import React, { useState } from "react";
+import { Menu, X, User, LogsIcon} from "lucide-react";
+import styles from "./Navbar.module.css";
+import logo from '../../assets/Logo.png';
+
 
 const Navbar: React.FC = () => {
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
-    <nav>
-      <Text variant="h1">Tango</Text>
+    <nav className={styles.navbar}>
+      <div className={styles.logo}><img src={logo} alt="Logo" /></div>
 
-      <div>
-        <>
-          <Link to="">
-            <span>Home</span>
-          </Link>
+      <button
+        className={styles.hamburger}
+        onClick={() => setIsOpen(!isOpen)}
+        aria-label="Toggle menu"
+      >
+        {isOpen ? <X size={24} /> : <Menu size={24} />}
+      </button>
 
-          <Link to="">
-            <span>About</span>
-          </Link>
+      <div className={`${styles.menu} ${isOpen ? styles.open : ""}`}>
+        <div className={styles.centerLinks}>
+          <a href="#home">Home</a>
+          <a href="#about">About</a>
+          <a href="#rooms">Rooms</a>
+          <a href="#experience">Experience</a>
+          <a href="#contact">Contact Us</a>
+        </div>
 
-          <Link to="">
-            <span>Rooms</span>
-          </Link>
-
-          <Link to="">
-            <span>Experience</span>
-          </Link>
-
-          <Link to="">
-            <span>Contact Us</span>
-          </Link>
-          <Link to="">
-            <Button>Login</Button>
-          </Link>
-        </>
+        <div className={styles.rightButton}>
+          <button className={styles.loginButton}><User size={24} /> <span className={styles.loginText}>Login</span></button>
+        </div>
+        <div className={styles.rightButton}>
+          <button className={styles.bookNow}>Book Now</button>
+        </div>
       </div>
     </nav>
   );
