@@ -1,16 +1,21 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';  
-import { Register } from './Pages/Register';
-import { Login } from './Pages/Login'; 
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import React from 'react';
-import LandingPage from './Pages/LandingPage';
+import Navbar from './Components/Navbar/Navbar';
+import Hero from './Pages/Hero';
 
 function App() {
   return (
     <Router>
       <Routes>
-         <Route path="/" element={<LandingPage />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/login" element={<Login />} />
+        <Route
+          path="/"
+          element={
+            <>
+              <Navbar />
+              <Hero />
+            </>
+          }
+        />
       </Routes>
     </Router>
   );
