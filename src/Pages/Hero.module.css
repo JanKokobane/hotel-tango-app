@@ -284,7 +284,6 @@
   right: 0;
   background: white;
   padding: 1.5rem 2rem;
-  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
   z-index: 10;
 }
 
@@ -336,7 +335,7 @@
   border: none;
   outline: none;
   font-size: 0.875rem;
-  color: #1a1a1a;
+  color: #666;
   background: transparent;
   padding: 0;
   width: 100%;
@@ -398,7 +397,7 @@
 
 .dateSummary {
   font-size: 0.875rem;
-  color: #1a1a1a;
+  color: #6666669c;
   font-weight: 500;
 }
 

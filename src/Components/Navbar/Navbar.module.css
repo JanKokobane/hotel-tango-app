@@ -9,18 +9,29 @@
   padding: 1rem 3rem;
   background: transparent;
   color: white;
-  height: 4rem;
+  height: 3.2rem;
   transition: background 0.3s ease, box-shadow 0.3s ease;
 }
 
+
 .navbar.scrolled {
-  background: linear-gradient(135deg, #0e2735 0%, #1b3a4b 50%, #8a8f92 100%);
+  background: black;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
 
 .logo img {
   width: 8.5rem;
   margin-left: -2.6rem;
+}
+
+@media (max-width: 768px) {
+  .navbar {
+  height: 4rem;
+}
+
+.logo img {
+  margin-left: -2rem;
+}
 }
 
 .hamburger {

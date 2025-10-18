@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import React from 'react';
 import Navbar from './Components/Navbar/Navbar';
 import Hero from './Pages/Hero';
+import { RoomsSection } from './Components/RoomsSection/RoomsSection';
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
             <>
               <Navbar />
               <Hero />
+              <RoomsSection />
             </>
           }
         />
