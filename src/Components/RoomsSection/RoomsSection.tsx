@@ -1,12 +1,10 @@
 import React from "react";
 import standardRoom from "../assets/images/standard-room.png";
-
 import familyRoom from "../assets/images/family-room.png";
 import deluxeRoom from "../assets/images/deluxe-room.png";
 import executiveSuite from "../assets/images/executive-suite.png";
 import presidentialSuite from "../assets/images/presidential-suite.png";
 import businessRoom from "../assets/images/business-room.png"; 
-
 
 interface Room {
   id: number;
