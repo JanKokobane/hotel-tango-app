@@ -1,15 +1,26 @@
-import React, { useState } from "react";
-import { Menu, X, User, LogsIcon} from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { Menu, X, User } from "lucide-react";
 import styles from "./Navbar.module.css";
-import logo from '../../assets/Logo.png';
-
+import logo from "../../assets/Logo.png";
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 50); // add background after 50px scroll
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
-    <nav className={styles.navbar}>
-      <div className={styles.logo}><img src={logo} alt="Logo" /></div>
+    <nav className={`${styles.navbar} ${scrolled ? styles.scrolled : ""}`}>
+      <div className={styles.logo}>
+        <img src={logo} alt="Logo" />
+      </div>
 
       <button
         className={styles.hamburger}
@@ -29,7 +40,9 @@ const Navbar: React.FC = () => {
         </div>
 
         <div className={styles.rightButton}>
-          <button className={styles.loginButton}><User size={24} /> <span className={styles.loginText}>Login</span></button>
+          <button className={styles.loginButton}>
+            <User size={24} /> <span className={styles.loginText}>Login</span>
+          </button>
         </div>
         <div className={styles.rightButton}>
           <button className={styles.bookNow}>Book Now</button>

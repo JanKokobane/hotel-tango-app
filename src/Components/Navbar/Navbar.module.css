@@ -1,16 +1,26 @@
 .navbar {
-  position: relative;
+  position: fixed;    
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
   display: flex;
   align-items: center;
   padding: 1rem 3rem;
-  background: linear-gradient(135deg, #080d0f 0%, #0e2735 50%, #717679 100%);
+  background: transparent;
   color: white;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   height: 4rem;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.navbar.scrolled {
+  background: linear-gradient(135deg, #0e2735 0%, #1b3a4b 50%, #8a8f92 100%);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
 
 .logo img {
   width: 8.5rem;
+  margin-left: -2.6rem;
 }
 
 .hamburger {
