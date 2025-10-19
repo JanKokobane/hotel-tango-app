@@ -1,5 +1,3 @@
-
-import { Link } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import { Menu, X, User } from "lucide-react";
 import styles from "./Navbar.module.css";
@@ -47,9 +45,7 @@ const Navbar: React.FC = () => {
           </button>
         </div>
         <div className={styles.rightButton}>
-          <Link  to="/login">
-            <button className={styles.bookNow}>Book Now</button>
-          </Link>
+          <button className={styles.bookNow}>Book Now</button>
         </div>
       </div>
     </nav>
