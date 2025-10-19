@@ -26,6 +26,7 @@
   margin-bottom: 16px;
   letter-spacing: -1px;
   line-height: 1.2;
+  margin-left: 3.5rem;
 }
 
 .description {
@@ -33,6 +34,7 @@
   color: #666;
   max-width: 650px;
   line-height: 1.7;
+  margin-left: 3.5rem;
 }
 
 .headerActions {

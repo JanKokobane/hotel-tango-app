@@ -3,6 +3,7 @@ import React from 'react';
 import Navbar from './Components/Navbar/Navbar';
 import Hero from './Pages/Hero';
 import { RoomsSection } from './Components/RoomsSection/RoomsSection';
+import HotelAmenities from './Components/HotelAmenities/HotelAmenities';
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
               <Navbar />
               <Hero />
               <RoomsSection />
+              <HotelAmenities />
             </>
           }
         />
