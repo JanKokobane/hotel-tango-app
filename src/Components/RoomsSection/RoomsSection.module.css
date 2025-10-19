@@ -1,0 +1,263 @@
+.section {
+  padding: 80px 20px;
+  position: relative;
+  top: -3rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  background: white;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 60px;
+  gap: 40px;
+}
+
+.headerContent {
+  flex: 1;
+}
+
+.heading {
+  font-size: 42px;
+  font-weight: 100;
+  color: #1a1a1ab9;
+  margin-bottom: 16px;
+  letter-spacing: -1px;
+  line-height: 1.2;
+  margin-left: 3.5rem;
+}
+
+.description {
+  font-size: 12px;
+  color: #666;
+  max-width: 650px;
+  line-height: 1.7;
+  margin-left: 3.5rem;
+}
+
+.headerActions {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.findMoreBtn {
+  padding: 12px 24px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.findMoreBtn {
+  background: transparent;
+  color: #1a1a1a8e;
+  border: none;
+  padding: 12px 0;
+}
+
+.findMoreBtn:hover {
+  color: goldenrod;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.185);
+  transform: translateY(-2px);
+}
+
+.carouselWrapper {
+  position: relative;
+  padding: 0 60px;
+}
+
+.carousel {
+  overflow: hidden;
+}
+
+.carouselTrack {
+  display: flex;
+  gap: 30px;
+  transition: transform 0.5s ease;
+}
+
+.card {
+  flex: 0 0 calc(25% - 16px);
+  width: 30%;              
+  min-width: 160px;
+  background: white;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  position: relative;
+  border: 2px solid rgba(0, 0, 0, 0.068);
+}
+
+.card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.imageWrapper {
+  width: 100%;
+  height: 140px;          
+  overflow: hidden;
+  position: relative;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.card:hover .image {
+  transform: scale(1.08);
+}
+
+.badge {
+  position: absolute;
+  top: 20px;
+  left: -0.3rem;
+  background: rgb(3, 112, 89);
+  color: rgb(255, 255, 255);
+  padding: 8px 16px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.cardContent {
+  padding: 30px;
+  background: white;
+}
+
+.roomTitle {
+  font-size: 25px;
+  font-weight: 100;
+  color: #1a1a1ab9;
+  margin-bottom: 16px;
+  letter-spacing: -1px;
+  line-height: 1.2;
+}
+
+.roomDescription {
+  font-size: 12px;
+  color: #1a1a1ab9;
+  line-height: 1.7;
+  margin-bottom: 24px;
+  min-height: 60px;
+}
+
+.button {
+  width: 60%;
+  color: #fcfafa;
+  background-color: goldenrod;
+  border: none;
+  padding: 14px 24px;
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.button:hover {
+  background: #e67e22;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(230, 126, 34, 0.3);
+}
+
+.button:active {
+  transform: translateY(0);
+}
+
+.navButton {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #68656510;
+  color: rgb(8, 8, 8);
+  border: none;
+  width: 48px;
+  height: 48px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  font-size: 20px;
+}
+
+.navButton:hover {
+  transform: translateY(-50%) scale(1.05);
+}
+
+.navButton:active {
+  transform: translateY(-50%) scale(0.95);
+}
+
+.prevButton {
+  left: 0;
+}
+
+.nextButton {
+  right: 0;
+}
+
+@media (max-width: 1200px) {
+  .card {
+    flex: 0 0 calc(50% - 15px);
+  }
+}
+
+@media (max-width: 768px) {
+  .section {
+    padding: 60px 16px;
+  }
+
+  .header {
+    flex-direction: column;
+    margin-bottom: 40px;
+  }
+
+  .heading {
+    font-size: 32px;
+  }
+
+  .headerActions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .newsletterBtn,
+  .findMoreBtn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .carouselWrapper {
+    padding: 0;
+  }
+
+  .card {
+    flex: 0 0 100%;
+    min-width: 100%;
+  }
+
+  .navButton {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+  }
+}
