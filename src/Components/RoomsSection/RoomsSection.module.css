@@ -37,6 +37,52 @@
   margin-left: 3.5rem;
 }
 
+@media (max-width: 768px) {
+  .heading {
+    text-align: center;
+  }
+}
+
+@media (max-width: 425px) {
+  .heading {
+    text-align: center;
+    align-items: center;
+    margin-left: 0.8rem;
+  }
+  .description {
+    align-items: center;
+    text-align: center;
+  }
+}
+
+@media (max-width: 375px) {
+  .heading {
+    position: relative;
+    text-align: center;
+    align-items: center;
+    margin-left: 2rem;
+  }
+  .description {
+    align-items: center;
+    text-align: center;
+  }
+}
+
+@media (max-width: 320px) {
+  .heading {
+    position: relative;
+    text-align: center;
+    align-items: center;
+    margin-left: -1rem;
+  }
+  .description {
+    align-items: center;
+    text-align: center;
+    
+    margin-left: -0.5rem;
+  }
+}
+
 .headerActions {
   display: flex;
   gap: 20px;
