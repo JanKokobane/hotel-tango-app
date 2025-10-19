@@ -71,7 +71,7 @@ export const RoomsSection: React.FC = () => {
   };
 
   return (
-    <section className={styles.section}>
+    <section className={styles.section} id="rooms">
       <div className={styles.header}>
         <div className={styles.headerContent}>
           <h2 className={styles.heading}>Our Rooms</h2>

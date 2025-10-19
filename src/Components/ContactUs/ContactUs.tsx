@@ -31,7 +31,7 @@ export const ContactUs: React.FC = () => {
   };
 
   return (
-    <section className={styles.contactSection}>
+    <section className={styles.contactSection} id="contact">
       <div className={styles.container}>
         <div className={styles.headerSection}>
           <h2 className={styles.title}>Get In Touch</h2>
@@ -75,7 +75,7 @@ export const ContactUs: React.FC = () => {
                 <div className={styles.infoContent}>
                   <h3 className={styles.infoTitle}>
                   <Phone className={styles.icon} /> Phone</h3>
-                  <p className={styles.infoText}>077 867 7675</p>
+                  <p className={styles.infoText}>078 638 8679</p>
                   <p className={styles.infoTextSecondary}>Available 24/7</p>
                 </div>
               </div>

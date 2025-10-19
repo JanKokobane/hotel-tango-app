@@ -11,6 +11,7 @@ import BlogHiddenGems from './Components/NewsEvents/Blog/BlogHiddenGems';
 import AboutUs from './Components/AboutUs/AboutUs'
 import ContactUs from './Components/ContactUs/ContactUs'
 import Footer from './Components/Footer/Footer'
+import Login from './Pages/Login'
 
 function App() {
   return (
@@ -34,6 +35,7 @@ function App() {
         <Route path="/blog/new-years-eve-gala" element={<BlogNewYearsGala />} />
         <Route path="/blog/wine-pairing-masterclass" element={<BlogWinePairing />} />
         <Route path="/blog/hidden-gems-guide" element={<BlogHiddenGems />} />
+        <Route path="/login" element={<Login />} />
       </Routes>
     </Router>
   );

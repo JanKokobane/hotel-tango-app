@@ -1,3 +1,5 @@
+
+import { Link } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import { Menu, X, User } from "lucide-react";
 import styles from "./Navbar.module.css";
@@ -9,7 +11,7 @@ const Navbar: React.FC = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 50); // add background after 50px scroll
+      setScrolled(window.scrollY > 50); 
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -45,7 +47,9 @@ const Navbar: React.FC = () => {
           </button>
         </div>
         <div className={styles.rightButton}>
-          <button className={styles.bookNow}>Book Now</button>
+          <Link  to="/login">
+            <button className={styles.bookNow}>Book Now</button>
+          </Link>
         </div>
       </div>
     </nav>

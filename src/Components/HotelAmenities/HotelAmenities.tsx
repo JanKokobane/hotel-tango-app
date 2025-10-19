@@ -33,7 +33,7 @@ const amenities: Amenity[] = [
 
 const HotelAmenities: React.FC = () => {
   return (
-    <section className={styles.section}>
+    <section className={styles.section} id="experience">
       <div className={styles.header}>
         <h2 className={styles.heading}>Hotel Amenities</h2>
         <p className={styles.subtitle}>

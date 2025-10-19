@@ -100,7 +100,7 @@ const Hero: React.FC = () => {
   }, []);
 
   return (
-    <section className={styles.heroSection}>
+    <section className={styles.heroSection} id="home">
       <div className={styles.sliderContainer}>
         {slides.map((slide, index) => (
           <div

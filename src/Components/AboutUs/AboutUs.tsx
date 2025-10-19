@@ -5,7 +5,7 @@ import aboutUsImage from "../../assets/aboutusBackground.png";
 
 const AboutUs: React.FC = () => {
   return (
-    <section className={styles.aboutSection}>
+    <section className={styles.aboutSection} id="about">
       <div className={styles.imageWrapper}>
         <img src={aboutUsImage} alt="About Tango Hotel" className={styles.aboutImage} />
       </div>
