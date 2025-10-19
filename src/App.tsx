@@ -9,6 +9,7 @@ import BlogNewYearsGala from './Components/NewsEvents/Blog/BlogNewYearsGala';
 import BlogWinePairing from './Components/NewsEvents/Blog/BlogWinePairing';
 import BlogHiddenGems from './Components/NewsEvents/Blog/BlogHiddenGems';
 import AboutUs from './Components/AboutUs/AboutUs'
+import ContactUs from './Components/ContactUs/ContactUs'
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
               <HotelAmenities />
               <LatestNewsEvents />
               <AboutUs />
+              <ContactUs />
             </>
           }
         />

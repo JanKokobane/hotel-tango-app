@@ -11,13 +11,14 @@ const AboutUs: React.FC = () => {
       </div>
 
       <div className={styles.content}>
-        <h2 className={styles.title}>Our Hotels</h2>
+        <h2 className={styles.title}>Our Hotel</h2>
         <p className={styles.description}>
-          City Lodge Hotels offers conveniently located properties in urban centres in South Africa and one each in Windhoek, Namibia; Gaborone, Botswana and Maputo, Mozambique. Our hotels offer budget and luxurious options, with brands Courtyard Hotel, City Lodge Hotel, Town Lodge and Road Lodge, set apart through their locations, features and amenities.
+          Tango Hotel is a sanctuary of sophistication nestled in the heart of the city. We offer a curated blend of elegance and comfort, designed for discerning travelers who value exceptional service, refined spaces, and seamless convenience.
         </p>
         <p className={styles.description}>
-          Enjoy affordable rates, reliable WiFi, meeting rooms, tasty meals and friendly, professional hospitality from our staff. All our hotels feature comfortable rooms, secure parking and easy access to major roads, making them ideal for business and leisure travellers.
+          From our luxury suites to our executive rooms, every detail is crafted to elevate your stay. Guests enjoy high-speed WiFi, gourmet dining, private meeting lounges, and attentive hospitality that reflects our commitment to excellence. Whether you're here for business or leisure, Tango Hotel is your effortless escape.
         </p>
+
       </div>
     </section>
   );
