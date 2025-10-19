@@ -1,45 +1,101 @@
-
 import React from 'react';
-import { Text } from "../Text/Text";
+import { Facebook, Twitter, Instagram, Linkedin, MapPin, Phone, Mail } from 'lucide-react';
+import styles from './Footer.module.css';
 
 const Footer: React.FC = () => {
   return (
-    <footer>
-      <div>
-        <div>
-          <Text variant="h2">TANGO</Text>
-          <div>
-            <a href="#">Facebook</a>
-            <a href="#">Twitter</a>
-            <a href="#">Instagram</a>
-            <a href="#">LinkedIn</a>
+    <footer className={styles.footer}>
+      <div className={styles.container}>
+        <div className={styles.topSection}>
+          <div className={styles.brandColumn}>
+            <p className={styles.brandTagline}>
+              Experience luxury and comfort in the heart of Pretoria
+            </p>
+            <div className={styles.socialLinks}>
+              <a href="#" className={styles.socialLink} aria-label="Facebook">
+                <Facebook className={styles.socialIcon} />
+              </a>
+              <a href="#" className={styles.socialLink} aria-label="Twitter">
+                <Twitter className={styles.socialIcon} />
+              </a>
+              <a href="#" className={styles.socialLink} aria-label="Instagram">
+                <Instagram className={styles.socialIcon} />
+              </a>
+              <a href="#" className={styles.socialLink} aria-label="LinkedIn">
+                <Linkedin className={styles.socialIcon} />
+              </a>
+            </div>
+          </div>
+
+          <div className={styles.linksColumn}>
+            <h3 className={styles.columnTitle}>Quick Links</h3>
+            <ul className={styles.linksList}>
+              <li><a href="#" className={styles.link}>Home</a></li>
+              <li><a href="#" className={styles.link}>About Us</a></li>
+              <li><a href="#" className={styles.link}>Rooms & Suites</a></li>
+              <li><a href="#" className={styles.link}>Amenities</a></li>
+              <li><a href="#" className={styles.link}>Gallery</a></li>
+              <li><a href="#" className={styles.link}>Contact</a></li>
+            </ul>
+          </div>
+
+          <div className={styles.linksColumn}>
+            <h3 className={styles.columnTitle}>Services</h3>
+            <ul className={styles.linksList}>
+              <li><a href="#" className={styles.link}>Restaurant & Bar</a></li>
+              <li><a href="#" className={styles.link}>Spa & Wellness</a></li>
+              <li><a href="#" className={styles.link}>Conference Rooms</a></li>
+              <li><a href="#" className={styles.link}>Events & Weddings</a></li>
+              <li><a href="#" className={styles.link}>Airport Transfer</a></li>
+              <li><a href="#" className={styles.link}>Room Service</a></li>
+            </ul>
+          </div>
+
+          <div className={styles.contactColumn}>
+            <h3 className={styles.columnTitle}>Contact Info</h3>
+            <div className={styles.contactInfo}>
+              <div className={styles.contactItem}>
+                <MapPin className={styles.contactIcon} />
+                <div>
+                  <p className={styles.contactText}>Lynwood Manor</p>
+                  <p className={styles.contactText}>Pretoria, Gauteng</p>
+                  <p className={styles.contactText}>South Africa</p>
+                </div>
+              </div>
+
+              <div className={styles.contactItem}>
+                <Phone className={styles.contactIcon} />
+                <div>
+                  <p className={styles.contactText}>077 867 7675</p>
+                  <p className={styles.contactTextSmall}>Available 24/7</p>
+                </div>
+              </div>
+
+              <div className={styles.contactItem}>
+                <Mail className={styles.contactIcon} />
+                <div>
+                  <p className={styles.contactText}>info@tangohotel.com</p>
+                  <p className={styles.contactTextSmall}>reservations@tangohotel.com</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div>
-          <Text variant="h3">Quick Links</Text>
-          <ul>
-            <li><a href="#">Home</a></li>
-            <li><a href="#">About Us</a></li>
-            <li><a href="#">Rooms</a></li>
-            <li><a href="#">Blog</a></li>
-            <li><a href="#">Contact</a></li>
-          </ul>
-        </div>
+        <div className={styles.divider}></div>
 
-        <div>
-          <Text variant = "h3">Contact Info</Text>
-          <Text variant = "p">123 Luxury Avenue, Downtown</Text>
-          <Text variant = "p">Phone: 27 645 123 4567</Text>
-          <Text variant = "p">Email: info@tangohotels.com</Text>
+        <div className={styles.bottomSection}>
+          <p className={styles.copyright}>
+            © 2025 Tango Hotel. All rights reserved.
+          </p>
+          <div className={styles.legalLinks}>
+            <a href="#" className={styles.legalLink}>Privacy Policy</a>
+            <span className={styles.separator}>|</span>
+            <a href="#" className={styles.legalLink}>Terms of Service</a>
+            <span className={styles.separator}>|</span>
+            <a href="#" className={styles.legalLink}>Cookie Policy</a>
+          </div>
         </div>
-<div>
-  <img src="/assets/map.png" alt="Map Icon" />
-</div>
-      </div>
-
-      <div>
-        <Text variant = "p">©2025 Tango Hotel. All rights reserved | <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a></Text>
       </div>
     </footer>
   );

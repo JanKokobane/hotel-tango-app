@@ -10,6 +10,7 @@ import BlogWinePairing from './Components/NewsEvents/Blog/BlogWinePairing';
 import BlogHiddenGems from './Components/NewsEvents/Blog/BlogHiddenGems';
 import AboutUs from './Components/AboutUs/AboutUs'
 import ContactUs from './Components/ContactUs/ContactUs'
+import Footer from './Components/Footer/Footer'
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
               <LatestNewsEvents />
               <AboutUs />
               <ContactUs />
+              <Footer />
             </>
           }
         />
