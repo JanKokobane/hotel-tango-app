@@ -149,7 +149,7 @@ const Hero: React.FC = () => {
 
       <div className={styles.searchBarContainer}>
         <div className={styles.searchBar}>
-          <div className={styles.searchField}>
+          {/* <div className={styles.searchField}>
             <MapPin size={18} className={styles.fieldIcon} />
             <div className={styles.fieldContent}>
               <label className={styles.fieldLabel}>FIND YOUR DESTINATION</label>
@@ -161,7 +161,7 @@ const Hero: React.FC = () => {
                 placeholder="Select destination"
               />
             </div>
-          </div>
+          </div> */}
 
           <div className={styles.searchField} ref={dateRef}>
             <Calendar size={18} className={styles.fieldIcon} />

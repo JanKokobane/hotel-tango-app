@@ -12,6 +12,8 @@ import AboutUs from './Components/AboutUs/AboutUs'
 import ContactUs from './Components/ContactUs/ContactUs'
 import Footer from './Components/Footer/Footer'
 import Login from './Pages/Login'
+import RattingAndFAQ from './Components/RatingsAndFAQ/RatingsAndFAQ'
+import Gallery from './Components/Gallery/Gallery'
 
 function App() {
   return (
@@ -27,6 +29,8 @@ function App() {
               <HotelAmenities />
               <LatestNewsEvents />
               <AboutUs />
+              <Gallery />
+              <RattingAndFAQ />
               <ContactUs />
               <Footer />
             </>

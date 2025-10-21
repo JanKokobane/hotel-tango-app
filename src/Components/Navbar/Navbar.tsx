@@ -36,6 +36,7 @@ const Navbar: React.FC = () => {
           <a href="#about">About</a>
           <a href="#rooms">Rooms</a>
           <a href="#experience">Experience</a>
+          <a href="#gallery">Gallery</a>
           <a href="#contact">Contact Us</a>
         </div>
 

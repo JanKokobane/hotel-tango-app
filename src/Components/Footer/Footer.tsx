@@ -30,16 +30,16 @@ const Footer: React.FC = () => {
           <div className={styles.linksColumn}>
             <h3 className={styles.columnTitle}>Quick Links</h3>
             <ul className={styles.linksList}>
-              <li><a href="#" className={styles.link}>Home</a></li>
-              <li><a href="#" className={styles.link}>About Us</a></li>
-              <li><a href="#" className={styles.link}>Rooms & Suites</a></li>
-              <li><a href="#" className={styles.link}>Amenities</a></li>
-              <li><a href="#" className={styles.link}>Gallery</a></li>
-              <li><a href="#" className={styles.link}>Contact</a></li>
+              <li><a href="#home" className={styles.link}>Home</a></li>
+              <li><a href="#about" className={styles.link}>About Us</a></li>
+              <li><a href="#rooms" className={styles.link}>Rooms</a></li>
+              <li><a href="#experience" className={styles.link}>Amenities</a></li>
+              <li><a href="#gallery" className={styles.link}>Gallery</a></li>
+              <li><a href="#Contact" className={styles.link}>Contact</a></li>
             </ul>
           </div>
 
-          <div className={styles.linksColumn}>
+          {/* <div className={styles.linksColumn}>
             <h3 className={styles.columnTitle}>Services</h3>
             <ul className={styles.linksList}>
               <li><a href="#" className={styles.link}>Restaurant & Bar</a></li>
@@ -49,7 +49,7 @@ const Footer: React.FC = () => {
               <li><a href="#" className={styles.link}>Airport Transfer</a></li>
               <li><a href="#" className={styles.link}>Room Service</a></li>
             </ul>
-          </div>
+          </div> */}
 
           <div className={styles.contactColumn}>
             <h3 className={styles.columnTitle}>Contact Info</h3>

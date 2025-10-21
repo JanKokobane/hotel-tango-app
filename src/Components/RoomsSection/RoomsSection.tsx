@@ -1,19 +1,21 @@
-import React, { useState } from "react";
+import React, { ReactNode, useState } from "react";
 import { ChevronLeft, ChevronRight, Mail, ArrowRight } from "lucide-react";
-import standardRoom from "../../assets/images/standard-room (2).png";
-import familyRoom from "../../assets/images/family-room.png";
-import deluxeRoom from "../../assets/images/deluxe-room.png";
-import executiveSuite from "../../assets/images/executive-suite.png";
-import presidentialSuite from "../../assets/images/presidential-suite.png";
-import businessRoom from "../../assets/images/business-room.png";
+import standardRoom from "../../assets/small-hotel-room-interior-with-double-bed-bathroom.jpg";
+import familyRoom from "../../assets/small-hotel-room-interior-with-double-bed-bathroom.jpg";
+import deluxeRoom from "../../assets/3d-rendering-beautiful-luxury-dark-wood-european-classic-bedroom-suite-hotel.jpg";
+import executiveSuite from "../../assets/3d-rendering-modern-luxury-bedroom-suite-bathroom.jpg";
+import presidentialSuite from "../../assets/bangkok-thailand-august-12-2016-beautiful-luxury-bedroom-int.jpg";
+import businessRoom from "../../assets/interior-modern-comfortable-hotel-room.jpg";
 import styles from "./RoomsSection.module.css";
 
 interface Room {
+  [x: string]: ReactNode;
   id: number;
   title: string;
   description: string;
   image: string;
   badge?: string;
+  price: string;
 }
 
 const rooms: Room[] = [
@@ -23,6 +25,7 @@ const rooms: Room[] = [
     description: "Comfortable and well-appointed room with modern amenities and city views.",
     image: standardRoom,
     badge: "POPULAR CHOICE",
+    price: "R1200"
   },
   {
     id: 2,
@@ -30,13 +33,14 @@ const rooms: Room[] = [
     description: "Spacious room with premium furnishings and enhanced amenities for extra comfort.",
     image: deluxeRoom,
     badge: "BEST VALUE",
+    price: "R2999"
   },
   {
     id: 3,
     title: "Executive Suite",
-    description:
-      "Luxurious suite with separate living area and premium amenities for discerning guests.",
+    description: "Luxurious suite with separate living area and premium amenities for discerning guests.",
     image: executiveSuite,
+    price: "R3999"
   },
   {
     id: 4,
@@ -44,18 +48,21 @@ const rooms: Room[] = [
     description: "The ultimate in luxury with panoramic views and exclusive amenities.",
     image: presidentialSuite,
     badge: "LUXURY",
+    price: "R11200"
   },
   {
     id: 5,
     title: "Family Room",
     description: "Perfect for families with connecting rooms and child-friendly amenities.",
     image: familyRoom,
+    price: "R900"
   },
   {
     id: 6,
     title: "Business Room",
     description: "Designed for business travelers with work desk and meeting facilities.",
     image: businessRoom,
+    price: "R4600"
   },
 ];
 
@@ -109,7 +116,8 @@ export const RoomsSection: React.FC = () => {
                 <div className={styles.cardContent}>
                   <h3 className={styles.roomTitle}>{room.title}</h3>
                   <p className={styles.roomDescription}>{room.description}</p>
-                  <button className={styles.button}>Book Now</button>
+                  <p className={styles.roomPrice}>{room.price}</p>
+                  <button className={styles.button}>More Rooms</button>
                 </div>
               </div>
             ))}
