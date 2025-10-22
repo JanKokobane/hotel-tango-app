@@ -44,10 +44,17 @@ export const Register = () => {
       return;
     }
 
-    const payload = Object.fromEntries(data);
+    const raw = Object.fromEntries(data);
+    const payload = {
+      firstname: raw.firstName,
+      lastname: raw.lastName,
+      email: raw.email,
+      password: raw.password,
+      contact: raw.contact
+    };
 
     try {
-      const res = await fetch('http://localhost:3000/api/auth/register', {
+      const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/users/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -139,3 +146,5 @@ export const Register = () => {
     </div>
   );
 };
+
+export default Register;

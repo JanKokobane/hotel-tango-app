@@ -3,9 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "scripts": {
-    "server": "nodemon --watch src/**/*.ts --exec ts-node --transpile-only src/backend/server.ts",
-    "client": "vite",
-    "dev": "concurrently \"npm run server\" \"npm run client\""
+    "dev": "vite"
   },
   "dependencies": {
     "bcryptjs": "^3.0.2",
