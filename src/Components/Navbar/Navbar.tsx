@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from 'react-router-dom'
 import { Menu, X, User } from "lucide-react";
 import styles from "./Navbar.module.css";
 import logo from "../../assets/Logo.png";
@@ -41,10 +42,12 @@ const Navbar: React.FC = () => {
         </div>
 
         <div className={styles.rightButton}>
-          <button className={styles.loginButton}>
-            <User size={24} /> <span className={styles.loginText}>Login</span>
-          </button>
+          <Link to="/login" className={styles.loginButton}>
+            <User size={24} />
+            <span className={styles.loginText}>Login</span>
+          </Link>
         </div>
+
         <div className={styles.rightButton}>
           <button className={styles.bookNow}>Book Now</button>
         </div>

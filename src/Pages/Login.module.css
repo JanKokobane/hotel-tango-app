@@ -5,10 +5,11 @@
   justify-content: center;
   padding: 40px 20px;
   position: relative;
-  background-image: url('../assets/pexels-pixabay-271643.jpg');
+  background-image: url('https://images.pexels.com/photos/258154/pexels-photo-258154.jpeg?auto=compress&cs=tinysrgb&w=1920');
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
+  margin-top: 5rem;
 }
 
 .backgroundOverlay {

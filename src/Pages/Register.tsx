@@ -6,6 +6,7 @@ import { Sparkles, User, Mail, Phone, Lock } from 'lucide-react';
 import styles from './Register.module.css';
 import { Link, useNavigate } from 'react-router-dom';
 import React from 'react';
+import Header from '../Components/Navbar/RegHeader/Header';
 
 export const Register = () => {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
@@ -13,8 +14,8 @@ export const Register = () => {
   const [showConfirm, setShowConfirm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [generalError, setGeneralError] = useState('');
-  
-  const navigate = useNavigate(); 
+
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,8 +35,16 @@ export const Register = () => {
 
     const password = data.get('password')?.toString();
     const confirm = data.get('conf_password')?.toString();
+
     if (password && confirm && password !== confirm) {
       newErrors['conf_password'] = 'Passwords do not match';
+    }
+
+    // ✅ Strong password validation
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+    if (password && !passwordRegex.test(password)) {
+      newErrors['password'] =
+        'Password must include uppercase, lowercase, number, special character, and be at least 8 characters';
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -50,7 +59,7 @@ export const Register = () => {
       lastname: raw.lastName,
       email: raw.email,
       password: raw.password,
-      contact: raw.contact
+      contact: raw.contact,
     };
 
     try {
@@ -80,10 +89,10 @@ export const Register = () => {
 
   return (
     <div className={styles.pageContainer}>
+      <Header />
       <div className={styles.backgroundOverlay}></div>
       <div className={styles.contentWrapper}>
         <div className={styles.brandSection}>
-          <Text variant="h1" className={styles.brandTitle}>Tango Hotel</Text>
           <div className={styles.tagline}>
             <Sparkles size={16} className={styles.sparkleIcon} />
             <span>Luxury Redefined</span>

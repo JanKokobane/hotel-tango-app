@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import React from 'react';
 import Navbar from './Components/Navbar/Navbar';
 import Hero from './Pages/Hero';
@@ -8,17 +8,23 @@ import LatestNewsEvents from './Components/NewsEvents/LatestNewsEvents';
 import BlogNewYearsGala from './Components/NewsEvents/Blog/BlogNewYearsGala';
 import BlogWinePairing from './Components/NewsEvents/Blog/BlogWinePairing';
 import BlogHiddenGems from './Components/NewsEvents/Blog/BlogHiddenGems';
-import AboutUs from './Components/AboutUs/AboutUs'
-import ContactUs from './Components/ContactUs/ContactUs'
-import Footer from './Components/Footer/Footer'
-import Login from './Pages/Login'
-import RattingAndFAQ from './Components/RatingsAndFAQ/RatingsAndFAQ'
-import Gallery from './Components/Gallery/Gallery'
+import AboutUs from './Components/AboutUs/AboutUs';
+import ContactUs from './Components/ContactUs/ContactUs';
+import Footer from './Components/Footer/Footer';
+import Login from './Pages/Login';
+import RattingAndFAQ from './Components/RatingsAndFAQ/RatingsAndFAQ';
+import Gallery from './Components/Gallery/Gallery';
+import ScrollToHash from './ScrollToHash';
+import Register from './Pages/Register';
 
-function App() {
+
+function LayoutWrapper() {
+  const location = useLocation();
+  const isAuthPage = ['/login', '/register'].includes(location.pathname);
+
   return (
-    <Router>
-      <Navbar />
+    <>
+      {!isAuthPage && <Navbar />}
       <Routes>
         <Route
           path="/"
@@ -32,15 +38,49 @@ function App() {
               <Gallery />
               <RattingAndFAQ />
               <ContactUs />
-              <Footer />
+              {!isAuthPage && <Footer />}
+              <ScrollToHash />
             </>
           }
         />
-        <Route path="/blog/new-years-eve-gala" element={<BlogNewYearsGala />} />
-        <Route path="/blog/wine-pairing-masterclass" element={<BlogWinePairing />} />
-        <Route path="/blog/hidden-gems-guide" element={<BlogHiddenGems />} />
+        <Route
+          path="/blog/new-years-eve-gala"
+          element={
+            <>
+              <BlogNewYearsGala />
+              {!isAuthPage && <Footer />}
+            </>
+          }
+        />
+        <Route
+          path="/blog/wine-pairing-masterclass"
+          element={
+            <>
+              <BlogWinePairing />
+              {!isAuthPage && <Footer />}
+            </>
+          }
+        />
+        <Route
+          path="/blog/hidden-gems-guide"
+          element={
+            <>
+              <BlogHiddenGems />
+              {!isAuthPage && <Footer />}
+            </>
+          }
+        />
         <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
       </Routes>
+    </>
+  );
+}
+
+function App() {
+  return (
+    <Router>
+      <LayoutWrapper />
     </Router>
   );
 }

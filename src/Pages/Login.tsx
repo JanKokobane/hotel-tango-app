@@ -7,6 +7,7 @@ import { Sparkles, Mail, Lock } from 'lucide-react';
 import styles from './Login.module.css';
 import { Link, useNavigate } from 'react-router-dom';
 import React from 'react';
+import Header from '../Components/Navbar/RegHeader/Header'
 
 export const Login = () => {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
@@ -69,11 +70,13 @@ export const Login = () => {
   };
 
   return (
+    
     <div className={styles.pageContainer}>
+      <Header />
       <div className={styles.backgroundOverlay}></div>
       <div className={styles.contentWrapper}>
         <div className={styles.brandSection}>
-          <Text variant="h1" className={styles.brandTitle}>Tango Hotel</Text>
+          {/* <Text variant="h1" className={styles.brandTitle}>Tango Hotel</Text> */}
           <div className={styles.tagline}>
             <Sparkles size={16} className={styles.sparkleIcon} />
             <span>Luxury Redefined</span>
@@ -125,7 +128,7 @@ export const Login = () => {
               <span>New to Tango?</span>
             </div>
 
-            <Link to="/" className={styles.switchButton}>
+            <Link to="/register" className={styles.switchButton}>
               Create Account
             </Link>
           </form>
