@@ -1,6 +1,7 @@
 import React from 'react';
 import { Facebook, Twitter, Instagram, Linkedin, MapPin, Phone, Mail } from 'lucide-react';
 import styles from './Footer.module.css';
+import { Link } from 'react-router-dom'
 
 const Footer: React.FC = () => {
   return (
@@ -94,6 +95,10 @@ const Footer: React.FC = () => {
             <a href="#" className={styles.legalLink}>Terms of Service</a>
             <span className={styles.separator}>|</span>
             <a href="#" className={styles.legalLink}>Cookie Policy</a>
+            <span className={styles.separator}>|</span>
+            <Link to="admin">
+              <a href="#" className={styles.legalLink}>Admin</a>
+            </Link>
           </div>
         </div>
       </div>

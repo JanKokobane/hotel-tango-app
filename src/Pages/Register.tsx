@@ -61,7 +61,7 @@ export const Register = () => {
       contact: raw.contact,
     };
 
-    // ✅ Use Render backend URL with fallback for local dev
+    
     const API_BASE_URL =
       import.meta.env.VITE_API_BASE_URL || 'https://tango-hotel-backend.onrender.com';
 
@@ -72,7 +72,7 @@ export const Register = () => {
         body: JSON.stringify(payload),
       });
 
-      // ✅ Handle non-JSON or error responses safely
+     
       if (!res.ok) {
         const text = await res.text();
         console.error('Server response:', text);

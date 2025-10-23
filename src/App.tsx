@@ -16,6 +16,7 @@ import RattingAndFAQ from './Components/RatingsAndFAQ/RatingsAndFAQ';
 import Gallery from './Components/Gallery/Gallery';
 import ScrollToHash from './ScrollToHash';
 import Register from './Pages/Register';
+import AdminDashboard from './Admin/AdminDashboard';
 
 
 function LayoutWrapper() {
@@ -72,6 +73,7 @@ function LayoutWrapper() {
         />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/admin" element={<AdminDashboard />} />
       </Routes>
     </>
   );
