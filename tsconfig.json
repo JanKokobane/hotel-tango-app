@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "jsx": "react",
-    "module": "CommonJS",
+    "module": "esnext",
     "target": "ES2020",
     "moduleResolution": "node",
     "esModuleInterop": true,
@@ -9,7 +9,8 @@
     "rootDir": "src",
     "strict": true,
     "resolveJsonModule": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "types": ["vite/client"]  
   },
   "include": ["src"]
 }

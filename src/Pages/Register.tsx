@@ -40,11 +40,10 @@ export const Register = () => {
       newErrors['conf_password'] = 'Passwords do not match';
     }
 
-    // ✅ Strong password validation
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/;
     if (password && !passwordRegex.test(password)) {
       newErrors['password'] =
-        'Password must include uppercase, lowercase, number, special character, and be at least 8 characters';
+        'Password must include uppercase, lowercase, and number. Minimum 6 characters.';
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -62,22 +61,29 @@ export const Register = () => {
       contact: raw.contact,
     };
 
+    // ✅ Use Render backend URL with fallback for local dev
+    const API_BASE_URL =
+      import.meta.env.VITE_API_BASE_URL || 'https://tango-hotel-backend.onrender.com';
+
     try {
-      const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/users/register`, {
+      const res = await fetch(`${API_BASE_URL}/api/users/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
 
-      const result = await res.json();
-
+      // ✅ Handle non-JSON or error responses safely
       if (!res.ok) {
-        setGeneralError(result.error || 'Registration failed');
+        const text = await res.text();
+        console.error('Server response:', text);
+        setGeneralError(`Registration failed: ${res.statusText}`);
         setLoading(false);
         return;
       }
 
+      const result = await res.json();
       console.log('User registered:', result);
+
       navigate('/login');
     } catch (err) {
       console.error('Registration error:', err);
@@ -109,10 +115,38 @@ export const Register = () => {
           <form onSubmit={handleSubmit} className={styles.form}>
             {generalError && <p className={styles.generalError}>{generalError}</p>}
 
-            <Input type="text" label="First Name" name="firstName" placeholder="Please Enter First Name" icon={User} error={errors.firstName} />
-            <Input type="text" label="Last Name" name="lastName" placeholder="Please Enter Last Name" icon={User} error={errors.lastName} />
-            <Input type="email" label="Email" name="email" placeholder="user@email.com" icon={Mail} error={errors.email} />
-            <Input type="tel" label="Phone" name="contact" placeholder="+27...." icon={Phone} error={errors.contact} />
+            <Input
+              type="text"
+              label="First Name"
+              name="firstName"
+              placeholder="Please Enter First Name"
+              icon={User}
+              error={errors.firstName}
+            />
+            <Input
+              type="text"
+              label="Last Name"
+              name="lastName"
+              placeholder="Please Enter Last Name"
+              icon={User}
+              error={errors.lastName}
+            />
+            <Input
+              type="email"
+              label="Email"
+              name="email"
+              placeholder="user@email.com"
+              icon={Mail}
+              error={errors.email}
+            />
+            <Input
+              type="tel"
+              label="Phone"
+              name="contact"
+              placeholder="+27...."
+              icon={Phone}
+              error={errors.contact}
+            />
             <Input
               type={showPassword ? 'text' : 'password'}
               label="Password"

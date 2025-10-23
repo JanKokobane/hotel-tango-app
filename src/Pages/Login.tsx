@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from '../Components/Button/Button';
 import { Input } from '../Components/Input/Input';
@@ -7,7 +6,7 @@ import { Sparkles, Mail, Lock } from 'lucide-react';
 import styles from './Login.module.css';
 import { Link, useNavigate } from 'react-router-dom';
 import React from 'react';
-import Header from '../Components/Navbar/RegHeader/Header'
+import Header from '../Components/Navbar/RegHeader/Header';
 
 export const Login = () => {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
@@ -41,8 +40,11 @@ export const Login = () => {
 
     const payload = { email, password };
 
+    // ✅ Use Render backend or environment variable
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://tango-hotel-backend.onrender.com';
+
     try {
-      const res = await fetch('http://localhost:3000/api/auth/login', {
+      const res = await fetch(`${API_BASE_URL}/api/users/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -56,11 +58,13 @@ export const Login = () => {
         return;
       }
 
-   
-      alert('Login successful! Welcome back.');
+      console.log('✅ Login successful:', result);
 
-    
-      navigate('/dashboard'); 
+      // Optional: store token in localStorage
+      localStorage.setItem('token', result.token);
+
+      alert('Login successful! Welcome back.');
+      navigate('/dashboard');
     } catch (err) {
       console.error('Login error:', err);
       setGeneralError('Network error. Please try again.');
@@ -70,13 +74,11 @@ export const Login = () => {
   };
 
   return (
-    
     <div className={styles.pageContainer}>
       <Header />
       <div className={styles.backgroundOverlay}></div>
       <div className={styles.contentWrapper}>
         <div className={styles.brandSection}>
-          {/* <Text variant="h1" className={styles.brandTitle}>Tango Hotel</Text> */}
           <div className={styles.tagline}>
             <Sparkles size={16} className={styles.sparkleIcon} />
             <span>Luxury Redefined</span>
