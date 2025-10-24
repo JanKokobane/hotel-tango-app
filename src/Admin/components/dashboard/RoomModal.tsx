@@ -25,6 +25,31 @@ function RoomModal({ room, onClose, onSave }: RoomModalProps) {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [showSuccess, setShowSuccess] = useState(false);
 
+const predefinedAmenities = [
+  'WiFi',
+  'Air Conditioning',
+  'Mini Bar',
+  'Ocean View',
+  'Room Service',
+  'Spa Access',
+  'Private Balcony',
+  'Parking',
+  'Workspace / Desk Area',
+  'Restaurant / Dining',
+  'Swimming Pool',
+  'Gym / Fitness Center',
+  'Heater / Fireplace',
+  'Laundry Service',
+  'Pet Friendly',
+  'Non-Smoking Room',
+  'Luggage Storage',
+  'Toiletries Included',
+  'Extra Bed Available',
+  'TV',
+  'Coffee / Breakfast Service',
+  'Shower / Bath'
+];
+
   useEffect(() => {
     if (room) {
       setFormData({
@@ -48,6 +73,14 @@ function RoomModal({ room, onClose, onSave }: RoomModalProps) {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
     setErrors(prev => ({ ...prev, [name]: '' }));
+  };
+
+  const handleAmenityClick = (amenity: string) => {
+    const current = formData.amenities.split(',').map(a => a.trim()).filter(Boolean);
+    if (!current.includes(amenity)) {
+      const updated = [...current, amenity].join(', ');
+      setFormData(prev => ({ ...prev, amenities: updated }));
+    }
   };
 
   const validateForm = () => {
@@ -237,8 +270,21 @@ function RoomModal({ room, onClose, onSave }: RoomModalProps) {
                   name="amenities"
                   value={formData.amenities}
                   onChange={handleChange}
-                  placeholder="WiFi, Air Conditioning, Mini Bar, Ocean View"
+                  placeholder="WiFi, Air Conditioning, Mini Bar, Ocean View, Room Service, Spa Access, Private Balcony"
                 />
+
+                <div className={styles.dropdown}>
+                  {predefinedAmenities.map((amenity, index) => (
+                    <button
+                      key={index}
+                      type="button"
+                      className={styles.dropdownItem}
+                      onClick={() => handleAmenityClick(amenity)}
+                    >
+                      {amenity}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
 
@@ -253,7 +299,7 @@ function RoomModal({ room, onClose, onSave }: RoomModalProps) {
           </form>
         </div>
       </div>
-     
+
       {showSuccess && (
         <div className={styles.successModal}>
           <div className={styles.successContent}>

@@ -1322,3 +1322,30 @@
     transform: scale(1);
   }
 }
+
+
+.formGroup {
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+
+.dropdown {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.dropdownItem {
+  background-color: #ffffff;
+  border: 1px solid rgba(22, 21, 21, 0.089);
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background-color 0.2s ease;
+}
+
+.dropdownItem:hover {
+  background-color: #f3f3f5;
+}
