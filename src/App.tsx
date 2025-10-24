@@ -16,15 +16,24 @@ import RattingAndFAQ from './Components/RatingsAndFAQ/RatingsAndFAQ';
 import Gallery from './Components/Gallery/Gallery';
 import ScrollToHash from './ScrollToHash';
 import Register from './Pages/Register';
+import AdminReg from './Admin/components/AdminReg/AdminReg';
+import { AdminLogin } from './Admin/components/AdminReg/AdminLogin';
 import AdminDashboard from './Admin/AdminDashboard';
+import ProtectedRoute from './ProtectedRoute';
+import { Toaster } from 'react-hot-toast';
 
-
-function LayoutWrapper() {
+function PublicLayout() {
   const location = useLocation();
-  const isAuthPage = ['/login', '/register'].includes(location.pathname);
+  const isAuthPage = [
+    '/login',
+    '/register',
+    '/admin/adminreg',
+    '/admin/login',
+  ].includes(location.pathname);
 
   return (
     <>
+      <Toaster position="top-right" />
       {!isAuthPage && <Navbar />}
       <Routes>
         <Route
@@ -44,36 +53,11 @@ function LayoutWrapper() {
             </>
           }
         />
-        <Route
-          path="/blog/new-years-eve-gala"
-          element={
-            <>
-              <BlogNewYearsGala />
-              {!isAuthPage && <Footer />}
-            </>
-          }
-        />
-        <Route
-          path="/blog/wine-pairing-masterclass"
-          element={
-            <>
-              <BlogWinePairing />
-              {!isAuthPage && <Footer />}
-            </>
-          }
-        />
-        <Route
-          path="/blog/hidden-gems-guide"
-          element={
-            <>
-              <BlogHiddenGems />
-              {!isAuthPage && <Footer />}
-            </>
-          }
-        />
+        <Route path="/blog/new-years-eve-gala" element={<><BlogNewYearsGala /><Footer /></>} />
+        <Route path="/blog/wine-pairing-masterclass" element={<><BlogWinePairing /><Footer /></>} />
+        <Route path="/blog/hidden-gems-guide" element={<><BlogHiddenGems /><Footer /></>} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/admin" element={<AdminDashboard />} />
       </Routes>
     </>
   );
@@ -82,7 +66,22 @@ function LayoutWrapper() {
 function App() {
   return (
     <Router>
-      <LayoutWrapper />
+      <Routes>
+        {/* Public pages */}
+        <Route path="/*" element={<PublicLayout />} />
+
+        {/* Admin pages */}
+        <Route path="/admin/adminreg" element={<AdminReg />} />
+        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route
+          path="/admin/dashboard"
+          element={
+            <ProtectedRoute>
+              <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
+      </Routes>
     </Router>
   );
 }

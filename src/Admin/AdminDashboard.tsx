@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { LayoutDashboard, Hotel, Calendar, Users, Settings, Bell, Search, Menu, X as CloseIcon, Star, FileText, MessageSquare, DollarSign, BarChart3
 } from 'lucide-react';
 import styles from './AdminDashboard.module.css';
@@ -13,10 +13,14 @@ import StaffsSection from './components/dashboard/StaffsSection';
 import ReportsSection from './components/dashboard/ReportsSection';
 import ReviewsSection from './components/dashboard/ReviewsSection';
 import React from 'react';
+import Logo from '.././assets/Logo.png'
+import { useNavigate } from 'react-router-dom';
 
 type TabType = 'dashboard' | 'reservation' | 'rooms' | 'staffs' | 'analytics' | 'reports' | 'reviews' | 'invoices' | 'settings';
 
 export interface Room {
+  description: string;
+  amenities: string;
   id: string;
   name: string;
   type: string;
@@ -31,6 +35,18 @@ function AdminDashboard() {
   const [showRoomModal, setShowRoomModal] = useState(false);
   const [editingRoom, setEditingRoom] = useState<Room | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const [adminName, setAdminName] = useState(localStorage.getItem('adminName') || '');
+  const [adminInitials, setAdminInitials] = useState('');
+
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem('adminToken');
+    localStorage.removeItem('adminEmail');
+    localStorage.removeItem('adminName');
+    navigate('/admin/login');
+  };
 
   const handleAddRoom = () => {
     setEditingRoom(null);
@@ -47,10 +63,6 @@ function AdminDashboard() {
     setEditingRoom(null);
   };
 
-  const handleSaveRoom = (roomData: any) => {
-    console.log('Saving room:', roomData);
-    handleCloseModal();
-  };
 
   const handleDeleteRoom = (roomId: string) => {
     if (confirm('Are you sure you want to delete this room?')) {
@@ -122,15 +134,43 @@ function AdminDashboard() {
     }
   };
 
+  useEffect(() => {
+    const fetchAdminProfile = async () => {
+      const token = localStorage.getItem('adminToken');
+      if (!token) return;
+
+      try {
+        const res = await fetch('https://tango-hotel-backend.onrender.com/api/admin/profile', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!res.ok) throw new Error('Failed to fetch admin profile');
+
+        const data = await res.json();
+        const fullName = data.admin.full_name;
+        setAdminName(fullName);
+
+        const initials = fullName
+          .split(' ')
+          .map((n: string) => n[0])
+          .join('');
+        setAdminInitials(initials.toUpperCase());
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchAdminProfile();
+  }, []);
+
   return (
     <div className={styles.dashboard}>
       <aside className={`${styles.sidebar} ${sidebarOpen ? styles.open : ''}`}>
         <div className={styles.sidebarHeader}>
           <div className={styles.logo}>
-            <div className={styles.logoIcon}>
-              <Hotel size={20} />
-            </div>
-            <span>Hostay</span>
+            <img src={Logo} alt="Logo" />
           </div>
           <button
             className={styles.mobileCloseBtn}
@@ -255,6 +295,7 @@ function AdminDashboard() {
               />
             </div>
           </div>
+
           <div className={styles.topBarRight}>
             <button className={styles.iconButton}>
               <MessageSquare size={20} />
@@ -263,13 +304,15 @@ function AdminDashboard() {
               <Bell size={20} />
               <span className={styles.notificationBadge}>2</span>
             </button>
+
             <div className={styles.userProfile}>
-              <div className={styles.adminAvatar}>ZG</div>
+            {/* <div className={styles.adminAvatar}>{adminInitials}</div> */}
               <div className={styles.userInfo}>
-                <div className={styles.userName}>Zain George</div>
+                <div className={styles.userName}>{adminName}</div>
                 <div className={styles.userRole}>Admin</div>
               </div>
             </div>
+
           </div>
         </div>
 
@@ -282,7 +325,7 @@ function AdminDashboard() {
         <RoomModal
           room={editingRoom}
           onClose={handleCloseModal}
-          onSave={handleSaveRoom}
+          onSave={handleAddRoom}
         />
       )}
 

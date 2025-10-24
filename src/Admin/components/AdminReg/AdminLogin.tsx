@@ -1,14 +1,14 @@
 import { useState } from 'react';
-import { Button } from '../Components/Button/Button';
-import { Input } from '../Components/Input/Input';
-import { Text } from '../Components/Text/Text';
+import { Button } from '../../../Components/Button/Button';
+import { Input } from '../../../Components/Input/Input';
+import { Text } from '../../../Components/Text/Text';
 import { Sparkles, Mail, Lock } from 'lucide-react';
-import styles from './Login.module.css';
+import styles from './AdminReg.module.css'; 
 import { Link, useNavigate } from 'react-router-dom';
 import React from 'react';
-import Header from '../Components/Navbar/RegHeader/Header';
+import toast from 'react-hot-toast';
 
-export const Login = () => {
+export const AdminLogin = () => {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -23,28 +23,25 @@ export const Login = () => {
 
     const form = e.target as HTMLFormElement;
     const data = new FormData(form);
-    const newErrors: { [key: string]: string } = {};
 
     const email = data.get('email')?.toString().trim();
-    const password = data.get('password')?.toString().trim();
+    const password = data.get('password')?.toString();
 
+    const newErrors: { [key: string]: string } = {};
     if (!email) newErrors.email = 'Email is required';
     if (!password) newErrors.password = 'Password is required';
 
-    setErrors(newErrors);
-
     if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
       setLoading(false);
       return;
     }
 
     const payload = { email, password };
-
-    // ✅ Use Render backend or environment variable
     const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://tango-hotel-backend.onrender.com';
 
     try {
-      const res = await fetch(`${API_BASE_URL}/api/users/login`, {
+      const res = await fetch(`${API_BASE_URL}/api/admin/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -53,18 +50,34 @@ export const Login = () => {
       const result = await res.json();
 
       if (!res.ok) {
-        setGeneralError(result.error || 'Invalid email or password');
+        setGeneralError(result.error || 'Login failed. Please check your credentials.');
         setLoading(false);
         return;
       }
 
-      console.log('✅ Login successful:', result);
+      // ✅ Show success toast
+      toast.success('Welcome back, Admin!', {
+        style: {
+          borderRadius: '8px',
+          background: '#0f172a',
+          color: '#fff',
+          fontWeight: '500',
+        },
+        iconTheme: {
+          primary: '#22c55e',
+          secondary: '#fff',
+        },
+      });
 
-      // Optional: store token in localStorage
-      localStorage.setItem('token', result.token);
+      // ✅ Save token to localStorage
+      localStorage.setItem('adminToken', result.token);
+      localStorage.setItem('adminEmail', result.admin.email);
+      localStorage.setItem('adminName', result.admin.full_name);
 
-      alert('Login successful! Welcome back.');
-      navigate('/dashboard');
+      // ✅ Delay navigation to show toast
+      setTimeout(() => {
+        navigate('/admin/dashboard');
+      }, 1500);
     } catch (err) {
       console.error('Login error:', err);
       setGeneralError('Network error. Please try again.');
@@ -75,13 +88,12 @@ export const Login = () => {
 
   return (
     <div className={styles.pageContainer}>
-      <Header />
       <div className={styles.backgroundOverlay}></div>
       <div className={styles.contentWrapper}>
         <div className={styles.brandSection}>
           <div className={styles.tagline}>
             <Sparkles size={16} className={styles.sparkleIcon} />
-            <span>Luxury Redefined</span>
+            <span>Admin Login</span>
             <Sparkles size={16} className={styles.sparkleIcon} />
           </div>
         </div>
@@ -89,7 +101,7 @@ export const Login = () => {
         <div className={styles.formCard}>
           <div className={styles.formHeader}>
             <Text variant="h2">Welcome Back</Text>
-            <p className={styles.formSubtitle}>Sign in to continue your journey</p>
+            <p className={styles.formSubtitle}>Sign in to manage Tango Hotel</p>
           </div>
 
           <form onSubmit={handleSubmit} className={styles.form}>
@@ -99,7 +111,7 @@ export const Login = () => {
               type="email"
               label="Email"
               name="email"
-              placeholder="user@email.com"
+              placeholder="admin@email.com"
               icon={Mail}
               error={errors.email}
             />
@@ -107,31 +119,23 @@ export const Login = () => {
               type={showPassword ? 'text' : 'password'}
               label="Password"
               name="password"
-              placeholder="••••••••"
+              placeholder="Enter password"
               icon={Lock}
               error={errors.password}
               rightIcon={showPassword ? 'eye-off' : 'eye'}
               onRightIconClick={() => setShowPassword(!showPassword)}
             />
 
-            <div className={styles.rememberSection}>
-              <label className={styles.checkboxLabel}>
-                <input type="checkbox" className={styles.checkbox} />
-                <span>Remember me</span>
-              </label>
-              <a href="#" className={styles.forgotLink}>Forgot password?</a>
-            </div>
-
             <Button type="submit" className={styles.SubmitButton} disabled={loading}>
               {loading ? 'Signing In...' : 'Sign In'}
             </Button>
 
             <div className={styles.divider}>
-              <span>New to Tango?</span>
+              <span>Need an account?</span>
             </div>
 
-            <Link to="/register" className={styles.switchButton}>
-              Create Account
+            <Link to="/admin/adminreg" className={styles.switchButton}>
+              Register Admin
             </Link>
           </form>
         </div>
@@ -144,4 +148,4 @@ export const Login = () => {
   );
 };
 
-export default Login;
+export default AdminLogin;

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Facebook, Twitter, Instagram, Linkedin, MapPin, Phone, Mail } from 'lucide-react';
 import styles from './Footer.module.css';
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router-dom';
 
 const Footer: React.FC = () => {
   return (
@@ -39,18 +39,6 @@ const Footer: React.FC = () => {
               <li><a href="#Contact" className={styles.link}>Contact</a></li>
             </ul>
           </div>
-
-          {/* <div className={styles.linksColumn}>
-            <h3 className={styles.columnTitle}>Services</h3>
-            <ul className={styles.linksList}>
-              <li><a href="#" className={styles.link}>Restaurant & Bar</a></li>
-              <li><a href="#" className={styles.link}>Spa & Wellness</a></li>
-              <li><a href="#" className={styles.link}>Conference Rooms</a></li>
-              <li><a href="#" className={styles.link}>Events & Weddings</a></li>
-              <li><a href="#" className={styles.link}>Airport Transfer</a></li>
-              <li><a href="#" className={styles.link}>Room Service</a></li>
-            </ul>
-          </div> */}
 
           <div className={styles.contactColumn}>
             <h3 className={styles.columnTitle}>Contact Info</h3>
@@ -90,15 +78,15 @@ const Footer: React.FC = () => {
             © 2025 Tango Hotel. All rights reserved.
           </p>
           <div className={styles.legalLinks}>
-            <a href="#" className={styles.legalLink}>Privacy Policy</a>
+            <Link to="/privacy" className={styles.legalLink}>Privacy Policy</Link>
             <span className={styles.separator}>|</span>
-            <a href="#" className={styles.legalLink}>Terms of Service</a>
+            <Link to="/terms" className={styles.legalLink}>Terms of Service</Link>
             <span className={styles.separator}>|</span>
-            <a href="#" className={styles.legalLink}>Cookie Policy</a>
+            <Link to="/cookies" className={styles.legalLink}>Cookie Policy</Link>
             <span className={styles.separator}>|</span>
-            <Link to="admin">
-              <a href="#" className={styles.legalLink}>Admin</a>
-            </Link>
+            <Link to="/admin" className={styles.legalLink}>Admin</Link>
+            <span className={styles.separator}>|</span>
+            <Link to="/admin/adminreg" className={styles.legalLink}>Register</Link>
           </div>
         </div>
       </div>
