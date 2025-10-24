@@ -1,0 +1,61 @@
+.pageContainer {
+  padding: 2rem;
+  background-color: #0c1925;
+}
+
+.pageTitle {
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: #0f172a;
+}
+
+.status, .error {
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  color: #475569;
+}
+
+.error {
+  color: #dc2626;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.card {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  transition: transform 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+}
+
+.image {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+.details {
+  padding: 1rem;
+}
+
+.details h2 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.type, .price, .capacity, .description, .amenities {
+  font-size: 0.9rem;
+  margin-bottom: 0.4rem;
+  color: #475569;
+}

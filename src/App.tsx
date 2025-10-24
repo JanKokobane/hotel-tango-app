@@ -21,6 +21,7 @@ import { AdminLogin } from './Admin/components/AdminReg/AdminLogin';
 import AdminDashboard from './Admin/AdminDashboard';
 import ProtectedRoute from './ProtectedRoute';
 import { Toaster } from 'react-hot-toast';
+import RoomsPage from './Pages/RoomsPage/RoomsPage';
 
 function PublicLayout() {
   const location = useLocation();
@@ -67,10 +68,13 @@ function App() {
   return (
     <Router>
       <Routes>
-        {/* Public pages */}
+        {/* Public routes with layout */}
         <Route path="/*" element={<PublicLayout />} />
 
-        {/* Admin pages */}
+        {/* Public route without layout */}
+        <Route path="/rooms" element={<RoomsPage />} />
+
+        {/* Admin routes */}
         <Route path="/admin/adminreg" element={<AdminReg />} />
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route

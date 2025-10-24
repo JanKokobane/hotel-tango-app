@@ -7,6 +7,7 @@ import executiveSuite from "../../assets/3d-rendering-modern-luxury-bedroom-suit
 import presidentialSuite from "../../assets/bangkok-thailand-august-12-2016-beautiful-luxury-bedroom-int.jpg";
 import businessRoom from "../../assets/interior-modern-comfortable-hotel-room.jpg";
 import styles from "./RoomsSection.module.css";
+import { Link } from "react-router-dom";
 
 interface Room {
   [x: string]: ReactNode;
@@ -117,7 +118,11 @@ export const RoomsSection: React.FC = () => {
                   <h3 className={styles.roomTitle}>{room.title}</h3>
                   <p className={styles.roomDescription}>{room.description}</p>
                   <p className={styles.roomPrice}>{room.price}</p>
-                  <button className={styles.button}>More Rooms</button>
+
+                  <Link to="/rooms">
+                    <button className={styles.button}>More Rooms</button>
+                  </Link>
+
                 </div>
               </div>
             ))}
