@@ -1,8 +1,28 @@
-import React, { useState } from 'react';
-import {X,Star,Users,Bed,Wifi,Coffee,Tv,Wind,Droplet,Calendar,CreditCard,Car,Briefcase,Utensils,Dumbbell,Flame,ShowerHead,PawPrint,CigaretteOff,Luggage,Sparkles
+import React, { useState } from 'react'; 
+import {
+  X,
+  Star,
+  Users,
+  Bed,
+  Wifi,
+  Coffee,
+  Tv,
+  Wind,
+  Droplet,
+  Calendar,
+  CreditCard,
+  Car,
+  Briefcase,
+  Utensils,
+  Dumbbell,
+  Flame,
+  ShowerHead,
+  PawPrint,
+  CigaretteOff,
+  Luggage,
+  Sparkles
 } from 'lucide-react';
 import styles from './RoomDetailModal.module.css';
-
 
 interface Room {
   id: string;
@@ -31,36 +51,37 @@ const RoomDetailModal: React.FC<RoomDetailModalProps> = ({ room, onClose }) => {
   const [hoverRating, setHoverRating] = useState(0);
   const [reviewText, setReviewText] = useState('');
   const [userName, setUserName] = useState('');
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
 
   const getAmenityIcon = (amenity: string) => {
-  const lower = amenity.toLowerCase();
+    const lower = amenity.toLowerCase();
 
-  if (lower.includes('wifi')) return <Wifi size={18} color="#3b82f6" />;
-  if (lower.includes('air')) return <Wind size={18} color="#06b6d4" />;
-  if (lower.includes('mini bar') || lower.includes('bar')) return <Coffee size={18} color="#b45309" />;
-  if (lower.includes('ocean')) return <Droplet size={18} color="#0ea5e9" />;
-  if (lower.includes('room service')) return <Bed size={18} color="#22c55e" />;
-  if (lower.includes('spa')) return <Wind size={18} color="#e879f9" />;
-  if (lower.includes('balcony')) return <Tv size={18} color="#facc15" />;
-  if (lower.includes('parking')) return <Car size={18} color="#6b7280" />;
-  if (lower.includes('workspace') || lower.includes('desk')) return <Briefcase size={18} color="#475569" />;
-  if (lower.includes('restaurant') || lower.includes('dining')) return <Utensils size={18} color="#f97316" />;
-  if (lower.includes('pool') || lower.includes('swim')) return <Droplet size={18} color="#38bdf8" />;
-  if (lower.includes('gym') || lower.includes('fitness')) return <Dumbbell size={18} color="#22c55e" />;
-  if (lower.includes('heater') || lower.includes('fire')) return <Flame size={18} color="#f87171" />;
-  if (lower.includes('laundry')) return <ShowerHead size={18} color="#a78bfa" />;
-  if (lower.includes('pet')) return <PawPrint size={18} color="#f59e0b" />;
-  if (lower.includes('non-smoking') || lower.includes('smoke free')) return <CigaretteOff size={18} color="#9ca3af" />;
-  if (lower.includes('luggage') || lower.includes('storage')) return <Luggage size={18} color="#475569" />;
-  if (lower.includes('toiletries') || lower.includes('amenities')) return <Sparkles size={18} color="#a855f7" />;
-  if (lower.includes('extra bed')) return <Bed size={18} color="#22d3ee" />;
-  if (lower.includes('tv')) return <Tv size={18} />;
-  if (lower.includes('coffee') || lower.includes('breakfast')) return <Coffee size={18} />;
-  if (lower.includes('ac') || lower.includes('cool')) return <Wind size={18} />;
-  if (lower.includes('shower') || lower.includes('bath')) return <Droplet size={18} />;
-
-  return <Bed size={18} />;
-};
+    if (lower.includes('wifi')) return <Wifi size={18} color="#3b82f6" />;
+    if (lower.includes('air')) return <Wind size={18} color="#06b6d4" />;
+    if (lower.includes('mini bar') || lower.includes('bar')) return <Coffee size={18} color="#b45309" />;
+    if (lower.includes('ocean')) return <Droplet size={18} color="#0ea5e9" />;
+    if (lower.includes('room service')) return <Bed size={18} color="#22c55e" />;
+    if (lower.includes('spa')) return <Wind size={18} color="#e879f9" />;
+    if (lower.includes('balcony')) return <Tv size={18} color="#facc15" />;
+    if (lower.includes('parking')) return <Car size={18} color="#6b7280" />;
+    if (lower.includes('workspace') || lower.includes('desk')) return <Briefcase size={18} color="#475569" />;
+    if (lower.includes('restaurant') || lower.includes('dining')) return <Utensils size={18} color="#f97316" />;
+    if (lower.includes('pool') || lower.includes('swim')) return <Droplet size={18} color="#38bdf8" />;
+    if (lower.includes('gym') || lower.includes('fitness')) return <Dumbbell size={18} color="#22c55e" />;
+    if (lower.includes('heater') || lower.includes('fire')) return <Flame size={18} color="#f87171" />;
+    if (lower.includes('laundry')) return <ShowerHead size={18} color="#a78bfa" />;
+    if (lower.includes('pet')) return <PawPrint size={18} color="#f59e0b" />;
+    if (lower.includes('non-smoking') || lower.includes('smoke free')) return <CigaretteOff size={18} color="#9ca3af" />;
+    if (lower.includes('luggage') || lower.includes('storage')) return <Luggage size={18} color="#475569" />;
+    if (lower.includes('toiletries') || lower.includes('amenities')) return <Sparkles size={18} color="#a855f7" />;
+    if (lower.includes('extra bed')) return <Bed size={18} color="#22d3ee" />;
+    if (lower.includes('tv')) return <Tv size={18} />;
+    if (lower.includes('coffee') || lower.includes('breakfast')) return <Coffee size={18} />;
+    if (lower.includes('ac') || lower.includes('cool')) return <Wind size={18} />;
+    if (lower.includes('shower') || lower.includes('bath')) return <Droplet size={18} />;
+    return <Bed size={18} />;
+  };
 
   const calculateNights = () => {
     if (!checkIn || !checkOut) return 0;
@@ -81,7 +102,6 @@ const RoomDetailModal: React.FC<RoomDetailModalProps> = ({ room, onClose }) => {
       review: reviewText,
       roomId: room.id
     });
-    
     setUserName('');
     setUserRating(0);
     setReviewText('');
@@ -91,11 +111,20 @@ const RoomDetailModal: React.FC<RoomDetailModalProps> = ({ room, onClose }) => {
     e.preventDefault();
     console.log({
       roomId: room.id,
+      fullName,
+      email,
       checkIn,
       checkOut,
       guests,
       totalPrice
     });
+
+    // Reset fields after submit
+    setFullName('');
+    setEmail('');
+    setCheckIn('');
+    setCheckOut('');
+    setGuests(1);
   };
 
   return (
@@ -106,6 +135,7 @@ const RoomDetailModal: React.FC<RoomDetailModalProps> = ({ room, onClose }) => {
         </button>
 
         <div className={styles.modalGrid}>
+          {/* LEFT COLUMN */}
           <div className={styles.leftColumn}>
             <div className={styles.imageContainer}>
               <img 
@@ -219,6 +249,7 @@ const RoomDetailModal: React.FC<RoomDetailModalProps> = ({ room, onClose }) => {
             </div>
           </div>
 
+          {/* RIGHT COLUMN (Booking Form) */}
           <div className={styles.rightColumn}>
             <div className={styles.bookingCard}>
               <div className={styles.priceHeader}>
@@ -227,6 +258,33 @@ const RoomDetailModal: React.FC<RoomDetailModalProps> = ({ room, onClose }) => {
               </div>
 
               <form onSubmit={handleBooking} className={styles.bookingForm}>
+                {/* Full Name */}
+                <div className={styles.formGroup}>
+                  <label className={styles.formLabel}>Full Name</label>
+                  <input
+                    type="text"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    className={styles.formInput}
+                    placeholder="Enter your full name"
+                    required
+                  />
+                </div>
+
+                {/* Email */}
+                <div className={styles.formGroup}>
+                  <label className={styles.formLabel}>Email Address</label>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className={styles.formInput}
+                    placeholder="Enter your email"
+                    required
+                  />
+                </div>
+
+                {/* Check-in */}
                 <div className={styles.formGroup}>
                   <label className={styles.formLabel}>
                     <Calendar size={16} />
@@ -242,6 +300,7 @@ const RoomDetailModal: React.FC<RoomDetailModalProps> = ({ room, onClose }) => {
                   />
                 </div>
 
+                {/* Check-out */}
                 <div className={styles.formGroup}>
                   <label className={styles.formLabel}>
                     <Calendar size={16} />
@@ -257,6 +316,7 @@ const RoomDetailModal: React.FC<RoomDetailModalProps> = ({ room, onClose }) => {
                   />
                 </div>
 
+                {/* Guests */}
                 <div className={styles.formGroup}>
                   <label className={styles.formLabel}>
                     <Users size={16} />
@@ -269,11 +329,14 @@ const RoomDetailModal: React.FC<RoomDetailModalProps> = ({ room, onClose }) => {
                     required
                   >
                     {Array.from({ length: room.capacity }, (_, i) => i + 1).map(num => (
-                      <option key={num} value={num}>{num} {num === 1 ? 'Guest' : 'Guests'}</option>
+                      <option key={num} value={num}>
+                        {num} {num === 1 ? 'Guest' : 'Guests'}
+                      </option>
                     ))}
                   </select>
                 </div>
 
+                {/* Price Breakdown */}
                 {checkIn && checkOut && (
                   <div className={styles.priceBreakdown}>
                     <div className={styles.breakdownRow}>

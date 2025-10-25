@@ -3,6 +3,8 @@ import { Star, Users, Bed, Wifi, Coffee, Tv, Wind, Droplet, Search, SlidersHoriz
 import styles from './RoomsPage.module.css';
 import RoomDetailModal from './RoomDetailModal/RoomDetailModal';
 import React from 'react';
+import { Link } from 'react-router-dom'
+import BookingForm from './BookingForm/BookingForm';
 
 export interface Room {
   id: string;
@@ -25,7 +27,6 @@ const RoomsPage = () => {
   const [error, setError] = useState('');
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
   
-  // Filter states
   const [searchTerm, setSearchTerm] = useState('');
   const [showFilters, setShowFilters] = useState(false);
   const [priceRange, setPriceRange] = useState({ min: 0, max: 10000 });
@@ -41,7 +42,6 @@ const RoomsPage = () => {
         if (!res.ok) throw new Error('Failed to fetch rooms');
         const data = await res.json();
         
-        // Add mock ratings if not present
         const roomsWithRatings = data.map((room: Room) => ({
           ...room,
           rating: room.rating || (Math.random() * 1.5 + 3.5).toFixed(1),
@@ -61,11 +61,10 @@ const RoomsPage = () => {
     fetchRooms();
   }, []);
 
-  // Filter logic
+  
   useEffect(() => {
     let filtered = [...rooms];
 
-    // Search filter
     if (searchTerm) {
       filtered = filtered.filter(room => 
         room.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -74,19 +73,16 @@ const RoomsPage = () => {
       );
     }
 
-    // Price filter
     filtered = filtered.filter(room => 
       room.price >= priceRange.min && room.price <= priceRange.max
     );
 
-    // Type filter
     if (selectedType !== 'all') {
       filtered = filtered.filter(room => 
         room.type.toLowerCase() === selectedType.toLowerCase()
       );
     }
 
-    // Capacity filter
     if (selectedCapacity !== 'all') {
       filtered = filtered.filter(room => 
         room.capacity >= parseInt(selectedCapacity)
@@ -305,9 +301,15 @@ const RoomsPage = () => {
                       >
                         View Details
                       </button>
-                      <button className={styles.bookButton}>
+
+                      <button
+                        className={styles.bookButton}
+                        onClick={() => setSelectedRoom(room)}
+                      >
                         Book Now
                       </button>
+
+
                     </div>
                   </div>
                 </div>
@@ -334,8 +336,16 @@ const RoomsPage = () => {
           onClose={() => setSelectedRoom(null)} 
         />
       )}
-    </div>
-  );
+
+      {selectedRoom && (
+        <BookingForm
+          room={selectedRoom}
+          onClose={() => setSelectedRoom(null)}
+        />
+      )}
+
+
+    </div>);
 };
 
 export default RoomsPage;
