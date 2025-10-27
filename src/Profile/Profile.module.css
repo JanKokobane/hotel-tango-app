@@ -1,0 +1,294 @@
+.profileContainer {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, #faf9f7 0%, #ffffff 50%, #f5f3f038 100%);
+  padding: 2rem;
+}
+
+.profileCard {
+  background: white;
+  border-radius: 2px;
+  padding: 3rem;
+  width: 100%;
+  max-width: 720px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+}
+
+.profileHeader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 2.5rem;
+  position: relative;
+}
+
+.avatarContainer {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #faf9f7, #f5f3f0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  margin-bottom: 1rem;
+  border: 3px solid #e5e5e5;
+}
+
+.profileTitle {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0;
+  text-align: center;
+}
+
+.logoutButton {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: none;
+  border: 2px solid #e5e5e5;
+  color: #666;
+  padding: 0.625rem 1rem;
+  border-radius: 2px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.logoutButton:hover {
+  border-color: #1a1a1a;
+  color: #1a1a1a;
+}
+
+.profileView {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.infoGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+.infoItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.infoLabel {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.infoValue {
+  font-size: 1rem;
+  color: #1a1a1a;
+  font-weight: 500;
+  padding: 0.875rem;
+  background: #faf9f7;
+  border-radius: 2px;
+  border: 2px solid #e5e5e5;
+  margin: 0;
+}
+
+.actions {
+  display: flex;
+  gap: 1rem;
+  padding-top: 1rem;
+  border-top: 2px solid #e5e5e5;
+}
+
+.editButton,
+.deleteButton {
+  flex: 1;
+  padding: 0.875rem 1.5rem;
+  border-radius: 2px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: none;
+}
+
+.editButton {
+  background: #1a1a1a;
+  color: white;
+}
+
+.editButton:hover {
+  background: #333;
+  transform: translateY(-2px);
+}
+
+.deleteButton {
+  background: white;
+  color: #c33;
+  border: 2px solid #c33;
+}
+
+.deleteButton:hover:not(:disabled) {
+  background: #c33;
+  color: white;
+  transform: translateY(-2px);
+}
+
+.deleteButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.profileForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.input {
+  padding: 0.875rem;
+  border: 2px solid #e5e5e5;
+  border-radius: 2px;
+  font-size: 0.875rem;
+  color: #1a1a1a;
+  transition: border-color 0.3s ease;
+  background: white;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #1a1a1a;
+}
+
+.input::placeholder {
+  color: #999;
+}
+
+.formActions {
+  display: flex;
+  gap: 1rem;
+  padding-top: 1rem;
+  border-top: 2px solid #e5e5e5;
+}
+
+.cancelButton,
+.saveButton {
+  flex: 1;
+  padding: 1rem;
+  border-radius: 2px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+}
+
+.cancelButton {
+  background: white;
+  border: 2px solid #e5e5e5;
+  color: #666;
+}
+
+.cancelButton:hover {
+  border-color: #1a1a1a;
+  color: #1a1a1a;
+}
+
+.saveButton {
+  background: #1a1a1a;
+  color: white;
+}
+
+.saveButton:hover:not(:disabled) {
+  background: #333;
+  transform: translateY(-2px);
+}
+
+.saveButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.errorMessage {
+  background: #fee;
+  color: #c33;
+  padding: 0.875rem;
+  border-radius: 2px;
+  font-size: 0.875rem;
+  border-left: 3px solid #c33;
+}
+
+.successMessage {
+  background: #efe;
+  color: #2a6;
+  padding: 0.875rem;
+  border-radius: 2px;
+  font-size: 0.875rem;
+  border-left: 3px solid #2a6;
+}
+
+@media (max-width: 768px) {
+  .profileCard {
+    padding: 2rem;
+  }
+
+  .infoGrid,
+  .formRow {
+    grid-template-columns: 1fr;
+  }
+
+  .actions,
+  .formActions {
+    flex-direction: column;
+  }
+
+  .logoutButton {
+    position: static;
+    margin-top: 1rem;
+    align-self: center;
+  }
+
+  .profileTitle {
+    font-size: 1.5rem;
+  }
+}

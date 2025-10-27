@@ -1,8 +1,7 @@
-import { useState } from 'react';
-import { X, Hotel, Sparkles, Calendar as CalendarIcon, User, Phone, Mail } from 'lucide-react';
+import React, { useState } from 'react';
+import { X, Sparkles, Calendar as CalendarIcon, User, Phone, Mail } from 'lucide-react';
 import { Calendar } from '../../../Components/ui/Calender';
 import styles from './BookingForm.module.css';
-import React from 'react';
 
 interface Room {
   id: string;
@@ -29,6 +28,8 @@ const BookingForm = ({ room, onClose }: BookingFormProps) => {
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const calculateNights = () => {
     if (!checkIn || !checkOut) return 0;
@@ -39,21 +40,52 @@ const BookingForm = ({ room, onClose }: BookingFormProps) => {
   const nights = calculateNights();
   const totalPrice = nights * room.price;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
+    setLoading(true);
 
-    if (!checkIn || !checkOut) {
-      alert('Please select check-in and check-out dates');
+    if (!checkIn || !checkOut || !fullName || !phone || !email) {
+      setError('Please fill in all required fields and select valid dates.');
+      setLoading(false);
       return;
     }
 
-    if (!fullName || !phone || !email) {
-      alert('Please fill in all required fields');
-      return;
-    }
+    const bookingData = {
+      room_id: Number(room.id),
+      full_name: fullName,
+      phone,
+      email,
+      check_in: checkIn.toISOString().split('T')[0],
+      check_out: checkOut.toISOString().split('T')[0],
+      total_price: totalPrice,
+      nights,
+    };
 
-    alert(`Booking Confirmed! Your reservation for ${room.name} is confirmed. Total: R${totalPrice}`);
-    onClose();
+    try {
+      const res = await fetch('https://tango-hotel-backend.onrender.com/api/bookings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(bookingData),
+      });
+
+      if (!res.ok) {
+        const text = await res.text();
+        console.error('Server response:', text);
+        setError(`Booking failed: ${res.statusText}`);
+        setLoading(false);
+        return;
+      }
+
+      const result = await res.json();
+      alert(`✅ Booking confirmed! Reference: ${result.booking?.id || 'N/A'}`);
+      onClose();
+    } catch (err) {
+      console.error('❌ Booking error:', err);
+      setError('Network error. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -66,7 +98,6 @@ const BookingForm = ({ room, onClose }: BookingFormProps) => {
 
       <div className={styles.contentWrapper}>
         <div className={styles.brandSection}>
-          
           <h1 className={styles.brandTitle}>Complete Your Booking</h1>
           <div className={styles.tagline}>
             <Sparkles className={styles.sparkleIcon} size={14} />
@@ -82,6 +113,8 @@ const BookingForm = ({ room, onClose }: BookingFormProps) => {
           </div>
 
           <form onSubmit={handleSubmit} className={styles.form}>
+            {error && <p className={styles.generalError}>{error}</p>}
+
             <div className={styles.formGroup}>
               <label className={styles.label}>
                 <User size={14} />
@@ -182,8 +215,8 @@ const BookingForm = ({ room, onClose }: BookingFormProps) => {
               </div>
             )}
 
-            <button type="submit" className={styles.submitButton}>
-              Confirm Booking
+            <button type="submit" className={styles.submitButton} disabled={loading}>
+              {loading ? 'Processing...' : 'Confirm Booking'}
             </button>
           </form>
         </div>

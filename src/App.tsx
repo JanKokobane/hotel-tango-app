@@ -30,7 +30,7 @@ function PublicLayout() {
     '/register',
     '/admin/adminreg',
     '/admin/login',
-    '/bookingfoom' // ✅ corrected to match your route
+    '/bookingfoom' 
   ].includes(location.pathname);
 
   return (
