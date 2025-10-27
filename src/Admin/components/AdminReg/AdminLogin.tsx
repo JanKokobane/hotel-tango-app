@@ -1,35 +1,34 @@
-import { useState } from 'react';
-import { Button } from '../../../Components/Button/Button';
-import { Input } from '../../../Components/Input/Input';
-import { Text } from '../../../Components/Text/Text';
-import { Sparkles, Mail, Lock } from 'lucide-react';
-import styles from './AdminReg.module.css'; 
-import { Link, useNavigate } from 'react-router-dom';
-import React from 'react';
-import toast from 'react-hot-toast';
+import { useState } from "react";
+import { Button } from "../../../Components/Button/Button";
+import { Input } from "../../../Components/Input/Input";
+import { Text } from "../../../Components/Text/Text";
+import { Sparkles, Mail, Lock } from "lucide-react";
+import styles from "./AdminReg.module.css";
+import { Link, useNavigate } from "react-router-dom";
+import React from "react";
 
 export const AdminLogin = () => {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [generalError, setGeneralError] = useState('');
+  const [generalError, setGeneralError] = useState("");
 
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setGeneralError('');
+    setGeneralError("");
     setLoading(true);
 
     const form = e.target as HTMLFormElement;
     const data = new FormData(form);
 
-    const email = data.get('email')?.toString().trim();
-    const password = data.get('password')?.toString();
+    const email = data.get("email")?.toString().trim();
+    const password = data.get("password")?.toString();
 
     const newErrors: { [key: string]: string } = {};
-    if (!email) newErrors.email = 'Email is required';
-    if (!password) newErrors.password = 'Password is required';
+    if (!email) newErrors.email = "Email is required";
+    if (!password) newErrors.password = "Password is required";
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -38,49 +37,37 @@ export const AdminLogin = () => {
     }
 
     const payload = { email, password };
-    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://tango-hotel-backend.onrender.com';
+    const API_BASE_URL =
+      import.meta.env.VITE_API_BASE_URL ||
+      "https://tango-hotel-backend.onrender.com";
 
     try {
       const res = await fetch(`${API_BASE_URL}/api/admin/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
       const result = await res.json();
 
       if (!res.ok) {
-        setGeneralError(result.error || 'Login failed. Please check your credentials.');
+        setGeneralError(
+          result.error || "Login failed. Please check your credentials."
+        );
         setLoading(false);
         return;
       }
 
-      // ✅ Show success toast
-      toast.success('Welcome back, Admin!', {
-        style: {
-          borderRadius: '8px',
-          background: '#0f172a',
-          color: '#fff',
-          fontWeight: '500',
-        },
-        iconTheme: {
-          primary: '#22c55e',
-          secondary: '#fff',
-        },
-      });
+      localStorage.setItem("adminToken", result.token);
+      localStorage.setItem("adminEmail", result.admin.email);
+      localStorage.setItem("adminName", result.admin.full_name);
 
-      // ✅ Save token to localStorage
-      localStorage.setItem('adminToken', result.token);
-      localStorage.setItem('adminEmail', result.admin.email);
-      localStorage.setItem('adminName', result.admin.full_name);
-
-      // ✅ Delay navigation to show toast
       setTimeout(() => {
-        navigate('/admin/dashboard');
+        navigate("/admin/dashboard");
       }, 1500);
     } catch (err) {
-      console.error('Login error:', err);
-      setGeneralError('Network error. Please try again.');
+      console.error("Login error:", err);
+      setGeneralError("Network error. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -105,7 +92,9 @@ export const AdminLogin = () => {
           </div>
 
           <form onSubmit={handleSubmit} className={styles.form}>
-            {generalError && <p className={styles.generalError}>{generalError}</p>}
+            {generalError && (
+              <p className={styles.generalError}>{generalError}</p>
+            )}
 
             <Input
               type="email"
@@ -116,18 +105,22 @@ export const AdminLogin = () => {
               error={errors.email}
             />
             <Input
-              type={showPassword ? 'text' : 'password'}
+              type={showPassword ? "text" : "password"}
               label="Password"
               name="password"
               placeholder="Enter password"
               icon={Lock}
               error={errors.password}
-              rightIcon={showPassword ? 'eye-off' : 'eye'}
+              rightIcon={showPassword ? "eye-off" : "eye"}
               onRightIconClick={() => setShowPassword(!showPassword)}
             />
 
-            <Button type="submit" className={styles.SubmitButton} disabled={loading}>
-              {loading ? 'Signing In...' : 'Sign In'}
+            <Button
+              type="submit"
+              className={styles.SubmitButton}
+              disabled={loading}
+            >
+              {loading ? "Signing In..." : "Sign In"}
             </Button>
 
             <div className={styles.divider}>

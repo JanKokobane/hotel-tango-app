@@ -1,109 +1,95 @@
-import { useState } from 'react';
-import { Button } from '../../../Components/Button/Button';
-import { Input } from '../../../Components/Input/Input';
-import { Text } from '../../../Components/Text/Text';
-import { Sparkles, User, Mail, Lock } from 'lucide-react';
-import styles from './AdminReg.module.css';
-import { Link, useNavigate } from 'react-router-dom';
-import React from 'react';
-import toast from 'react-hot-toast';
+import { useState } from "react";
+import { Button } from "../../../Components/Button/Button";
+import { Input } from "../../../Components/Input/Input";
+import { Text } from "../../../Components/Text/Text";
+import { Sparkles, User, Mail, Lock } from "lucide-react";
+import styles from "./AdminReg.module.css";
+import { Link, useNavigate } from "react-router-dom";
+import React from "react";
 
 export const Register = () => {
-const [errors, setErrors] = useState<{ [key: string]: string }>({});
-const [showPassword, setShowPassword] = useState(false);
-const [showConfirm, setShowConfirm] = useState(false);
-const [loading, setLoading] = useState(false);
-const [generalError, setGeneralError] = useState('');
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [generalError, setGeneralError] = useState("");
 
-const navigate = useNavigate();
+  const navigate = useNavigate();
 
-const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setGeneralError('');
-  setLoading(true);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setGeneralError("");
+    setLoading(true);
 
-  const form = e.target as HTMLFormElement;
-  const data = new FormData(form);
+    const form = e.target as HTMLFormElement;
+    const data = new FormData(form);
 
-  const full_name = data.get('full_name')?.toString().trim();
-  const email = data.get('email')?.toString().trim();
-  const password = data.get('password')?.toString();
-  const confirm = data.get('conf_password')?.toString();
+    const full_name = data.get("full_name")?.toString().trim();
+    const email = data.get("email")?.toString().trim();
+    const password = data.get("password")?.toString();
+    const confirm = data.get("conf_password")?.toString();
 
-  const newErrors: { [key: string]: string } = {};
+    const newErrors: { [key: string]: string } = {};
 
-  if (!full_name) newErrors.full_name = 'Full name is required';
-  if (!email) newErrors.email = 'Email is required';
-  if (!password) newErrors.password = 'Password is required';
-  if (!confirm) newErrors.conf_password = 'Please confirm your password';
+    if (!full_name) newErrors.full_name = "Full name is required";
+    if (!email) newErrors.email = "Email is required";
+    if (!password) newErrors.password = "Password is required";
+    if (!confirm) newErrors.conf_password = "Please confirm your password";
 
-  if (password && confirm && password !== confirm) {
-    newErrors.conf_password = 'Passwords do not match';
-  }
+    if (password && confirm && password !== confirm) {
+      newErrors.conf_password = "Passwords do not match";
+    }
 
-  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{6,}$/;
-  if (password && !passwordRegex.test(password)) {
-    newErrors.password =
-      'Password must be at least 8 characters and contain letters and numbers';
-  }
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{6,}$/;
+    if (password && !passwordRegex.test(password)) {
+      newErrors.password =
+        "Password must be at least 8 characters and contain letters and numbers";
+    }
 
-  if (Object.keys(newErrors).length > 0) {
-    setErrors(newErrors);
-    setLoading(false);
-    return;
-  }
-
-  const payload = { full_name, email, password };
-
-  const API_BASE_URL =
-    import.meta.env.VITE_API_BASE_URL || 'https://tango-hotel-backend.onrender.com';
-
-  try {
-    const res = await fetch(`${API_BASE_URL}/api/admin/register`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
-
-    if (!res.ok) {
-      const text = await res.text();
-      console.error('Server response:', text);
-      setGeneralError(`Registration failed: ${res.statusText}`);
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
       setLoading(false);
       return;
     }
 
-    const result = await res.json();
-    console.log('Admin registered:', result);
+    const payload = { full_name, email, password };
 
-    toast.success('Admin registered successfully!', {
-      style: {
-        borderRadius: '8px',
-        background: '#0f172a',
-        color: '#fff',
-        fontWeight: '500',
-      },
-      iconTheme: {
-        primary: '#22c55e',
-        secondary: '#fff',
-      },
-    });
+    const API_BASE_URL =
+      import.meta.env.VITE_API_BASE_URL ||
+      "https://tango-hotel-backend.onrender.com";
 
-    localStorage.setItem('adminToken', result.token);
-    localStorage.setItem('adminEmail', result.admin.email);
-    localStorage.setItem('adminName', result.admin.full_name);
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/admin/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
 
-    setTimeout(() => {
-      navigate('/admin/login');
-    }, 1500);
+      if (!res.ok) {
+        const text = await res.text();
+        console.error("Server response:", text);
+        setGeneralError(`Registration failed: ${res.statusText}`);
+        setLoading(false);
+        return;
+      }
 
-  } catch (err) {
-    console.error('Registration error:', err);
-    setGeneralError('Network error. Please try again.');
-  } finally {
-    setLoading(false);
-  }
-};
+      const result = await res.json();
+      console.log("Admin registered:", result);
+
+      localStorage.setItem("adminToken", result.token);
+      localStorage.setItem("adminEmail", result.admin.email);
+      localStorage.setItem("adminName", result.admin.full_name);
+
+      setTimeout(() => {
+        navigate("/admin/login");
+      }, 1500);
+    } catch (err) {
+      console.error("Registration error:", err);
+      setGeneralError("Network error. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className={styles.pageContainer}>
@@ -120,11 +106,15 @@ const handleSubmit = async (e: React.FormEvent) => {
         <div className={styles.formCard}>
           <div className={styles.formHeader}>
             <Text variant="h2">Create Admin Account</Text>
-            <p className={styles.formSubtitle}>Register to manage Tango Hotel</p>
+            <p className={styles.formSubtitle}>
+              Register to manage Tango Hotel
+            </p>
           </div>
 
           <form onSubmit={handleSubmit} className={styles.form}>
-            {generalError && <p className={styles.generalError}>{generalError}</p>}
+            {generalError && (
+              <p className={styles.generalError}>{generalError}</p>
+            )}
 
             <Input
               type="text"
@@ -143,28 +133,32 @@ const handleSubmit = async (e: React.FormEvent) => {
               error={errors.email}
             />
             <Input
-              type={showPassword ? 'text' : 'password'}
+              type={showPassword ? "text" : "password"}
               label="Password"
               name="password"
               placeholder="Enter password"
               icon={Lock}
               error={errors.password}
-              rightIcon={showPassword ? 'eye-off' : 'eye'}
+              rightIcon={showPassword ? "eye-off" : "eye"}
               onRightIconClick={() => setShowPassword(!showPassword)}
             />
             <Input
-              type={showConfirm ? 'text' : 'password'}
+              type={showConfirm ? "text" : "password"}
               label="Confirm Password"
               name="conf_password"
               placeholder="Repeat password"
               icon={Lock}
               error={errors.conf_password}
-              rightIcon={showConfirm ? 'eye-off' : 'eye'}
+              rightIcon={showConfirm ? "eye-off" : "eye"}
               onRightIconClick={() => setShowConfirm(!showConfirm)}
             />
 
-            <Button type="submit" className={styles.SubmitButton} disabled={loading}>
-              {loading ? 'Registering...' : 'Register Admin'}
+            <Button
+              type="submit"
+              className={styles.SubmitButton}
+              disabled={loading}
+            >
+              {loading ? "Registering..." : "Register Admin"}
             </Button>
 
             <div className={styles.divider}>
@@ -174,7 +168,6 @@ const handleSubmit = async (e: React.FormEvent) => {
             <Link to="/admin/login" className={styles.switchButton}>
               Sign In
             </Link>
-
           </form>
         </div>
 
