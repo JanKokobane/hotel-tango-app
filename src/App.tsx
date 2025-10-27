@@ -22,6 +22,7 @@ import AdminDashboard from './Admin/AdminDashboard';
 import ProtectedRoute from './ProtectedRoute';
 import { Toaster } from 'react-hot-toast';
 import RoomsPage from './Pages/RoomsPage/RoomsPage';
+import Profile from './Profile/Profile';
 
 function PublicLayout() {
   const location = useLocation();
@@ -30,7 +31,8 @@ function PublicLayout() {
     '/register',
     '/admin/adminreg',
     '/admin/login',
-    '/bookingfoom' 
+    '/bookingfoom',
+    '/profile'
   ].includes(location.pathname);
 
   return (
@@ -60,6 +62,14 @@ function PublicLayout() {
         <Route path="/blog/hidden-gems-guide" element={<><BlogHiddenGems /><Footer /></>} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </>
   );
@@ -69,13 +79,8 @@ function App() {
   return (
     <Router>
       <Routes>
-        {/* Public routes with layout */}
         <Route path="/*" element={<PublicLayout />} />
-
-        {/* Public route without layout */}
         <Route path="/rooms" element={<RoomsPage />} />
-
-        {/* Admin routes */}
         <Route path="/admin/adminreg" element={<AdminReg />} />
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route

@@ -3,7 +3,7 @@ import { Star, Users, Bed, Wifi, Coffee, Tv, Wind, Droplet, Search, SlidersHoriz
 import styles from './RoomsPage.module.css';
 import RoomDetailModal from './RoomDetailModal/RoomDetailModal';
 import React from 'react';
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router-dom';
 import BookingForm from './BookingForm/BookingForm';
 
 export interface Room {
@@ -26,7 +26,8 @@ const RoomsPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
-  
+  const [modalMode, setModalMode] = useState<'view' | 'book' | null>(null); 
+
   const [searchTerm, setSearchTerm] = useState('');
   const [showFilters, setShowFilters] = useState(false);
   const [priceRange, setPriceRange] = useState({ min: 0, max: 10000 });
@@ -41,13 +42,13 @@ const RoomsPage = () => {
         const res = await fetch(`${API_BASE_URL}/api/rooms`);
         if (!res.ok) throw new Error('Failed to fetch rooms');
         const data = await res.json();
-        
+
         const roomsWithRatings = data.map((room: Room) => ({
           ...room,
           rating: room.rating || (Math.random() * 1.5 + 3.5).toFixed(1),
-          reviews: room.reviews || Math.floor(Math.random() * 200 + 50)
+          reviews: room.reviews || Math.floor(Math.random() * 200 + 50),
         }));
-        
+
         setRooms(roomsWithRatings);
         setFilteredRooms(roomsWithRatings);
       } catch (err: any) {
@@ -61,37 +62,38 @@ const RoomsPage = () => {
     fetchRooms();
   }, []);
 
-  
   useEffect(() => {
     let filtered = [...rooms];
 
     if (searchTerm) {
-      filtered = filtered.filter(room => 
-        room.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        room.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        room.type.toLowerCase().includes(searchTerm.toLowerCase())
+      filtered = filtered.filter(
+        (room) =>
+          room.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          room.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          room.type.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
-    filtered = filtered.filter(room => 
-      room.price >= priceRange.min && room.price <= priceRange.max
+    filtered = filtered.filter(
+      (room) => room.price >= priceRange.min && room.price <= priceRange.max
     );
 
     if (selectedType !== 'all') {
-      filtered = filtered.filter(room => 
-        room.type.toLowerCase() === selectedType.toLowerCase()
+      filtered = filtered.filter(
+        (room) => room.type.toLowerCase() === selectedType.toLowerCase()
       );
     }
 
     if (selectedCapacity !== 'all') {
-      filtered = filtered.filter(room => 
-        room.capacity >= parseInt(selectedCapacity)
+      filtered = filtered.filter(
+        (room) => room.capacity >= parseInt(selectedCapacity)
       );
     }
 
     setFilteredRooms(filtered);
   }, [searchTerm, priceRange, selectedType, selectedCapacity, rooms]);
 
+  
   const getAmenityIcon = (amenity: string) => {
     const lower = amenity.toLowerCase();
     if (lower.includes('wifi')) return <Wifi size={16} />;
@@ -102,20 +104,18 @@ const RoomsPage = () => {
     return <Bed size={16} />;
   };
 
-  const renderStars = (rating: number) => {
-    return (
-      <div className={styles.stars}>
-        {[1, 2, 3, 4, 5].map(star => (
-          <Star
-            key={star}
-            size={14}
-            fill={star <= Math.floor(rating) ? 'goldenrod' : 'none'}
-            stroke={star <= Math.floor(rating) ? 'goldenrod' : '#ddd'}
-          />
-        ))}
-      </div>
-    );
-  };
+  const renderStars = (rating: number) => (
+    <div className={styles.stars}>
+      {[1, 2, 3, 4, 5].map((star) => (
+        <Star
+          key={star}
+          size={14}
+          fill={star <= Math.floor(rating) ? 'goldenrod' : 'none'}
+          stroke={star <= Math.floor(rating) ? 'goldenrod' : '#ddd'}
+        />
+      ))}
+    </div>
+  );
 
   const resetFilters = () => {
     setSearchTerm('');
@@ -124,21 +124,34 @@ const RoomsPage = () => {
     setSelectedCapacity('all');
   };
 
+  const handleViewDetails = (room: Room) => {
+    setSelectedRoom(room);
+    setModalMode('view');
+  };
+
+  const handleBookNow = (room: Room) => {
+    setSelectedRoom(room);
+    setModalMode('book');
+  };
+
+  const handleCloseModal = () => {
+    setSelectedRoom(null);
+    setModalMode(null);
+  };
+
   return (
     <div className={styles.pageContainer}>
       <section className={styles.section}>
-        {/* Header */}
         <div className={styles.header}>
           <div className={styles.headerContent}>
             <h1 className={styles.heading}>Discover Your Perfect Stay</h1>
             <p className={styles.description}>
-              Experience luxury and comfort in our carefully curated selection of rooms. 
+              Experience luxury and comfort in our carefully curated selection of rooms.
               Each space is designed to provide you with an unforgettable experience.
             </p>
           </div>
         </div>
 
-        {/* Search and Filter Bar */}
         <div className={styles.searchSection}>
           <div className={styles.searchBar}>
             <Search className={styles.searchIcon} size={20} />
@@ -155,8 +168,8 @@ const RoomsPage = () => {
               </button>
             )}
           </div>
-          
-          <button 
+
+          <button
             className={styles.filterToggle}
             onClick={() => setShowFilters(!showFilters)}
           >
@@ -165,7 +178,6 @@ const RoomsPage = () => {
           </button>
         </div>
 
-        {/* Filter Panel */}
         {showFilters && (
           <div className={styles.filterPanel}>
             <div className={styles.filterGroup}>
@@ -175,7 +187,9 @@ const RoomsPage = () => {
                   type="number"
                   placeholder="Min"
                   value={priceRange.min}
-                  onChange={(e) => setPriceRange({ ...priceRange, min: parseInt(e.target.value) || 0 })}
+                  onChange={(e) =>
+                    setPriceRange({ ...priceRange, min: parseInt(e.target.value) || 0 })
+                  }
                   className={styles.priceInput}
                 />
                 <span>-</span>
@@ -183,7 +197,9 @@ const RoomsPage = () => {
                   type="number"
                   placeholder="Max"
                   value={priceRange.max}
-                  onChange={(e) => setPriceRange({ ...priceRange, max: parseInt(e.target.value) || 10000 })}
+                  onChange={(e) =>
+                    setPriceRange({ ...priceRange, max: parseInt(e.target.value) || 10000 })
+                  }
                   className={styles.priceInput}
                 />
               </div>
@@ -225,21 +241,18 @@ const RoomsPage = () => {
           </div>
         )}
 
-        {/* Results Count */}
         <div className={styles.resultsBar}>
           <p className={styles.resultsCount}>
             {filteredRooms.length} {filteredRooms.length === 1 ? 'room' : 'rooms'} available
           </p>
         </div>
 
-        {/* Loading & Error States */}
         {loading && <p className={styles.status}>Loading rooms...</p>}
         {error && <p className={styles.error}>{error}</p>}
 
-        {/* Rooms Grid */}
         {!loading && !error && (
           <div className={styles.grid}>
-            {filteredRooms.map(room => (
+            {filteredRooms.map((room) => (
               <div key={room.id} className={styles.card}>
                 <div className={styles.imageWrapper}>
                   <img
@@ -275,8 +288,8 @@ const RoomsPage = () => {
                   </div>
 
                   <p className={styles.roomDescription}>
-                    {room.description.length > 100 
-                      ? `${room.description.substring(0, 100)}...` 
+                    {room.description.length > 100
+                      ? `${room.description.substring(0, 100)}...`
                       : room.description}
                   </p>
 
@@ -295,21 +308,19 @@ const RoomsPage = () => {
                       <span className={styles.priceLabel}>/ night</span>
                     </div>
                     <div className={styles.actionButtons}>
-                      <button 
+                      <button
                         className={styles.detailsBtn}
-                        onClick={() => setSelectedRoom(room)}
+                        onClick={() => handleViewDetails(room)} 
                       >
                         View Details
                       </button>
 
                       <button
                         className={styles.bookButton}
-                        onClick={() => setSelectedRoom(room)}
+                        onClick={() => handleBookNow(room)} 
                       >
                         Book Now
                       </button>
-
-
                     </div>
                   </div>
                 </div>
@@ -318,7 +329,6 @@ const RoomsPage = () => {
           </div>
         )}
 
-        {/* No Results */}
         {!loading && filteredRooms.length === 0 && (
           <div className={styles.noResults}>
             <p>No rooms found matching your criteria.</p>
@@ -329,23 +339,15 @@ const RoomsPage = () => {
         )}
       </section>
 
-      {/* Room Detail Modal */}
-      {selectedRoom && (
-        <RoomDetailModal 
-          room={selectedRoom} 
-          onClose={() => setSelectedRoom(null)} 
-        />
+      {selectedRoom && modalMode === 'view' && (
+        <RoomDetailModal room={selectedRoom} onClose={handleCloseModal} mode="view" />
       )}
 
-      {selectedRoom && (
-        <BookingForm
-          room={selectedRoom}
-          onClose={() => setSelectedRoom(null)}
-        />
+      {selectedRoom && modalMode === 'book' && (
+        <BookingForm room={selectedRoom} onClose={handleCloseModal} />
       )}
-
-
-    </div>);
+    </div>
+  );
 };
 
 export default RoomsPage;

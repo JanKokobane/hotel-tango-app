@@ -4,6 +4,7 @@ import { ApiService } from '../services/api';
 import { UpdateProfileData } from '';
 import styles from './Profile.module.css';
 import { User, Edit2, Trash2, LogOut } from 'lucide-react';
+import React from 'react';
 
 export const Profile = () => {
   const { user, logout, refreshUser } = useAuth();
@@ -221,3 +222,5 @@ export const Profile = () => {
     </div>
   );
 };
+
+export default Profile;
