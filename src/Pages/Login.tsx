@@ -41,9 +41,13 @@ export const Login = () => {
 
     const payload = { email, password };
     const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://tango-hotel-backend.onrender.com';
+    const loginEndpoint = `${API_BASE_URL}/api/users/login`;
+
+    console.log('🔐 Sending login request to:', loginEndpoint);
+    console.log('📦 Payload:', payload);
 
     try {
-      const res = await fetch(`${API_BASE_URL}/api/users/login`, {
+      const res = await fetch(loginEndpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -52,6 +56,7 @@ export const Login = () => {
       const result = await res.json();
 
       if (!res.ok) {
+        console.error('❌ Login failed:', result);
         setGeneralError(result.error || 'Invalid email or password');
         setLoading(false);
         return;
@@ -61,7 +66,7 @@ export const Login = () => {
       alert('Login successful! Welcome back.');
       navigate('/profile');
     } catch (err) {
-      console.error('Login error:', err);
+      console.error('🌐 Network error during login:', err);
       setGeneralError('Network error. Please try again.');
     } finally {
       setLoading(false);

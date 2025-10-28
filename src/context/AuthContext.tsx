@@ -1,65 +1,44 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useEffect, useState } from 'react';
 
-interface User {
-  id: number;
-  firstname: string;
-  lastname: string;
-  email: string;
-  contact?: string;
-}
+const AuthContext = createContext<any>(null);
 
-interface AuthContextType {
-  user: User | null;
-  token: string | null;
-  login: (token: string) => Promise<void>;
-  logout: () => void;
-  refreshUser: () => Promise<void>;
-}
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+  const [token, setToken] = useState<string | null>(null);
+  const [user, setUser] = useState<any>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-const AuthContext = createContext<AuthContextType>({
-  user: null,
-  token: null,
-  login: async () => {},
-  logout: () => {},
-  refreshUser: async () => {},
-});
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://tango-hotel-backend.onrender.com';
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(
-    localStorage.getItem("userToken") || null
-  );
-
-  const API_BASE_URL =
-    import.meta.env.VITE_API_BASE_URL ||
-    "https://tango-hotel-backend.onrender.com";
-
-  const fetchUserProfile = async (jwt: string) => {
+  const fetchUserProfile = async (authToken: string) => {
     try {
       const res = await fetch(`${API_BASE_URL}/api/users/profile`, {
-        headers: { Authorization: `Bearer ${jwt}` },
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
       });
-      if (!res.ok) throw new Error("Failed to fetch user profile");
-      const data = await res.json();
-      setUser(data.user || data);
+
+      if (!res.ok) throw new Error('Failed to fetch user profile');
+
+      const result = await res.json();
+      setUser(result.user);
     } catch (err) {
-      console.error("Error fetching profile:", err);
-      logout();
+      console.error('Error fetching profile:', err);
+      setUser(null);
     }
   };
 
-  const login = async (jwt: string) => {
-    localStorage.setItem("userToken", jwt);
-    setToken(jwt);
-    await fetchUserProfile(jwt);
+  const login = async (newToken: string) => {
+    localStorage.setItem('userToken', newToken);
+    setToken(newToken);
+    setIsAuthenticated(true);
+    await fetchUserProfile(newToken); 
   };
 
   const logout = () => {
-    localStorage.removeItem("userToken");
-    setUser(null);
+    localStorage.removeItem('userToken');
     setToken(null);
+    setUser(null);
+    setIsAuthenticated(false);
   };
 
   const refreshUser = async () => {
@@ -67,11 +46,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   useEffect(() => {
-    if (token) fetchUserProfile(token);
-  }, [token]);
+    const storedToken = localStorage.getItem('userToken');
+    if (storedToken) {
+      setToken(storedToken);
+      setIsAuthenticated(true);
+      fetchUserProfile(storedToken); 
+    }
+  }, []);
 
   return (
-    <AuthContext.Provider value={{ user, token, login, logout, refreshUser }}>
+    <AuthContext.Provider value={{ token, user, isAuthenticated, login, logout, refreshUser }}>
       {children}
     </AuthContext.Provider>
   );

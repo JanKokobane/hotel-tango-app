@@ -1,294 +1,423 @@
-.profileContainer {
+.container {
   min-height: 100vh;
+  background: linear-gradient(to bottom right, hsl(var(--background)), hsl(var(--background)), hsl(var(--secondary) / 0.2));
+}
+
+.header {
+  border-bottom: 1px solid hsl(var(--border) / 0.5);
+  background: hsl(var(--card) / 0.5);
+  backdrop-filter: blur(8px);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.headerContent {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 1rem;
   display: flex;
   align-items: center;
-  justify-content: center;
-  background: linear-gradient(180deg, #faf9f7 0%, #ffffff 50%, #f5f3f038 100%);
-  padding: 2rem;
+  justify-content: space-between;
+}
+
+.headerTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: hsl(var(--foreground));
+}
+
+.logoutButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid hsl(var(--border));
+  border-radius: 0.375rem;
+  background: transparent;
+  color: hsl(var(--foreground));
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: all 0.2s;
+}
+
+.logoutButton:hover {
+  background: hsl(var(--accent));
+  color: hsl(var(--accent-foreground));
+}
+
+.content {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
 }
 
 .profileCard {
-  background: white;
-  border-radius: 2px;
-  padding: 3rem;
-  width: 100%;
-  max-width: 720px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+  overflow: hidden;
+  border: 1px solid hsl(var(--border));
+  border-radius: 0.75rem;
+  background: hsl(var(--card));
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.coverImage {
+  height: 8rem;
+  background: linear-gradient(to right, hsl(var(--accent) / 0.2), hsl(var(--accent) / 0.3), hsl(var(--accent) / 0.2));
+}
+
+.profileContent {
+  padding: 0 2rem 2rem 2rem;
 }
 
 .profileHeader {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  margin-bottom: 2.5rem;
-  position: relative;
+  align-items: flex-start;
+  gap: 1.5rem;
+  margin-top: -4rem;
 }
 
-.avatarContainer {
-  width: 96px;
-  height: 96px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #faf9f7, #f5f3f0);
+@media (min-width: 768px) {
+  .profileHeader {
+    flex-direction: row;
+    align-items: flex-end;
+  }
+}
+
+.avatar {
+  width: 8rem;
+  height: 8rem;
+  border-radius: 9999px;
+  background: linear-gradient(to bottom right, hsl(var(--accent)), hsl(var(--accent) / 0.7));
+  border: 4px solid hsl(var(--card));
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #666;
-  margin-bottom: 1rem;
-  border: 3px solid #e5e5e5;
+  box-shadow: 0 20px 60px -15px rgba(0, 0, 0, 0.3);
+  color: hsl(var(--card));
 }
 
-.profileTitle {
-  font-size: 2rem;
-  font-weight: 700;
-  color: #1a1a1a;
-  margin: 0;
-  text-align: center;
-}
-
-.logoutButton {
-  position: absolute;
-  top: 0;
-  right: 0;
-  background: none;
-  border: 2px solid #e5e5e5;
-  color: #666;
-  padding: 0.625rem 1rem;
-  border-radius: 2px;
-  cursor: pointer;
-  font-size: 0.875rem;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  transition: all 0.3s ease;
-}
-
-.logoutButton:hover {
-  border-color: #1a1a1a;
-  color: #1a1a1a;
-}
-
-.profileView {
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-}
-
-.infoGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2rem;
-}
-
-.infoItem {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.infoLabel {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: #666;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.infoValue {
-  font-size: 1rem;
-  color: #1a1a1a;
-  font-weight: 500;
-  padding: 0.875rem;
-  background: #faf9f7;
-  border-radius: 2px;
-  border: 2px solid #e5e5e5;
-  margin: 0;
-}
-
-.actions {
-  display: flex;
-  gap: 1rem;
-  padding-top: 1rem;
-  border-top: 2px solid #e5e5e5;
-}
-
-.editButton,
-.deleteButton {
+.profileInfo {
   flex: 1;
-  padding: 0.875rem 1.5rem;
-  border-radius: 2px;
-  font-size: 0.875rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  cursor: pointer;
-  transition: all 0.3s ease;
+}
+
+.profileTop {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  border: none;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+@media (min-width: 768px) {
+  .profileTop {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+.userName {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: hsl(var(--foreground));
+  margin-bottom: 0.25rem;
+}
+
+.memberBadge {
+  color: hsl(var(--muted-foreground));
 }
 
 .editButton {
-  background: #1a1a1a;
-  color: white;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1.5rem;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
 }
 
-.editButton:hover {
-  background: #333;
+.editButtonPrimary {
+  background: hsl(var(--accent));
+  color: hsl(var(--accent-foreground));
+  border: none;
+}
+
+.editButtonPrimary:hover {
+  opacity: 0.9;
+}
+
+.editButtonOutline {
+  background: transparent;
+  color: hsl(var(--foreground));
+  border: 1px solid hsl(var(--border));
+}
+
+.editButtonOutline:hover {
+  background: hsl(var(--secondary));
+}
+
+.contactGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .contactGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.contactItem {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: hsl(var(--secondary));
+  border-radius: 0.5rem;
+  border: 1px solid hsl(var(--border));
+}
+
+.contactIcon {
+  color: hsl(var(--accent));
+}
+
+.contactLabel {
+  font-size: 0.75rem;
+  color: hsl(var(--muted-foreground));
+  text-transform: uppercase;
+}
+
+.contactValue {
+  font-weight: 500;
+  color: hsl(var(--foreground));
+}
+
+.editForm {
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+  background: hsl(var(--secondary));
+  border-radius: 0.75rem;
+  border: 1px solid hsl(var(--border));
+}
+
+.formTitle {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: hsl(var(--foreground));
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .formGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.formGroup label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: hsl(var(--foreground));
+}
+
+.formGroup input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid hsl(var(--border));
+  border-radius: 0.375rem;
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-size: 0.875rem;
+}
+
+.formGroup input:focus {
+  outline: 2px solid hsl(var(--accent));
+  outline-offset: 2px;
+}
+
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+@media (min-width: 768px) {
+  .statsGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.statCard {
+  padding: 1.5rem;
+  border: 1px solid hsl(var(--border));
+  border-radius: 0.75rem;
+  background: hsl(var(--card));
+  transition: all 0.3s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.statCard:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
   transform: translateY(-2px);
 }
 
-.deleteButton {
-  background: white;
-  color: #c33;
-  border: 2px solid #c33;
+.statContent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
-.deleteButton:hover:not(:disabled) {
-  background: #c33;
-  color: white;
-  transform: translateY(-2px);
+.statLabel {
+  font-size: 0.875rem;
+  color: hsl(var(--muted-foreground));
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
-.deleteButton:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+.statValue {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: hsl(var(--accent));
+  margin-top: 0.25rem;
 }
 
-.profileForm {
+.statIcon {
+  color: hsl(var(--accent) / 0.3);
+}
+
+.loyaltyIcon {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 9999px;
+  background: linear-gradient(to bottom right, hsl(var(--accent)), hsl(var(--accent) / 0.7));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: hsl(var(--card));
+  font-weight: 700;
+}
+
+.bookingsCard {
+  border: 1px solid hsl(var(--border));
+  border-radius: 0.75rem;
+  background: hsl(var(--card));
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.bookingsHeader {
+  padding: 1.5rem;
+  border-bottom: 1px solid hsl(var(--border));
+}
+
+.bookingsTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: hsl(var(--foreground));
+}
+
+.bookingsSubtitle {
+  color: hsl(var(--muted-foreground));
+  margin-top: 0.25rem;
+}
+
+.tabs {
+  padding: 1.5rem;
+}
+
+.tabsList {
+  display: flex;
+  background: hsl(var(--muted));
+  border-radius: 0.375rem;
+  padding: 0.25rem;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .tabsList {
+    width: auto;
+  }
+}
+
+.tabTrigger {
+  flex: 1;
+  padding: 0.5rem 1rem;
+  border: none;
+  background: transparent;
+  color: hsl(var(--muted-foreground));
+  cursor: pointer;
+  border-radius: 0.25rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+@media (min-width: 768px) {
+  .tabTrigger {
+    flex: none;
+  }
+}
+
+.tabTrigger:hover {
+  color: hsl(var(--foreground));
+}
+
+.tabTriggerActive {
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.tabContent {
+  margin-top: 1.5rem;
+}
+
+.bookingsList {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
 }
 
-.formRow {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
+.emptyState {
+  text-align: center;
+  padding: 3rem 0;
 }
 
-.formGroup {
+.emptyIcon {
+  margin: 0 auto 1rem;
+  color: hsl(var(--muted-foreground) / 0.3);
+}
+
+.emptyText {
+  color: hsl(var(--muted-foreground));
+}
+
+.loading {
   display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  color: hsl(var(--muted-foreground));
 }
 
-.label {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: #1a1a1a;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.input {
-  padding: 0.875rem;
-  border: 2px solid #e5e5e5;
-  border-radius: 2px;
-  font-size: 0.875rem;
-  color: #1a1a1a;
-  transition: border-color 0.3s ease;
-  background: white;
-}
-
-.input:focus {
-  outline: none;
-  border-color: #1a1a1a;
-}
-
-.input::placeholder {
-  color: #999;
-}
-
-.formActions {
-  display: flex;
-  gap: 1rem;
-  padding-top: 1rem;
-  border-top: 2px solid #e5e5e5;
-}
-
-.cancelButton,
-.saveButton {
-  flex: 1;
-  padding: 1rem;
-  border-radius: 2px;
-  font-size: 0.875rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  border: none;
-}
-
-.cancelButton {
-  background: white;
-  border: 2px solid #e5e5e5;
-  color: #666;
-}
-
-.cancelButton:hover {
-  border-color: #1a1a1a;
-  color: #1a1a1a;
-}
-
-.saveButton {
-  background: #1a1a1a;
-  color: white;
-}
-
-.saveButton:hover:not(:disabled) {
-  background: #333;
-  transform: translateY(-2px);
-}
-
-.saveButton:disabled {
-  opacity: 0.6;
+.editButton:disabled {
+  opacity: 0.5;
   cursor: not-allowed;
-}
-
-.errorMessage {
-  background: #fee;
-  color: #c33;
-  padding: 0.875rem;
-  border-radius: 2px;
-  font-size: 0.875rem;
-  border-left: 3px solid #c33;
-}
-
-.successMessage {
-  background: #efe;
-  color: #2a6;
-  padding: 0.875rem;
-  border-radius: 2px;
-  font-size: 0.875rem;
-  border-left: 3px solid #2a6;
-}
-
-@media (max-width: 768px) {
-  .profileCard {
-    padding: 2rem;
-  }
-
-  .infoGrid,
-  .formRow {
-    grid-template-columns: 1fr;
-  }
-
-  .actions,
-  .formActions {
-    flex-direction: column;
-  }
-
-  .logoutButton {
-    position: static;
-    margin-top: 1rem;
-    align-self: center;
-  }
-
-  .profileTitle {
-    font-size: 1.5rem;
-  }
 }

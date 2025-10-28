@@ -35,8 +35,7 @@ function PublicLayout() {
     "/register",
     "/admin/adminreg",
     "/admin/login",
-    "/bookingfoom",
-    "/profile",
+    "/bookingfoom"
   ].includes(location.pathname);
 
   return (
@@ -89,14 +88,6 @@ function PublicLayout() {
         />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route
-          path="/profile"
-          element={
-            <ProtectedRoute>
-              <Profile />
-            </ProtectedRoute>
-          }
-        />
       </Routes>
     </>
   );
@@ -115,6 +106,14 @@ function App() {
           element={
             <ProtectedRoute>
               <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
             </ProtectedRoute>
           }
         />
