@@ -1,12 +1,658 @@
-import React from 'react';
-import styles from './Dashboard.module.css';
+import {
+  LineChart,
+  Line,
+  BarChart,
+  Bar,
+  PieChart,
+  Pie,
+  Cell,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Legend,
+} from "recharts";
+import {
+  TrendingUp,
+  TrendingDown,
+  MoreVertical,
+  Users,
+  DollarSign,
+  LogIn,
+  LogOut,
+  Hotel,
+} from "lucide-react";
+import styles from "./Styles/DashboardOverview.module.css";
+import React from "react";
+
+const statsData = [
+  {
+    label: "Total Revenue",
+    value: "R 492,800",
+    change: "+3.48%",
+    trend: "up",
+    subtitle: "from last week",
+  },
+  {
+    label: "New Bookings",
+    value: "135",
+    change: "+2.38%",
+    trend: "up",
+    subtitle: "from last week",
+  },
+  {
+    label: "Check In",
+    value: "101",
+    change: "-1.56%",
+    trend: "down",
+    subtitle: "from last week",
+  },
+  {
+    label: "Check Out",
+    value: "29",
+    change: "+0.87%",
+    trend: "up",
+    subtitle: "from last week",
+  },
+];
+
+const guestsData = [
+  { day: "Sun", guests: 420 },
+  { day: "Mon", guests: 350 },
+  { day: "Tue", guests: 480 },
+  { day: "Wed", guests: 380 },
+  { day: "Thu", guests: 520 },
+  { day: "Fri", guests: 460 },
+  { day: "Sat", guests: 880 },
+];
+
+const revenueData = [
+  { month: "May", revenue: 15000 },
+  { month: "Jun", revenue: 18000 },
+  { month: "Jul", revenue: 28000 },
+  { month: "Aug", revenue: 20000 },
+  { month: "Sept", revenue: 23000 },
+  { month: "Oct", revenue: 26000 },
+  { month: "Nov", revenue: 22000 },
+  { month: "Dec", revenue: 25000 },
+];
+
+const bookingsMonthly = [
+  { month: "Jan", booked: 45, cancelled: 5 },
+  { month: "Feb", booked: 38, cancelled: 8 },
+  { month: "Mar", booked: 52, cancelled: 6 },
+  { month: "Apr", booked: 48, cancelled: 7 },
+  { month: "May", booked: 42, cancelled: 9 },
+  { month: "Jun", booked: 35, cancelled: 4 },
+  { month: "Jul", booked: 48, cancelled: 6 },
+  { month: "Aug", booked: 45, cancelled: 5 },
+  { month: "Sep", booked: 38, cancelled: 7 },
+  { month: "Oct", booked: 52, cancelled: 4 },
+  { month: "Nov", booked: 48, cancelled: 8 },
+  { month: "Dec", booked: 65, cancelled: 6 },
+];
+
+const platformData = [
+  { name: "Booking.com", value: 654, color: "#0071c2" },
+  { name: "Agoda", value: 544, color: "#ec5b24" },
+  { name: "Airbnb", value: 408, color: "#ff5a5f" },
+  { name: "Hotels.com", value: 271, color: "#d32f2f" },
+  { name: "TripAdvisor", value: 203, color: "#00af87" },
+  { name: "Traveloka", value: 158, color: "#1ba0e2" },
+];
+
+const recentActivities = [
+  {
+    id: 1,
+    type: "registration",
+    message: "New user registration completed",
+    detail: "Jane Smith - Registered for a new account using the email address",
+    time: "10:30 AM",
+    icon: Users,
+    color: "#3b82f6",
+  },
+  {
+    id: 2,
+    type: "booking",
+    message: "Booking Confirmation",
+    detail: "Booking ID 00123 for James Lisbon, Deluxe Room 105",
+    time: "9:06 AM",
+    icon: LogIn,
+    color: "#22c55e",
+  },
+  {
+    id: 3,
+    type: "payment",
+    message: "Payment Received",
+    detail: "Payment of R 3,450 received from Robert Wilson for booking #00125",
+    time: "8:45 AM",
+    icon: DollarSign,
+    color: "#8b5cf6",
+  },
+];
+
+const bookingsList = [
+  {
+    id: "00123",
+    guestName: "James Lisbon",
+    roomType: "Deluxe",
+    roomNo: "105",
+    duration: "3 Nights",
+    checkIn: "2024-04-06",
+    checkOut: "2024-04-08",
+    status: "Confirmed",
+  },
+  {
+    id: "00124",
+    guestName: "Sarah Johnson",
+    roomType: "Suite",
+    roomNo: "201",
+    duration: "2 Nights",
+    checkIn: "2024-04-07",
+    checkOut: "2024-04-09",
+    status: "Confirmed",
+  },
+  {
+    id: "00125",
+    guestName: "Michael Chen",
+    roomType: "Standard",
+    roomNo: "302",
+    duration: "4 Nights",
+    checkIn: "2024-04-08",
+    checkOut: "2024-04-12",
+    status: "Pending",
+  },
+];
+
+const ratings = [
+  { category: "Cleanliness", score: 8.8 },
+  { category: "Facilities", score: 9.1 },
+  { category: "Location", score: 9.0 },
+  { category: "Service", score: 8.7 },
+  { category: "Value", score: 8.9 },
+];
 
 function DashboardOverview() {
+  const totalPlatformBookings = platformData.reduce(
+    (sum, item) => sum + item.value,
+    0
+  );
+
   return (
-    <div className={styles.emptySection}>
-      <div className={styles.emptyState}>
-        <h3>Dashboard Overview</h3>
-        <p>Dashboard overview content will be displayed here</p>
+    <div className={styles.dashboardOverview}>
+      <div className={styles.mainSection}>
+        {/* Stats Cards */}
+        <div className={styles.statsGrid}>
+          {statsData.map((stat, index) => (
+            <div key={index} className={styles.statCard}>
+              <div className={styles.statHeader}>
+                <span className={styles.statLabel}>{stat.label}</span>
+                <button className={styles.moreButton}>
+                  <MoreVertical size={16} />
+                </button>
+              </div>
+              <div className={styles.statValue}>{stat.value}</div>
+              <div
+                className={`${styles.statChange} ${
+                  stat.trend === "up" ? styles.positive : styles.negative
+                }`}
+              >
+                {stat.trend === "up" ? (
+                  <TrendingUp size={14} />
+                ) : (
+                  <TrendingDown size={14} />
+                )}
+                <span>{stat.change}</span>
+                <span className={styles.statSubtitle}>{stat.subtitle}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Charts Row 1 */}
+        <div className={styles.chartsRow}>
+          <div className={styles.chartCard}>
+            <div className={styles.chartHeader}>
+              <div>
+                <h3>Guests</h3>
+                <p className={styles.chartSubtitle}>This Week</p>
+              </div>
+              <select className={styles.chartSelect}>
+                <option>This Week</option>
+                <option>Last Week</option>
+                <option>This Month</option>
+              </select>
+            </div>
+            <ResponsiveContainer width="100%" height={280}>
+              <LineChart data={guestsData}>
+                <defs>
+                  <linearGradient
+                    id="guestGradient"
+                    x1="0"
+                    y1="0"
+                    x2="0"
+                    y2="1"
+                  >
+                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="#e5e7eb"
+                  vertical={false}
+                />
+                <XAxis dataKey="day" stroke="#9ca3af" fontSize={12} />
+                <YAxis stroke="#9ca3af" fontSize={12} />
+                <Tooltip
+                  contentStyle={{
+                    background: "white",
+                    border: "1px solid #e5e7eb",
+                    borderRadius: "8px",
+                    boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                  }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="guests"
+                  stroke="#3b82f6"
+                  strokeWidth={2}
+                  fill="url(#guestGradient)"
+                  dot={{ fill: "#3b82f6", r: 4 }}
+                  activeDot={{ r: 6 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+            <div className={styles.chartFooter}>
+              <span className={styles.guestCount}>880 Guests</span>
+            </div>
+          </div>
+
+          <div className={styles.chartCard}>
+            <div className={styles.chartHeader}>
+              <div>
+                <h3>Revenue</h3>
+                <p className={styles.chartSubtitle}>Last 6 Months</p>
+              </div>
+              <select className={styles.chartSelect}>
+                <option>Last 6 Months</option>
+                <option>Last Year</option>
+                <option>All Time</option>
+              </select>
+            </div>
+            <ResponsiveContainer width="100%" height={280}>
+              <LineChart data={revenueData}>
+                <defs>
+                  <linearGradient
+                    id="revenueGradient"
+                    x1="0"
+                    y1="0"
+                    x2="0"
+                    y2="1"
+                  >
+                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="#e5e7eb"
+                  vertical={false}
+                />
+                <XAxis dataKey="month" stroke="#9ca3af" fontSize={12} />
+                <YAxis stroke="#9ca3af" fontSize={12} />
+                <Tooltip
+                  contentStyle={{
+                    background: "white",
+                    border: "1px solid #e5e7eb",
+                    borderRadius: "8px",
+                    boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                  }}
+                  formatter={(value: number) => `R ${value.toLocaleString()}`}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="revenue"
+                  stroke="#3b82f6"
+                  strokeWidth={2}
+                  fill="url(#revenueGradient)"
+                  dot={{ fill: "#3b82f6", r: 4 }}
+                  activeDot={{ r: 6 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+            <div className={styles.chartFooter}>
+              <span className={styles.revenueAmount}>R 28,164</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Charts Row 2 */}
+        <div className={styles.chartsRow}>
+          <div className={styles.chartCard}>
+            <div className={styles.chartHeader}>
+              <div>
+                <h3>Bookings</h3>
+                <p className={styles.chartSubtitle}>This Year</p>
+              </div>
+              <div className={styles.legendRow}>
+                <div className={styles.legendItem}>
+                  <span
+                    className={styles.legendDot}
+                    style={{ background: "#3b82f6" }}
+                  ></span>
+                  <span>Booked</span>
+                </div>
+                <div className={styles.legendItem}>
+                  <span
+                    className={styles.legendDot}
+                    style={{ background: "#e5e7eb" }}
+                  ></span>
+                  <span>Cancelled</span>
+                </div>
+              </div>
+            </div>
+            <ResponsiveContainer width="100%" height={280}>
+              <BarChart data={bookingsMonthly}>
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="#e5e7eb"
+                  vertical={false}
+                />
+                <XAxis dataKey="month" stroke="#9ca3af" fontSize={12} />
+                <YAxis stroke="#9ca3af" fontSize={12} />
+                <Tooltip
+                  contentStyle={{
+                    background: "white",
+                    border: "1px solid #e5e7eb",
+                    borderRadius: "8px",
+                    boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                  }}
+                />
+                <Bar dataKey="booked" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="cancelled" fill="#e5e7eb" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+            <div className={styles.chartFooter}>
+              <div className={styles.bookingStats}>
+                <span>
+                  Booked: <strong>6,164</strong>
+                </span>
+                <span>
+                  Cancelled: <strong>926</strong>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div className={styles.chartCard}>
+            <div className={styles.chartHeader}>
+              <div>
+                <h3>Bookings by Platform</h3>
+                <p className={styles.chartSubtitle}>This Week</p>
+              </div>
+              <select className={styles.chartSelect}>
+                <option>This Week</option>
+                <option>This Month</option>
+                <option>This Year</option>
+              </select>
+            </div>
+            <div className={styles.donutContainer}>
+              <ResponsiveContainer width="100%" height={240}>
+                <PieChart>
+                  <Pie
+                    data={platformData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={90}
+                    paddingAngle={2}
+                    dataKey="value"
+                  >
+                    {platformData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    contentStyle={{
+                      background: "white",
+                      border: "1px solid #e5e7eb",
+                      borderRadius: "8px",
+                      boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                    }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+              <div className={styles.donutCenter}>
+                <div className={styles.donutValue}>
+                  {totalPlatformBookings.toLocaleString()}
+                </div>
+                <div className={styles.donutLabel}>Total Bookings</div>
+              </div>
+            </div>
+            <div className={styles.platformLegend}>
+              {platformData.map((platform, index) => (
+                <div key={index} className={styles.platformItem}>
+                  <div className={styles.platformInfo}>
+                    <span
+                      className={styles.platformDot}
+                      style={{ background: platform.color }}
+                    ></span>
+                    <span className={styles.platformName}>
+                      {platform.name} ({platform.value})
+                    </span>
+                  </div>
+                  <span className={styles.platformPercent}>
+                    {((platform.value / totalPlatformBookings) * 100).toFixed(
+                      0
+                    )}
+                    %
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Booking List */}
+        <div className={styles.tableSection}>
+          <div className={styles.tablHeader}>
+            <h3>Booking List</h3>
+            <div className={styles.tableActions}>
+              <select className={styles.tableSelect}>
+                <option>Today</option>
+                <option>This Week</option>
+                <option>This Month</option>
+              </select>
+              <button className={styles.seeAllButton}>See All</button>
+            </div>
+          </div>
+          <div className={styles.tableWrapper}>
+            <table className={styles.bookingTable}>
+              <thead>
+                <tr>
+                  <th>Booking ID</th>
+                  <th>Guest Name</th>
+                  <th>Room Type</th>
+                  <th>Room No</th>
+                  <th>Duration</th>
+                  <th>Check-In</th>
+                  <th>Check-Out</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {bookingsList.map((booking) => (
+                  <tr key={booking.id}>
+                    <td>
+                      <strong>{booking.id}</strong>
+                    </td>
+                    <td>{booking.guestName}</td>
+                    <td>{booking.roomType}</td>
+                    <td>{booking.roomNo}</td>
+                    <td>{booking.duration}</td>
+                    <td>{booking.checkIn}</td>
+                    <td>{booking.checkOut}</td>
+                    <td>
+                      <span
+                        className={`${styles.statusBadge} ${
+                          styles[booking.status.toLowerCase()]
+                        }`}
+                      >
+                        {booking.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      {/* Right Sidebar */}
+      <div className={styles.rightSidebar}>
+        {/* Room Occupancy */}
+        <div className={styles.widget}>
+          <div className={styles.widgetHeader}>
+            <h3>Room Occupancy</h3>
+            <button className={styles.moreButton}>
+              <MoreVertical size={16} />
+            </button>
+          </div>
+          <div className={styles.occupancyMain}>
+            <div className={styles.occupancyIcon}>
+              <Hotel size={32} />
+            </div>
+            <div className={styles.occupancyValue}>256</div>
+            <div className={styles.occupancyLabel}>Total Rooms</div>
+          </div>
+          <div className={styles.occupancyBar}>
+            <div
+              className={styles.occupancySegment}
+              style={{ width: "38%", background: "#3b82f6" }}
+            ></div>
+            <div
+              className={styles.occupancySegment}
+              style={{ width: "18%", background: "#22c55e" }}
+            ></div>
+            <div
+              className={styles.occupancySegment}
+              style={{ width: "34%", background: "#f59e0b" }}
+            ></div>
+            <div
+              className={styles.occupancySegment}
+              style={{ width: "10%", background: "#e5e7eb" }}
+            ></div>
+          </div>
+          <div className={styles.occupancyStats}>
+            <div className={styles.occupancyStat}>
+              <span
+                className={styles.occupancyDot}
+                style={{ background: "#3b82f6" }}
+              ></span>
+              <div>
+                <div className={styles.occupancyNumber}>98</div>
+                <div className={styles.occupancyText}>Occupied</div>
+              </div>
+            </div>
+            <div className={styles.occupancyStat}>
+              <span
+                className={styles.occupancyDot}
+                style={{ background: "#22c55e" }}
+              ></span>
+              <div>
+                <div className={styles.occupancyNumber}>45</div>
+                <div className={styles.occupancyText}>Available</div>
+              </div>
+            </div>
+            <div className={styles.occupancyStat}>
+              <span
+                className={styles.occupancyDot}
+                style={{ background: "#f59e0b" }}
+              ></span>
+              <div>
+                <div className={styles.occupancyNumber}>86</div>
+                <div className={styles.occupancyText}>Reserved</div>
+              </div>
+            </div>
+            <div className={styles.occupancyStat}>
+              <span
+                className={styles.occupancyDot}
+                style={{ background: "#e5e7eb" }}
+              ></span>
+              <div>
+                <div className={styles.occupancyNumber}>27</div>
+                <div className={styles.occupancyText}>Not Ready</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Overall Ratings */}
+        <div className={styles.widget}>
+          <div className={styles.widgetHeader}>
+            <h3>Overall Ratings</h3>
+            <button className={styles.seeAllLink}>See All</button>
+          </div>
+          <div className={styles.ratingsMain}>
+            <div className={styles.overallScore}>8.9</div>
+            <div>
+              <div className={styles.ratingLabel}>Excellent</div>
+              <div className={styles.ratingCount}>1,458 verified reviews</div>
+            </div>
+          </div>
+          <div className={styles.ratingsList}>
+            {ratings.map((rating, index) => (
+              <div key={index} className={styles.ratingItem}>
+                <div className={styles.ratingCategory}>{rating.category}</div>
+                <div className={styles.ratingBarContainer}>
+                  <div
+                    className={styles.ratingBar}
+                    style={{ width: `${(rating.score / 10) * 100}%` }}
+                  ></div>
+                </div>
+                <div className={styles.ratingScore}>{rating.score}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Recent Activity */}
+        <div className={styles.widget}>
+          <div className={styles.widgetHeader}>
+            <h3>Recent Activity</h3>
+            <button className={styles.seeAllLink}>See All</button>
+          </div>
+          <div className={styles.activityList}>
+            {recentActivities.map((activity) => {
+              const Icon = activity.icon;
+              return (
+                <div key={activity.id} className={styles.activityItem}>
+                  <div
+                    className={styles.activityIcon}
+                    style={{
+                      background: `${activity.color}15`,
+                      color: activity.color,
+                    }}
+                  >
+                    <Icon size={18} />
+                  </div>
+                  <div className={styles.activityContent}>
+                    <div className={styles.activityMessage}>
+                      {activity.message}
+                    </div>
+                    <div className={styles.activityDetail}>
+                      {activity.detail}
+                    </div>
+                    <div className={styles.activityTime}>{activity.time}</div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
       </div>
     </div>
   );
