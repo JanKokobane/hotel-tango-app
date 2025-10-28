@@ -1,7 +1,14 @@
-import React, { useState } from 'react';
-import { X, Sparkles, Calendar as CalendarIcon, User, Phone, Mail } from 'lucide-react';
-import { Calendar } from '../../../Components/ui/Calender';
-import styles from './BookingForm.module.css';
+import React, { useState } from "react";
+import {
+  X,
+  Sparkles,
+  Calendar as CalendarIcon,
+  User,
+  Phone,
+  Mail,
+} from "lucide-react";
+import { Calendar } from "../../../Components/ui/Calender";
+import styles from "./BookingForm.module.css";
 
 interface Room {
   id: string;
@@ -25,12 +32,13 @@ interface BookingFormProps {
 const BookingForm = ({ room, onClose }: BookingFormProps) => {
   const [checkIn, setCheckIn] = useState<Date>();
   const [checkOut, setCheckOut] = useState<Date>();
-  const [fullName, setFullName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [email, setEmail] = useState('');
-  const [error, setError] = useState('');
+  const [fullName, setFullName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // Calculate stay duration
   const calculateNights = () => {
     if (!checkIn || !checkOut) return 0;
     const diffTime = Math.abs(checkOut.getTime() - checkIn.getTime());
@@ -42,47 +50,55 @@ const BookingForm = ({ room, onClose }: BookingFormProps) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setLoading(true);
 
     if (!checkIn || !checkOut || !fullName || !phone || !email) {
-      setError('Please fill in all required fields and select valid dates.');
+      setError("Please fill in all required fields and select valid dates.");
       setLoading(false);
       return;
     }
 
     const bookingData = {
       room_id: Number(room.id),
-      full_name: fullName,
-      phone,
-      email,
-      check_in: checkIn.toISOString().split('T')[0],
-      check_out: checkOut.toISOString().split('T')[0],
+      room_name: room.name, // ✅ include room name
+      full_name: fullName.trim(),
+      phone: phone.trim(),
+      email: email.trim(),
+      check_in: checkIn.toISOString().split("T")[0],
+      check_out: checkOut.toISOString().split("T")[0],
       total_price: totalPrice,
       nights,
     };
 
     try {
-      const res = await fetch('https://tango-hotel-backend.onrender.com/api/bookings', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(bookingData),
-      });
+      const res = await fetch(
+        "https://tango-hotel-backend.onrender.com/api/bookings",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(bookingData),
+        }
+      );
 
       if (!res.ok) {
         const text = await res.text();
-        console.error('Server response:', text);
+        console.error("Server response:", text);
         setError(`Booking failed: ${res.statusText}`);
         setLoading(false);
         return;
       }
 
       const result = await res.json();
-      alert(`✅ Booking confirmed! Reference: ${result.booking?.id || 'N/A'}`);
+      alert(
+        `✅ Booking confirmed for ${room.name}! Reference: ${
+          result.booking?.id || "N/A"
+        }`
+      );
       onClose();
     } catch (err) {
-      console.error('❌ Booking error:', err);
-      setError('Network error. Please try again.');
+      console.error("❌ Booking error:", err);
+      setError("Network error. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -109,12 +125,14 @@ const BookingForm = ({ room, onClose }: BookingFormProps) => {
         <div className={styles.formCard}>
           <div className={styles.formHeader}>
             <h2 className={styles.roomName}>{room.name}</h2>
+            <p className={styles.formSubtitle}>Room #{room.id}</p>
             <p className={styles.formSubtitle}>R{room.price} per night</p>
           </div>
 
           <form onSubmit={handleSubmit} className={styles.form}>
             {error && <p className={styles.generalError}>{error}</p>}
 
+            {/* Full Name */}
             <div className={styles.formGroup}>
               <label className={styles.label}>
                 <User size={14} />
@@ -130,6 +148,7 @@ const BookingForm = ({ room, onClose }: BookingFormProps) => {
               />
             </div>
 
+            {/* Phone */}
             <div className={styles.formGroup}>
               <label className={styles.label}>
                 <Phone size={14} />
@@ -145,6 +164,7 @@ const BookingForm = ({ room, onClose }: BookingFormProps) => {
               />
             </div>
 
+            {/* Email */}
             <div className={styles.formGroup}>
               <label className={styles.label}>
                 <Mail size={14} />
@@ -164,6 +184,7 @@ const BookingForm = ({ room, onClose }: BookingFormProps) => {
               <span>Select Dates</span>
             </div>
 
+            {/* Check-in / Check-out */}
             <div className={styles.dateRow}>
               <div className={styles.formGroup}>
                 <label className={styles.label}>
@@ -198,10 +219,13 @@ const BookingForm = ({ room, onClose }: BookingFormProps) => {
               </div>
             </div>
 
+            {/* Price Breakdown */}
             {nights > 0 && (
               <div className={styles.priceBreakdown}>
                 <div className={styles.breakdownRow}>
-                  <span>R{room.price} × {nights} night{nights > 1 ? 's' : ''}</span>
+                  <span>
+                    R{room.price} × {nights} night{nights > 1 ? "s" : ""}
+                  </span>
                   <span>R{room.price * nights}</span>
                 </div>
                 <div className={styles.breakdownRow}>
@@ -215,8 +239,13 @@ const BookingForm = ({ room, onClose }: BookingFormProps) => {
               </div>
             )}
 
-            <button type="submit" className={styles.submitButton} disabled={loading}>
-              {loading ? 'Processing...' : 'Confirm Booking'}
+            {/* Submit */}
+            <button
+              type="submit"
+              className={styles.submitButton}
+              disabled={loading}
+            >
+              {loading ? "Processing..." : "Confirm Booking"}
             </button>
           </form>
         </div>
