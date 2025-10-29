@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Search, Eye, Edit2, Trash2 } from "lucide-react";
+import { Search } from "lucide-react";
 import styles from "./Styles/BookingsSection.module.css";
 import React from "react";
 
@@ -97,16 +97,6 @@ function BookingsSection({ compact = false }: BookingsSectionProps) {
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   };
 
-  const handleEditBooking = (bookingId: string) => {
-    console.log("Edit booking:", bookingId);
-  };
-
-  const handleDeleteBooking = (bookingId: string) => {
-    if (confirm("Are you sure you want to cancel this booking?")) {
-      console.log("Cancelling booking:", bookingId);
-    }
-  };
-
   return (
     <div className={styles.section}>
       <div className={styles.sectionHeader}>
@@ -156,7 +146,6 @@ function BookingsSection({ compact = false }: BookingsSectionProps) {
                 <th>Check-out</th>
                 <th>Total</th>
                 <th>Status</th>
-                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -201,30 +190,6 @@ function BookingsSection({ compact = false }: BookingsSectionProps) {
                       {booking.status.charAt(0).toUpperCase() +
                         booking.status.slice(1)}
                     </span>
-                  </td>
-                  <td>
-                    <div className={styles.actionButtons}>
-                      <button
-                        className={`${styles.actionButton} ${styles.view}`}
-                        title="View Details"
-                      >
-                        <Eye size={16} />
-                      </button>
-                      <button
-                        className={`${styles.actionButton} ${styles.edit}`}
-                        onClick={() => handleEditBooking(booking.id)}
-                        title="Edit Booking"
-                      >
-                        <Edit2 size={16} />
-                      </button>
-                      <button
-                        className={`${styles.actionButton} ${styles.delete}`}
-                        onClick={() => handleDeleteBooking(booking.id)}
-                        title="Cancel Booking"
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
                   </td>
                 </tr>
               ))}

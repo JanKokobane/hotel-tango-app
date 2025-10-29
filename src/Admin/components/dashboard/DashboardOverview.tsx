@@ -24,38 +24,7 @@ import {
   Hotel,
 } from "lucide-react";
 import styles from "./Styles/DashboardOverview.module.css";
-import React from "react";
-
-const statsData = [
-  {
-    label: "Total Revenue",
-    value: "R 492,800",
-    change: "+3.48%",
-    trend: "up",
-    subtitle: "from last week",
-  },
-  {
-    label: "New Bookings",
-    value: "135",
-    change: "+2.38%",
-    trend: "up",
-    subtitle: "from last week",
-  },
-  {
-    label: "Check In",
-    value: "101",
-    change: "-1.56%",
-    trend: "down",
-    subtitle: "from last week",
-  },
-  {
-    label: "Check Out",
-    value: "29",
-    change: "+0.87%",
-    trend: "up",
-    subtitle: "from last week",
-  },
-];
+import React, { useEffect, useState } from "react";
 
 const guestsData = [
   { day: "Sun", guests: 420 },
@@ -173,41 +142,115 @@ const ratings = [
   { category: "Value", score: 8.9 },
 ];
 
+interface StatCard {
+  label: string;
+  value: string;
+  change: string;
+  trend: "up" | "down";
+  subtitle: string;
+}
+
 function DashboardOverview() {
   const totalPlatformBookings = platformData.reduce(
     (sum, item) => sum + item.value,
     0
   );
 
+  const [statsData, setStatsData] = useState<StatCard[]>([]);
+  const [loadingStats, setLoadingStats] = useState(true);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_API_BASE_URL}/api/bookings/stats`
+        );
+        if (!response.ok) throw new Error("Failed to fetch stats");
+        const data = await response.json();
+
+        const formattedStats: StatCard[] = [
+          {
+            label: "Total Revenue",
+            value: `R ${data.totalRevenue.toLocaleString()}`,
+            change: `${
+              data.changes.revenue > 0 ? "+" : ""
+            }${data.changes.revenue.toFixed(2)}%`,
+            trend: data.changes.revenue >= 0 ? "up" : "down",
+            subtitle: "from last week",
+          },
+          {
+            label: "New Bookings",
+            value: `${data.newBookings}`,
+            change: `${
+              data.changes.bookings > 0 ? "+" : ""
+            }${data.changes.bookings.toFixed(2)}%`,
+            trend: data.changes.bookings >= 0 ? "up" : "down",
+            subtitle: "from last week",
+          },
+          {
+            label: "Check In",
+            value: `${data.checkIns}`,
+            change: `${
+              data.changes.checkIns > 0 ? "+" : ""
+            }${data.changes.checkIns.toFixed(2)}%`,
+            trend: data.changes.checkIns >= 0 ? "up" : "down",
+            subtitle: "from last week",
+          },
+          {
+            label: "Check Out",
+            value: `${data.checkOuts}`,
+            change: `${
+              data.changes.checkOuts > 0 ? "+" : ""
+            }${data.changes.checkOuts.toFixed(2)}%`,
+            trend: data.changes.checkOuts >= 0 ? "up" : "down",
+            subtitle: "from last week",
+          },
+        ];
+
+        setStatsData(formattedStats);
+      } catch (err) {
+        console.error("Stats fetch error:", err);
+      } finally {
+        setLoadingStats(false);
+      }
+    };
+
+    fetchStats();
+  }, []);
+
   return (
     <div className={styles.dashboardOverview}>
       <div className={styles.mainSection}>
         {/* Stats Cards */}
         <div className={styles.statsGrid}>
-          {statsData.map((stat, index) => (
-            <div key={index} className={styles.statCard}>
-              <div className={styles.statHeader}>
-                <span className={styles.statLabel}>{stat.label}</span>
-                <button className={styles.moreButton}>
-                  <MoreVertical size={16} />
-                </button>
+          {loadingStats ? (
+            <p>Loading stats...</p>
+          ) : (
+            statsData.map((stat, index) => (
+              <div key={index} className={styles.statCard}>
+                <div className={styles.statHeader}>
+                  <span className={styles.statLabel}>{stat.label}</span>
+                  <button className={styles.moreButton}>
+                    <MoreVertical size={16} />
+                  </button>
+                </div>
+                <div className={styles.statValue}>{stat.value}</div>
+                <div
+                  className={`${styles.statChange} ${
+                    stat.trend === "up" ? styles.positive : styles.negative
+                  }`}
+                >
+                  {stat.trend === "up" ? (
+                    <TrendingUp size={14} />
+                  ) : (
+                    <TrendingDown size={14} />
+                  )}
+                  <span>{stat.change}</span>
+                  <span className={styles.statSubtitle}>{stat.subtitle}</span>
+                </div>
               </div>
-              <div className={styles.statValue}>{stat.value}</div>
-              <div
-                className={`${styles.statChange} ${
-                  stat.trend === "up" ? styles.positive : styles.negative
-                }`}
-              >
-                {stat.trend === "up" ? (
-                  <TrendingUp size={14} />
-                ) : (
-                  <TrendingDown size={14} />
-                )}
-                <span>{stat.change}</span>
-                <span className={styles.statSubtitle}>{stat.subtitle}</span>
-              </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
 
         {/* Charts Row 1 */}
