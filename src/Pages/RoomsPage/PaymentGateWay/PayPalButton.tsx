@@ -18,20 +18,22 @@ declare global {
   interface Window {
     paypal?: {
       Buttons: (config: {
-        createOrder: (data: unknown, actions: {
-          order: {
-            create: (details: {
-              purchase_units: { amount: { value: string } }[];
-            }) => Promise<string>;
-          };
-        }) => Promise<string>;
-        onApprove: (data: { orderID: string }, actions: {
-          order: { capture: () => Promise<unknown> };
-        }) => Promise<void>;
+        createOrder: (
+          data: unknown,
+          actions: {
+            order: {
+              create: (details: {
+                purchase_units: { amount: { value: string } }[];
+              }) => Promise<string>;
+            };
+          }
+        ) => Promise<string>;
+        onApprove: (
+          data: { orderID: string },
+          actions: { order: { capture: () => Promise<unknown> } }
+        ) => Promise<void>;
         onError?: (err: Error) => void;
-      }) => {
-        render: (selector: string) => Promise<void>;
-      };
+      }) => { render: (selector: string) => Promise<void> };
     };
   }
 }
@@ -49,10 +51,7 @@ function PayPalButton({ amount, onSuccess, bookingData }: PayPalButtonProps) {
     }&currency=USD`;
     script.async = true;
 
-    script.addEventListener("load", () => {
-      renderPayPalButton();
-    });
-
+    script.addEventListener("load", renderPayPalButton);
     script.addEventListener("error", () => {
       console.error("Failed to load PayPal SDK");
     });
@@ -60,9 +59,7 @@ function PayPalButton({ amount, onSuccess, bookingData }: PayPalButtonProps) {
     document.body.appendChild(script);
 
     return () => {
-      if (script.parentNode) {
-        script.parentNode.removeChild(script);
-      }
+      if (script.parentNode) script.parentNode.removeChild(script);
     };
   }, [amount]);
 
@@ -70,38 +67,29 @@ function PayPalButton({ amount, onSuccess, bookingData }: PayPalButtonProps) {
     if (!window.paypal) return;
 
     const container = document.getElementById("paypal-button-container");
-    if (container) {
-      container.innerHTML = "";
-    }
+    if (container) container.innerHTML = "";
 
     window.paypal
       .Buttons({
-        createOrder: (data, actions) => {
-          return actions.order.create({
-            purchase_units: [
-              {
-                amount: {
-                  value: amount,
-                },
-              },
-            ],
-          });
-        },
+        createOrder: (data, actions) =>
+          actions.order.create({
+            purchase_units: [{ amount: { value: amount } }],
+          }),
         onApprove: async (data, actions) => {
           const details = await actions.order.capture();
           console.log("Payment successful:", details);
+          console.log("✅ Payment verified successfully, sending to backend");
+          console.log("📦 Sending bookingData:", bookingData);
 
           try {
-          await fetch("https://tango-hotel-backend.onrender.com/api/bookings/verify-payment", {
+            await fetch(
+              "https://tango-hotel-backend.onrender.com/api/bookings/verify-payment",
+              {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                  orderID: data.orderID,
-                  bookingData, 
-                }),
+                body: JSON.stringify({ orderID: data.orderID, bookingData }),
               }
             );
-
             onSuccess();
           } catch (error) {
             console.error("Failed to confirm booking:", error);

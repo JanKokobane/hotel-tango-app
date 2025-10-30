@@ -13,6 +13,7 @@ import styles from "./CheckoutPage.module.css";
 
 interface CheckoutPageProps {
   bookingData: {
+    id: string; // ✅ Added booking ID here
     room_id: number;
     room_name: string;
     full_name: string;
@@ -20,7 +21,7 @@ interface CheckoutPageProps {
     email: string;
     check_in: string;
     check_out: string;
-    total_price: string | number; // ✅ allow both types here
+    total_price: string | number;
     nights: number;
   };
   onBack: () => void;
@@ -39,10 +40,8 @@ const CheckoutPage = ({
   const [uploading, setUploading] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState(false);
 
-  // ✅ Safely convert total_price to a number
   const totalPrice = Number(bookingData.total_price) || 0;
 
-  // Bank details
   const bankDetails = {
     bankName: "First National Bank",
     accountName: "Tango Hotel Ltd",
@@ -90,7 +89,6 @@ const CheckoutPage = ({
     }
   };
 
-  // ✅ Convert ZAR → USD using number, not string
   const amountInUSD = (totalPrice / 18).toFixed(2);
 
   return (
@@ -98,7 +96,6 @@ const CheckoutPage = ({
       <div className={styles.backgroundOverlay} />
 
       <div className={styles.contentWrapper}>
-        {/* Header */}
         <div className={styles.header}>
           <button onClick={onBack} className={styles.backButton}>
             <ArrowLeft size={20} />
@@ -112,7 +109,6 @@ const CheckoutPage = ({
         </div>
 
         <div className={styles.mainContent}>
-          {/* Booking Summary */}
           <div className={styles.summaryCard}>
             <h2 className={styles.summaryTitle}>Booking Summary</h2>
 
@@ -167,12 +163,10 @@ const CheckoutPage = ({
             </div>
           </div>
 
-          {/* Payment Methods */}
           <div className={styles.paymentCard}>
             <h2 className={styles.paymentTitle}>Choose Payment Method</h2>
 
             <div className={styles.paymentMethods}>
-              {/* PayPal Option */}
               <button
                 className={`${styles.paymentMethodButton} ${
                   paymentMethod === "paypal" ? styles.active : ""
@@ -188,7 +182,6 @@ const CheckoutPage = ({
                 </div>
               </button>
 
-              {/* EFT Option */}
               <button
                 className={`${styles.paymentMethodButton} ${
                   paymentMethod === "eft" ? styles.active : ""
@@ -205,7 +198,6 @@ const CheckoutPage = ({
               </button>
             </div>
 
-            {/* PayPal Integration */}
             {paymentMethod === "paypal" && (
               <div className={styles.paymentContent}>
                 <div className={styles.paymentHeader}>
@@ -220,18 +212,18 @@ const CheckoutPage = ({
                     amount={amountInUSD}
                     onSuccess={onPaymentComplete}
                     bookingData={{
+                      id: bookingData.id, // ✅ Added here
                       room_id: bookingData.room_id,
                       room_name: bookingData.room_name,
                       full_name: bookingData.full_name,
                       email: bookingData.email,
-                      total_price: totalPrice, // ✅ always a number here
+                      total_price: totalPrice,
                     }}
                   />
                 </div>
               </div>
             )}
 
-            {/* EFT Details */}
             {paymentMethod === "eft" && (
               <div className={styles.paymentContent}>
                 <div className={styles.bankDetailsSection}>
@@ -274,9 +266,7 @@ const CheckoutPage = ({
                     </div>
 
                     <div className={styles.bankDetail}>
-                      <span className={styles.bankDetailLabel}>
-                        Payment Reference
-                      </span>
+                      <span className={styles.bankDetailLabel}>Payment Reference</span>
                       <span className={`${styles.bankDetailValue} ${styles.reference}`}>
                         {bankDetails.reference}
                       </span>
@@ -284,12 +274,10 @@ const CheckoutPage = ({
                   </div>
 
                   <div className={styles.importantNote}>
-                    <strong>Important:</strong> Please use the payment reference
-                    above when making your transfer
+                    <strong>Important:</strong> Please use the payment reference above when making your transfer
                   </div>
                 </div>
 
-                {/* Upload Proof of Payment */}
                 <div className={styles.uploadSection}>
                   <h3 className={styles.uploadTitle}>Upload Proof of Payment</h3>
                   <p className={styles.uploadDescription}>
@@ -310,9 +298,7 @@ const CheckoutPage = ({
                           ? proofOfPayment.name
                           : "Click to upload or drag and drop"}
                       </p>
-                      <p className={styles.uploadSubtext}>
-                        JPG, PNG or PDF (max 5MB)
-                      </p>
+                      <p className={styles.uploadSubtext}>JPG, PNG or PDF (max 5MB)</p>
                     </div>
                   </label>
 
@@ -329,9 +315,7 @@ const CheckoutPage = ({
                   {uploadSuccess && (
                     <div className={styles.successMessage}>
                       <CheckCircle size={24} />
-                      <span>
-                        Payment proof uploaded successfully! Redirecting...
-                      </span>
+                      <span>Payment proof uploaded successfully! Redirecting...</span>
                     </div>
                   )}
                 </div>
@@ -340,11 +324,9 @@ const CheckoutPage = ({
           </div>
         </div>
 
-        {/* Footer */}
         <div className={styles.footer}>
           <p>
-            Your payment information is secure and encrypted. We never store your
-            card details.
+            Your payment information is secure and encrypted. We never store your card details.
           </p>
         </div>
       </div>
