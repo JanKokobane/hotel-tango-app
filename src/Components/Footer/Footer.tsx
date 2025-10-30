@@ -84,9 +84,7 @@ const Footer: React.FC = () => {
             <span className={styles.separator}>|</span>
             <Link to="/cookies" className={styles.legalLink}>Cookie Policy</Link>
             <span className={styles.separator}>|</span>
-            <Link to="/admin" className={styles.legalLink}>Admin</Link>
-            <span className={styles.separator}>|</span>
-            <Link to="/admin/adminreg" className={styles.legalLink}>Register</Link>
+            <Link to="/admin/adminreg" className={styles.legalLink}>Admin</Link>
           </div>
         </div>
       </div>

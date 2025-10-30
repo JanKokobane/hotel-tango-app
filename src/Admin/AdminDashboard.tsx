@@ -78,12 +78,13 @@ function AdminDashboard() {
         return <AnalyticsSection detailed />;
       case 'rooms':
         return (
-          <RoomsSection
-            onAddRoom={handleAddRoom}
-            onEditRoom={handleEditRoom}
-            onDeleteRoom={handleDeleteRoom}
-          />
-        );
+        <RoomsSection
+          onAddRoom={handleAddRoom}
+          onEditRoom={handleEditRoom}
+          onDeleteRoom={handleDeleteRoom}
+        />
+      );
+
       case 'reservation':
         return <BookingsSection />;
       case 'staffs':

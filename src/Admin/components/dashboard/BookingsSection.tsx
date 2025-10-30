@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Search } from "lucide-react";
+import { Search, Trash2 } from "lucide-react";
 import styles from "./Styles/BookingsSection.module.css";
 import React from "react";
 
@@ -9,13 +9,12 @@ const API_BASE_URL =
 interface Booking {
   id: string;
   room_name: string;
-  room_image: string | null;
   full_name: string;
   email: string;
   check_in: string;
   check_out: string;
   total_price: number;
-  status?: "pending" | "confirmed" | "cancelled";
+  payment_status?: "paid" | "pending";
   guests?: number;
 }
 
@@ -29,7 +28,9 @@ function BookingsSection({ compact = false }: BookingsSectionProps) {
   const [filterStatus, setFilterStatus] = useState<string>("all");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [deleting, setDeleting] = useState<string | null>(null);
 
+  // Fetch all bookings
   useEffect(() => {
     const fetchBookings = async () => {
       try {
@@ -44,9 +45,35 @@ function BookingsSection({ compact = false }: BookingsSectionProps) {
         setLoading(false);
       }
     };
-
     fetchBookings();
   }, []);
+
+  // Handle delete booking
+  const handleDelete = async (id: string) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this booking? This cannot be undone."
+    );
+    if (!confirmDelete) return;
+
+    setDeleting(id);
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/bookings/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to delete booking`);
+      }
+
+      setBookings((prev) => prev.filter((b) => b.id !== id));
+      alert("Booking deleted successfully!");
+    } catch (err: any) {
+      console.error("Delete error:", err);
+      alert(err.message || "Error deleting booking");
+    } finally {
+      setDeleting(null);
+    }
+  };
 
   const transformedBookings = bookings.map((b) => ({
     id: b.id,
@@ -56,7 +83,7 @@ function BookingsSection({ compact = false }: BookingsSectionProps) {
     guestEmail: b.email ?? "",
     checkIn: b.check_in,
     checkOut: b.check_out,
-    status: b.status || "pending",
+    paymentStatus: b.payment_status || "pending",
     guests: b.guests || 2,
     total: b.total_price,
   }));
@@ -69,10 +96,10 @@ function BookingsSection({ compact = false }: BookingsSectionProps) {
       booking.roomName.toLowerCase().includes(query) ||
       booking.id.toLowerCase().includes(query) ||
       booking.guestEmail.toLowerCase().includes(query) ||
-      booking.status.toLowerCase().includes(query);
+      booking.paymentStatus.toLowerCase().includes(query);
 
     const matchesFilter =
-      filterStatus === "all" || booking.status === filterStatus;
+      filterStatus === "all" || booking.paymentStatus === filterStatus;
 
     return matchesSearch && matchesFilter;
   });
@@ -123,9 +150,8 @@ function BookingsSection({ compact = false }: BookingsSectionProps) {
             onChange={(e) => setFilterStatus(e.target.value)}
           >
             <option value="all">All Status</option>
+            <option value="paid">Paid</option>
             <option value="pending">Pending</option>
-            <option value="confirmed">Confirmed</option>
-            <option value="cancelled">Cancelled</option>
           </select>
         </div>
       )}
@@ -145,7 +171,8 @@ function BookingsSection({ compact = false }: BookingsSectionProps) {
                 <th>Check-in</th>
                 <th>Check-out</th>
                 <th>Total</th>
-                <th>Status</th>
+                <th>Payment</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
@@ -176,8 +203,7 @@ function BookingsSection({ compact = false }: BookingsSectionProps) {
                         margin: "4px 0 0 0",
                       }}
                     >
-                      {calculateNights(booking.checkIn, booking.checkOut)}{" "}
-                      nights
+                      {calculateNights(booking.checkIn, booking.checkOut)} nights
                     </p>
                   </td>
                   <td>
@@ -185,11 +211,41 @@ function BookingsSection({ compact = false }: BookingsSectionProps) {
                   </td>
                   <td>
                     <span
-                      className={`${styles.badge} ${styles[booking.status]}`}
+                      style={{
+                        backgroundColor:
+                          booking.paymentStatus === "paid"
+                            ? "#22c55e" // ✅ green for paid
+                            : "#f87171", // ❌ red for pending
+                        color: "white",
+                        padding: "5px 12px",
+                        borderRadius: "8px",
+                        fontWeight: 600,
+                        textTransform: "capitalize",
+                      }}
                     >
-                      {booking.status.charAt(0).toUpperCase() +
-                        booking.status.slice(1)}
+                      {booking.paymentStatus}
                     </span>
+                  </td>
+                  <td>
+                    <button
+                      onClick={() => handleDelete(booking.id)}
+                      disabled={deleting === booking.id}
+                      style={{
+                        backgroundColor: "#ef4444",
+                        color: "white",
+                        border: "none",
+                        padding: "6px 10px",
+                        borderRadius: "8px",
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "6px",
+                        opacity: deleting === booking.id ? 0.6 : 1,
+                      }}
+                    >
+                      <Trash2 size={16} />
+                      {deleting === booking.id ? "Deleting..." : "Delete"}
+                    </button>
                   </td>
                 </tr>
               ))}
