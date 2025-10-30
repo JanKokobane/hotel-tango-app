@@ -24,7 +24,7 @@ import {
   Hotel,
 } from "lucide-react";
 import styles from "./Styles/DashboardOverview.module.css";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 const guestsData = [
   { day: "Sun", guests: 420 },
@@ -159,6 +159,10 @@ function DashboardOverview() {
   const [statsData, setStatsData] = useState<StatCard[]>([]);
   const [loadingStats, setLoadingStats] = useState(true);
 
+  const [bookingsMonthly, setBookingsMonthly] = useState<MonthlyBookingData[]>([]);
+  const [loadingBookings, setLoadingBookings] = useState(true);
+
+
   useEffect(() => {
     const fetchStats = async () => {
       try {
@@ -218,10 +222,50 @@ function DashboardOverview() {
     fetchStats();
   }, []);
 
+
+type MonthlyBookingData = {
+  month: string;
+  booked: number;
+  cancelled: number;
+};
+
+useEffect(() => {
+  const fetchMonthlyBookings = async () => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/api/bookings/monthly`
+      );
+      if (!response.ok) throw new Error("Failed to fetch monthly bookings");
+      const data = await response.json();
+
+      const formattedData: MonthlyBookingData[] = data.map((item: any) => ({
+        month: item.month,
+        booked: Number(item.booked) || 0,
+        cancelled: Number(item.cancelled) || 0,
+      }));
+
+      setBookingsMonthly(formattedData);
+    } catch (err) {
+      console.error("Monthly bookings fetch error:", err);
+    } finally {
+      setLoadingBookings(false);
+    }
+  };
+
+  fetchMonthlyBookings();
+}, []);
+
+if (loadingBookings) {
+  return <p>Loading bookings data...</p>;
+}
+
+
   return (
     <div className={styles.dashboardOverview}>
       <div className={styles.mainSection}>
+
         {/* Stats Cards */}
+
         <div className={styles.statsGrid}>
           {loadingStats ? (
             <p>Loading stats...</p>
@@ -253,182 +297,7 @@ function DashboardOverview() {
           )}
         </div>
 
-        {/* Charts Row 1 */}
-        <div className={styles.chartsRow}>
-          <div className={styles.chartCard}>
-            <div className={styles.chartHeader}>
-              <div>
-                <h3>Guests</h3>
-                <p className={styles.chartSubtitle}>This Week</p>
-              </div>
-              <select className={styles.chartSelect}>
-                <option>This Week</option>
-                <option>Last Week</option>
-                <option>This Month</option>
-              </select>
-            </div>
-            <ResponsiveContainer width="100%" height={280}>
-              <LineChart data={guestsData}>
-                <defs>
-                  <linearGradient
-                    id="guestGradient"
-                    x1="0"
-                    y1="0"
-                    x2="0"
-                    y2="1"
-                  >
-                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  stroke="#e5e7eb"
-                  vertical={false}
-                />
-                <XAxis dataKey="day" stroke="#9ca3af" fontSize={12} />
-                <YAxis stroke="#9ca3af" fontSize={12} />
-                <Tooltip
-                  contentStyle={{
-                    background: "white",
-                    border: "1px solid #e5e7eb",
-                    borderRadius: "8px",
-                    boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-                  }}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="guests"
-                  stroke="#3b82f6"
-                  strokeWidth={2}
-                  fill="url(#guestGradient)"
-                  dot={{ fill: "#3b82f6", r: 4 }}
-                  activeDot={{ r: 6 }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-            <div className={styles.chartFooter}>
-              <span className={styles.guestCount}>880 Guests</span>
-            </div>
-          </div>
-
-          <div className={styles.chartCard}>
-            <div className={styles.chartHeader}>
-              <div>
-                <h3>Revenue</h3>
-                <p className={styles.chartSubtitle}>Last 6 Months</p>
-              </div>
-              <select className={styles.chartSelect}>
-                <option>Last 6 Months</option>
-                <option>Last Year</option>
-                <option>All Time</option>
-              </select>
-            </div>
-            <ResponsiveContainer width="100%" height={280}>
-              <LineChart data={revenueData}>
-                <defs>
-                  <linearGradient
-                    id="revenueGradient"
-                    x1="0"
-                    y1="0"
-                    x2="0"
-                    y2="1"
-                  >
-                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  stroke="#e5e7eb"
-                  vertical={false}
-                />
-                <XAxis dataKey="month" stroke="#9ca3af" fontSize={12} />
-                <YAxis stroke="#9ca3af" fontSize={12} />
-                <Tooltip
-                  contentStyle={{
-                    background: "white",
-                    border: "1px solid #e5e7eb",
-                    borderRadius: "8px",
-                    boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-                  }}
-                  formatter={(value: number) => `R ${value.toLocaleString()}`}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="revenue"
-                  stroke="#3b82f6"
-                  strokeWidth={2}
-                  fill="url(#revenueGradient)"
-                  dot={{ fill: "#3b82f6", r: 4 }}
-                  activeDot={{ r: 6 }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-            <div className={styles.chartFooter}>
-              <span className={styles.revenueAmount}>R 28,164</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Charts Row 2 */}
-        <div className={styles.chartsRow}>
-          <div className={styles.chartCard}>
-            <div className={styles.chartHeader}>
-              <div>
-                <h3>Bookings</h3>
-                <p className={styles.chartSubtitle}>This Year</p>
-              </div>
-              <div className={styles.legendRow}>
-                <div className={styles.legendItem}>
-                  <span
-                    className={styles.legendDot}
-                    style={{ background: "#3b82f6" }}
-                  ></span>
-                  <span>Booked</span>
-                </div>
-                <div className={styles.legendItem}>
-                  <span
-                    className={styles.legendDot}
-                    style={{ background: "#e5e7eb" }}
-                  ></span>
-                  <span>Cancelled</span>
-                </div>
-              </div>
-            </div>
-            <ResponsiveContainer width="100%" height={280}>
-              <BarChart data={bookingsMonthly}>
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  stroke="#e5e7eb"
-                  vertical={false}
-                />
-                <XAxis dataKey="month" stroke="#9ca3af" fontSize={12} />
-                <YAxis stroke="#9ca3af" fontSize={12} />
-                <Tooltip
-                  contentStyle={{
-                    background: "white",
-                    border: "1px solid #e5e7eb",
-                    borderRadius: "8px",
-                    boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-                  }}
-                />
-                <Bar dataKey="booked" fill="#3b82f6" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="cancelled" fill="#e5e7eb" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-            <div className={styles.chartFooter}>
-              <div className={styles.bookingStats}>
-                <span>
-                  Booked: <strong>6,164</strong>
-                </span>
-                <span>
-                  Cancelled: <strong>926</strong>
-                </span>
-              </div>
-            </div>
-          </div>
-
+      
           <div className={styles.chartCard}>
             <div className={styles.chartHeader}>
               <div>
@@ -498,6 +367,7 @@ function DashboardOverview() {
           </div>
         </div>
 
+
         {/* Booking List */}
         <div className={styles.tableSection}>
           <div className={styles.tablHeader}>
@@ -552,8 +422,7 @@ function DashboardOverview() {
             </table>
           </div>
         </div>
-      </div>
-
+      
       {/* Right Sidebar */}
       <div className={styles.rightSidebar}>
         {/* Room Occupancy */}
