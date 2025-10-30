@@ -5,6 +5,7 @@ interface PayPalButtonProps {
   amount: string;
   onSuccess: () => void;
   bookingData: {
+    id: string;
     room_id: number;
     room_name: string;
     full_name: string;
@@ -91,14 +92,12 @@ function PayPalButton({ amount, onSuccess, bookingData }: PayPalButtonProps) {
           console.log("Payment successful:", details);
 
           try {
-            await fetch(
-              "https://tango-hotel-backend.onrender.com/api/bookings/verify-payment",
-              {
+          await fetch("https://tango-hotel-backend.onrender.com/api/bookings/verify-payment", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                   orderID: data.orderID,
-                  bookingData,
+                  bookingData, 
                 }),
               }
             );
