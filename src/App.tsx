@@ -28,6 +28,9 @@ import ProtectedRoute from "./ProtectedRoute";
 import RoomsPage from "./Pages/RoomsPage/RoomsPage";
 import Profile from "./Profile/Profile";
 
+// ✅ New AdminProtectedRoute import
+import AdminProtectedRoute from "./Admin/components/AdminProtectedRoute";
+
 function PublicLayout() {
   const location = useLocation();
   const isAuthPage = [
@@ -35,7 +38,7 @@ function PublicLayout() {
     "/register",
     "/admin/adminreg",
     "/admin/login",
-    "/bookingfoom"
+    "/bookingfoom",
   ].includes(location.pathname);
 
   return (
@@ -97,18 +100,23 @@ function App() {
   return (
     <Router>
       <Routes>
+        {/* Public routes */}
         <Route path="/*" element={<PublicLayout />} />
         <Route path="/rooms" element={<RoomsPage />} />
+
+        {/* Admin routes */}
         <Route path="/admin/adminreg" element={<AdminReg />} />
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route
           path="/admin/dashboard"
           element={
-            <ProtectedRoute>
+            <AdminProtectedRoute>
               <AdminDashboard />
-            </ProtectedRoute>
+            </AdminProtectedRoute>
           }
         />
+
+        {/* User protected routes */}
         <Route
           path="/profile"
           element={

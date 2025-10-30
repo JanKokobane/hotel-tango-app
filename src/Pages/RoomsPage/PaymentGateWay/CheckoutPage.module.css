@@ -1,65 +1,90 @@
+/* Classic Black & White Color Scheme */
 .pageContainer {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
   position: fixed;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 50;
-  padding: 1.5rem;
-  overflow-y: auto;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  z-index: 9999;
+  backdrop-filter: blur(20px);
 }
 
 .backgroundOverlay {
-  position: fixed;
-  inset: 0;
-  background: linear-gradient(135deg, #1a1a2e 0%, #0f3460 50%, #16213e 100%);
-  opacity: 0.98;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background:
+    radial-gradient(circle at 20% 80%, rgba(100, 100, 100, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.03) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
 }
 
 .contentWrapper {
-  position: relative;
-  width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  animation: fadeIn 0.3s ease-out;
+  position: relative;
+  z-index: 1;
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 1rem;
+  -webkit-overflow-scrolling: touch;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.contentWrapper::-webkit-scrollbar {
+  width: 8px;
 }
 
+.contentWrapper::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+.contentWrapper::-webkit-scrollbar-thumb {
+  background: rgba(120, 120, 120, 0.5);
+  border-radius: 4px;
+}
+
+.contentWrapper::-webkit-scrollbar-thumb:hover {
+  background: rgba(120, 120, 120, 0.7);
+}
+
+/* Header */
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 2rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding-top: 1rem;
 }
 
 .backButton {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.75rem 1.25rem;
   background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 12px;
-  color: white;
+  padding: 0.75rem 1.25rem;
+  border-radius: 8px;
+  cursor: pointer;
   font-size: 0.95rem;
   font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   backdrop-filter: blur(10px);
 }
 
 .backButton:hover {
   background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(200, 200, 200, 0.5);
   transform: translateX(-4px);
 }
 
@@ -67,44 +92,42 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.75rem 1.25rem;
-  background: rgba(74, 222, 128, 0.15);
-  border: 1px solid rgba(74, 222, 128, 0.3);
-  border-radius: 12px;
-  color: #4ade80;
-  font-size: 0.9rem;
+  background: rgba(76, 175, 80, 0.15);
+  color: #81c784;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.875rem;
   font-weight: 500;
+  border: 1px solid rgba(76, 175, 80, 0.3);
   backdrop-filter: blur(10px);
 }
 
+/* Main Content */
 .mainContent {
   display: grid;
   grid-template-columns: 1fr 1.5fr;
   gap: 2rem;
   margin-bottom: 2rem;
+  padding-bottom: 2rem;
 }
 
-@media (max-width: 968px) {
-  .mainContent {
-    grid-template-columns: 1fr;
-  }
-}
-
+/* Summary Card */
 .summaryCard {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 20px;
+  background: #ffffff;
+  border-radius: 12px;
   padding: 2rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 152, 0, 0.1);
   height: fit-content;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
 .summaryTitle {
   font-size: 1.5rem;
-  font-weight: 700;
-  color: white;
+  font-weight: 600;
+  color: #1a1a1a;
   margin-bottom: 1.5rem;
+  border-bottom: 3px solid #4a4a4a;
+  padding-bottom: 0.75rem;
 }
 
 .summaryDetails {
@@ -116,24 +139,26 @@
 .summaryRow {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: start;
+  gap: 1rem;
 }
 
 .summaryLabel {
-  color: rgba(255, 255, 255, 0.6);
   font-size: 0.95rem;
+  color: #5f6368;
+  font-weight: 500;
 }
 
 .summaryValue {
-  color: white;
-  font-weight: 500;
   font-size: 0.95rem;
+  color: #1a1a1a;
+  font-weight: 600;
   text-align: right;
 }
 
 .divider {
   height: 1px;
-  background: rgba(255, 255, 255, 0.1);
+  background: linear-gradient(to right, transparent, #e0e0e0, transparent);
   margin: 0.5rem 0;
 }
 
@@ -142,41 +167,40 @@
   justify-content: space-between;
   align-items: center;
   padding-top: 1rem;
-  border-top: 2px solid rgba(255, 255, 255, 0.2);
   margin-top: 0.5rem;
+  border-top: 3px solid #4a4a4a;
 }
 
 .totalLabel {
-  color: white;
   font-size: 1.1rem;
-  font-weight: 600;
-}
-
-.totalValue {
-  color: #4ade80;
-  font-size: 1.75rem;
+  color: #1a1a1a;
   font-weight: 700;
 }
 
+.totalValue {
+  font-size: 1.5rem;
+  color: #2d2d2d;
+  font-weight: 700;
+}
+
+/* Payment Card */
 .paymentCard {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 20px;
+  background: #ffffff;
+  border-radius: 12px;
   padding: 2rem;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 152, 0, 0.1);
 }
 
 .paymentTitle {
   font-size: 1.5rem;
-  font-weight: 700;
-  color: white;
+  font-weight: 600;
+  color: #1a1a1a;
   margin-bottom: 1.5rem;
 }
 
 .paymentMethods {
-  display: flex;
-  flex-direction: column;
+  display: grid;
   gap: 1rem;
   margin-bottom: 2rem;
 }
@@ -184,87 +208,94 @@
 .paymentMethodButton {
   display: flex;
   align-items: center;
-  gap: 1.25rem;
+  gap: 1rem;
   padding: 1.5rem;
-  background: rgba(255, 255, 255, 0.05);
-  border: 2px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
+  background: #f8f9fa;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   text-align: left;
   width: 100%;
 }
 
 .paymentMethodButton:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.2);
+  border-color: #4a4a4a;
+  background: #ffffff;
   transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(74, 74, 74, 0.2);
 }
 
 .paymentMethodButton.active {
-  background: rgba(74, 222, 128, 0.1);
-  border-color: #4ade80;
+  border-color: #2d2d2d;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f8f8 100%);
+  box-shadow: 0 4px 16px rgba(45, 45, 45, 0.25);
 }
 
 .methodIcon {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 56px;
-  height: 56px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  color: white;
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
+  color: #ffffff;
+  border-radius: 8px;
   flex-shrink: 0;
 }
 
 .paymentMethodButton.active .methodIcon {
-  background: rgba(74, 222, 128, 0.2);
-  color: #4ade80;
+  background: linear-gradient(135deg, #4a4a4a 0%, #3a3a3a 100%);
 }
 
 .methodInfo h3 {
   font-size: 1.1rem;
   font-weight: 600;
-  color: white;
+  color: #1a1a1a;
   margin-bottom: 0.25rem;
 }
 
 .methodInfo p {
-  font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.875rem;
+  color: #5f6368;
 }
 
+/* Payment Content */
 .paymentContent {
-  background: rgba(255, 255, 255, 0.03);
-  border-radius: 16px;
   padding: 2rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #f8f9fa;
+  border-radius: 10px;
+  border: 1px solid #e0e0e0;
 }
 
 .paymentHeader {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: #4ade80;
-  font-size: 0.9rem;
+  color: #4caf50;
+  font-size: 0.875rem;
   font-weight: 500;
   margin-bottom: 1rem;
 }
 
 .conversionNote {
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 0.9rem;
+  color: #5f6368;
+  font-size: 0.95rem;
   margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: #ffffff;
+  border-radius: 8px;
+  border-left: 4px solid #4a4a4a;
 }
 
 .paypalContainer {
-  min-height: 150px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  background: #ffffff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
 }
 
+/* Bank Details */
 .bankDetailsSection {
   margin-bottom: 2rem;
 }
@@ -272,7 +303,7 @@
 .bankDetailsTitle {
   font-size: 1.2rem;
   font-weight: 600;
-  color: white;
+  color: #1a1a1a;
   margin-bottom: 1.5rem;
 }
 
@@ -283,88 +314,90 @@
   margin-bottom: 1.5rem;
 }
 
-@media (max-width: 640px) {
-  .bankDetailsGrid {
-    grid-template-columns: 1fr;
-  }
-}
-
 .bankDetail {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  padding: 1rem;
+  background: #ffffff;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  transition: all 0.3s ease;
+}
+
+.bankDetail:hover {
+  border-color: #4a4a4a;
+  box-shadow: 0 2px 8px rgba(74, 74, 74, 0.15);
 }
 
 .bankDetailLabel {
-  color: rgba(255, 255, 255, 0.5);
-  font-size: 0.85rem;
+  font-size: 0.8rem;
+  color: #5f6368;
+  font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
 .bankDetailValue {
-  color: white;
   font-size: 1rem;
-  font-weight: 500;
-  padding: 0.75rem;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #1a1a1a;
+  font-weight: 600;
 }
 
 .bankDetailValue.reference {
-  color: #4ade80;
-  font-weight: 600;
+  color: #2d2d2d;
   font-family: monospace;
-  letter-spacing: 0.5px;
+  font-size: 0.9rem;
 }
 
 .importantNote {
-  padding: 1rem 1.25rem;
-  background: rgba(251, 191, 36, 0.1);
-  border: 1px solid rgba(251, 191, 36, 0.3);
-  border-radius: 12px;
-  color: #fbbf24;
+  padding: 1rem;
+  background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+  border-left: 4px solid #4a4a4a;
+  border-radius: 6px;
+  color: #5f6368;
   font-size: 0.9rem;
-  line-height: 1.5;
 }
 
 .importantNote strong {
-  font-weight: 600;
+  color: #2d2d2d;
+  font-weight: 700;
 }
 
+/* Upload Section */
 .uploadSection {
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
   padding-top: 2rem;
+  border-top: 2px solid #e0e0e0;
 }
 
 .uploadTitle {
   font-size: 1.2rem;
   font-weight: 600;
-  color: white;
+  color: #1a1a1a;
   margin-bottom: 0.5rem;
 }
 
 .uploadDescription {
-  color: rgba(255, 255, 255, 0.6);
+  color: #5f6368;
   font-size: 0.9rem;
   margin-bottom: 1.5rem;
 }
 
 .uploadArea {
   display: block;
+  padding: 2.5rem;
+  background: #ffffff;
+  border: 2px dashed #4a4a4a;
+  border-radius: 10px;
   cursor: pointer;
-  border: 2px dashed rgba(255, 255, 255, 0.3);
-  border-radius: 16px;
-  padding: 3rem 2rem;
+  transition: all 0.3s ease;
   text-align: center;
-  transition: all 0.2s ease;
-  background: rgba(255, 255, 255, 0.02);
 }
 
 .uploadArea:hover {
-  border-color: #4ade80;
-  background: rgba(74, 222, 128, 0.05);
+  border-color: #2d2d2d;
+  background: #f8f8f8;
+  transform: scale(1.01);
 }
 
 .fileInput {
@@ -376,42 +409,43 @@
   flex-direction: column;
   align-items: center;
   gap: 0.75rem;
-  color: white;
+  color: #5f6368;
 }
 
 .uploadContent svg {
-  opacity: 0.5;
+  color: #4a4a4a;
 }
 
 .uploadText {
   font-size: 1rem;
   font-weight: 500;
-  color: white;
+  color: #1a1a1a;
 }
 
 .uploadSubtext {
-  font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.875rem;
+  color: #5f6368;
 }
 
 .submitButton {
   width: 100%;
-  padding: 1rem 2rem;
   margin-top: 1.5rem;
-  background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+  padding: 1rem;
+  background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
+  color: #ffffff;
   border: none;
-  border-radius: 12px;
-  color: white;
+  border-radius: 8px;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 4px 16px rgba(74, 222, 128, 0.3);
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(45, 45, 45, 0.3);
 }
 
 .submitButton:hover:not(:disabled) {
+  background: linear-gradient(135deg, #3a3a3a 0%, #2d2d2d 100%);
   transform: translateY(-2px);
-  box-shadow: 0 6px 24px rgba(74, 222, 128, 0.4);
+  box-shadow: 0 6px 20px rgba(45, 45, 45, 0.4);
 }
 
 .submitButton:disabled {
@@ -424,37 +458,153 @@
   align-items: center;
   justify-content: center;
   gap: 0.75rem;
-  padding: 1.25rem;
-  background: rgba(74, 222, 128, 0.15);
-  border: 1px solid rgba(74, 222, 128, 0.3);
-  border-radius: 12px;
-  color: #4ade80;
-  font-weight: 500;
   margin-top: 1.5rem;
-  animation: slideIn 0.3s ease-out;
+  padding: 1rem;
+  background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+  border: 1px solid #4caf50;
+  border-radius: 8px;
+  color: #2e7d32;
+  font-weight: 500;
 }
 
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.successMessage svg {
+  color: #2e7d32;
+  flex-shrink: 0;
 }
 
+/* Footer */
 .footer {
   text-align: center;
   padding: 1.5rem;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  margin-bottom: 2rem;
 }
 
 .footer p {
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.9);
   font-size: 0.9rem;
-  line-height: 1.5;
+  margin: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .mainContent {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .contentWrapper {
+    padding: 0.75rem;
+  }
+
+  .header {
+    margin-bottom: 1.5rem;
+  }
+
+  .backButton {
+    padding: 0.625rem 1rem;
+    font-size: 0.875rem;
+  }
+
+  .securityBadge {
+    padding: 0.4rem 0.875rem;
+    font-size: 0.8rem;
+  }
+
+  .summaryCard,
+  .paymentCard {
+    padding: 1.5rem;
+    border-radius: 10px;
+  }
+
+  .summaryTitle,
+  .paymentTitle {
+    font-size: 1.25rem;
+  }
+
+  .totalValue {
+    font-size: 1.25rem;
+  }
+
+  .bankDetailsGrid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .paymentContent {
+    padding: 1.5rem;
+  }
+
+  .uploadArea {
+    padding: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .contentWrapper {
+    padding: 0.5rem;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .backButton,
+  .securityBadge {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .summaryCard,
+  .paymentCard {
+    padding: 1.25rem;
+  }
+
+  .summaryTitle,
+  .paymentTitle {
+    font-size: 1.1rem;
+  }
+
+  .summaryRow {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .summaryValue {
+    text-align: left;
+  }
+
+  .paymentMethodButton {
+    padding: 1.25rem;
+  }
+
+  .methodIcon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .methodInfo h3 {
+    font-size: 1rem;
+  }
+
+  .methodInfo p {
+    font-size: 0.8rem;
+  }
+
+  .uploadArea {
+    padding: 1.5rem;
+  }
+
+  .footer {
+    padding: 1rem;
+  }
+
+  .footer p {
+    font-size: 0.8rem;
+  }
 }
