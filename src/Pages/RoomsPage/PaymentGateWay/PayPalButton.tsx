@@ -24,7 +24,7 @@ declare global {
             }) => Promise<string>;
           };
         }) => Promise<string>;
-        onApprove: (data: unknown, actions: {
+        onApprove: (data: { orderID: string }, actions: {
           order: { capture: () => Promise<unknown> };
         }) => Promise<void>;
         onError?: (err: Error) => void;
@@ -37,7 +37,6 @@ declare global {
 
 function PayPalButton({ amount, onSuccess, bookingData }: PayPalButtonProps) {
   useEffect(() => {
-   
     if (window.paypal) {
       renderPayPalButton();
       return;
@@ -60,7 +59,6 @@ function PayPalButton({ amount, onSuccess, bookingData }: PayPalButtonProps) {
     document.body.appendChild(script);
 
     return () => {
-      
       if (script.parentNode) {
         script.parentNode.removeChild(script);
       }
@@ -91,16 +89,16 @@ function PayPalButton({ amount, onSuccess, bookingData }: PayPalButtonProps) {
         onApprove: async (data, actions) => {
           const details = await actions.order.capture();
           console.log("Payment successful:", details);
+
           try {
             await fetch(
-              "https://tango-hotel-backend.onrender.com/api/bookings/confirm-payment",
+              "https://tango-hotel-backend.onrender.com/api/bookings/verify-payment",
               {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
+                  orderID: data.orderID,
                   bookingData,
-                  paymentDetails: details,
-                  paymentMethod: "paypal",
                 }),
               }
             );
