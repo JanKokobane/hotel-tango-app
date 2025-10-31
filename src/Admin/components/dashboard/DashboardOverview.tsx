@@ -27,48 +27,48 @@ import styles from "./Styles/DashboardOverview.module.css";
 import React, { useCallback, useEffect, useState } from "react";
 
 const guestsData = [
-  { day: "Sun", guests: 420 },
-  { day: "Mon", guests: 350 },
-  { day: "Tue", guests: 480 },
-  { day: "Wed", guests: 380 },
-  { day: "Thu", guests: 520 },
-  { day: "Fri", guests: 460 },
-  { day: "Sat", guests: 880 },
+  { day: "Sun", guests: 0 },
+  { day: "Mon", guests: 0 },
+  { day: "Tue", guests: 0 },
+  { day: "Wed", guests: 0 },
+  { day: "Thu", guests: 0 },
+  { day: "Fri", guests: 7 },
+  { day: "Sat", guests: 0 },
 ];
 
 const revenueData = [
-  { month: "May", revenue: 15000 },
-  { month: "Jun", revenue: 18000 },
-  { month: "Jul", revenue: 28000 },
-  { month: "Aug", revenue: 20000 },
-  { month: "Sept", revenue: 23000 },
-  { month: "Oct", revenue: 26000 },
-  { month: "Nov", revenue: 22000 },
-  { month: "Dec", revenue: 25000 },
+  { month: "May", revenue: 0 },
+  { month: "Jun", revenue: 0 },
+  { month: "Jul", revenue: 0 },
+  { month: "Aug", revenue: 0 },
+  { month: "Sept", revenue:0 },
+  { month: "Oct", revenue: 0 },
+  { month: "Nov", revenue: 0 },
+  { month: "Dec", revenue: 0 },
 ];
 
 const bookingsMonthly = [
-  { month: "Jan", booked: 45, cancelled: 5 },
-  { month: "Feb", booked: 38, cancelled: 8 },
-  { month: "Mar", booked: 52, cancelled: 6 },
-  { month: "Apr", booked: 48, cancelled: 7 },
-  { month: "May", booked: 42, cancelled: 9 },
-  { month: "Jun", booked: 35, cancelled: 4 },
-  { month: "Jul", booked: 48, cancelled: 6 },
-  { month: "Aug", booked: 45, cancelled: 5 },
-  { month: "Sep", booked: 38, cancelled: 7 },
-  { month: "Oct", booked: 52, cancelled: 4 },
-  { month: "Nov", booked: 48, cancelled: 8 },
-  { month: "Dec", booked: 65, cancelled: 6 },
+  { month: "Jan", booked: 0, cancelled: 0 },
+  { month: "Feb", booked: 0, cancelled: 0 },
+  { month: "Mar", booked: 0, cancelled: 0 },
+  { month: "Apr", booked: 0, cancelled: 0 },
+  { month: "May", booked: 0, cancelled: 0 },
+  { month: "Jun", booked: 0, cancelled: 4 },
+  { month: "Jul", booked: 0, cancelled: 0 },
+  { month: "Aug", booked: 0, cancelled: 0 },
+  { month: "Sep", booked: 0, cancelled: 0 },
+  { month: "Oct", booked: 5, cancelled: 3 },
+  { month: "Nov", booked: 0, cancelled: 0 },
+  { month: "Dec", booked: 0, cancelled: 0 },
 ];
 
 const platformData = [
-  { name: "Booking.com", value: 654, color: "#0071c2" },
-  { name: "Agoda", value: 544, color: "#ec5b24" },
-  { name: "Airbnb", value: 408, color: "#ff5a5f" },
-  { name: "Hotels.com", value: 271, color: "#d32f2f" },
-  { name: "TripAdvisor", value: 203, color: "#00af87" },
-  { name: "Traveloka", value: 158, color: "#1ba0e2" },
+  { name: "Booking.com", value: 0, color: "#0071c2" },
+  { name: "Agoda", value: 0, color: "#ec5b24" },
+  { name: "Airbnb", value: 0, color: "#ff5a5f" },
+  { name: "Hotels.com", value: 0, color: "#d32f2f" },
+  { name: "TripAdvisor", value: 0, color: "#00af87" },
+  { name: "Traveloka", value: 0, color: "#1ba0e2" },
 ];
 
 const recentActivities = [
@@ -76,7 +76,7 @@ const recentActivities = [
     id: 1,
     type: "registration",
     message: "New user registration completed",
-    detail: "Jane Smith - Registered for a new account using the email address",
+    detail: "Karabo Mogano - Registered for a new account using the email address",
     time: "10:30 AM",
     icon: Users,
     color: "#3b82f6",
@@ -85,7 +85,7 @@ const recentActivities = [
     id: 2,
     type: "booking",
     message: "Booking Confirmation",
-    detail: "Booking ID 00123 for James Lisbon, Deluxe Room 105",
+    detail: "Booking ID 00123 for Gift Ragidhi, Deluxe Room 105",
     time: "9:06 AM",
     icon: LogIn,
     color: "#22c55e",
@@ -94,7 +94,7 @@ const recentActivities = [
     id: 3,
     type: "payment",
     message: "Payment Received",
-    detail: "Payment of R 3,450 received from Robert Wilson for booking #00125",
+    detail: "Payment of R 1 900 received from Jan Kokobane for booking #00125",
     time: "8:45 AM",
     icon: DollarSign,
     color: "#8b5cf6",
@@ -104,9 +104,9 @@ const recentActivities = [
 const bookingsList = [
   {
     id: "00123",
-    guestName: "James Lisbon",
+    guestName: "Karabo Mogano",
     roomType: "Deluxe",
-    roomNo: "105",
+    roomNo: "3",
     duration: "3 Nights",
     checkIn: "2024-04-06",
     checkOut: "2024-04-08",
@@ -114,9 +114,9 @@ const bookingsList = [
   },
   {
     id: "00124",
-    guestName: "Sarah Johnson",
+    guestName: "Jan Kokobane",
     roomType: "Suite",
-    roomNo: "201",
+    roomNo: "1",
     duration: "2 Nights",
     checkIn: "2024-04-07",
     checkOut: "2024-04-09",
@@ -124,9 +124,9 @@ const bookingsList = [
   },
   {
     id: "00125",
-    guestName: "Michael Chen",
+    guestName: "James Nkele",
     roomType: "Standard",
-    roomNo: "302",
+    roomNo: "5",
     duration: "4 Nights",
     checkIn: "2024-04-08",
     checkOut: "2024-04-12",
@@ -155,6 +155,7 @@ function DashboardOverview() {
     (sum, item) => sum + item.value,
     0
   );
+
 
   const [statsData, setStatsData] = useState<StatCard[]>([]);
   const [loadingStats, setLoadingStats] = useState(true);
@@ -259,45 +260,230 @@ if (loadingBookings) {
   return <p>Loading bookings data...</p>;
 }
 
-
+ function DashboardOverview() {
   return (
     <div className={styles.dashboardOverview}>
       <div className={styles.mainSection}>
-
         {/* Stats Cards */}
-
         <div className={styles.statsGrid}>
-          {loadingStats ? (
-            <p>Loading stats...</p>
-          ) : (
-            statsData.map((stat, index) => (
-              <div key={index} className={styles.statCard}>
-                <div className={styles.statHeader}>
-                  <span className={styles.statLabel}>{stat.label}</span>
-                  <button className={styles.moreButton}>
-                    <MoreVertical size={16} />
-                  </button>
-                </div>
-                <div className={styles.statValue}>{stat.value}</div>
-                <div
-                  className={`${styles.statChange} ${
-                    stat.trend === "up" ? styles.positive : styles.negative
-                  }`}
-                >
-                  {stat.trend === "up" ? (
-                    <TrendingUp size={14} />
-                  ) : (
-                    <TrendingDown size={14} />
-                  )}
-                  <span>{stat.change}</span>
-                  <span className={styles.statSubtitle}>{stat.subtitle}</span>
-                </div>
+          {statsData.map((stat, index) => (
+            <div key={index} className={styles.statCard}>
+              <div className={styles.statHeader}>
+                <span className={styles.statLabel}>{stat.label}</span>
+                <button className={styles.moreButton}>
+                  <MoreVertical size={16} />
+                </button>
               </div>
-            ))
-          )}
+              <div className={styles.statValue}>{stat.value}</div>
+              <div
+                className={`${styles.statChange} ${
+                  stat.trend === 'up' ? styles.positive : styles.negative
+                }`}
+              >
+                {stat.trend === 'up' ? (
+                  <TrendingUp size={14} />
+                ) : (
+                  <TrendingDown size={14} />
+                )}
+                <span>{stat.change}</span>
+                <span className={styles.statSubtitle}>{stat.subtitle}</span>
+              </div>
+            </div>
+          ))}
         </div>
 
-      
+        {/* Charts Row 1 */}
+        <div className={styles.chartsRow}>
+          <div className={styles.chartCard}>
+            <div className={styles.chartHeader}>
+              <div>
+                <h3>Guests</h3>
+                <p className={styles.chartSubtitle}>This Week</p>
+              </div>
+              <select className={styles.chartSelect}>
+                <option>This Week</option>
+                <option>Last Week</option>
+                <option>This Month</option>
+              </select>
+            </div>
+            <ResponsiveContainer width="100%" height={280}>
+              <LineChart data={guestsData}>
+                <defs>
+                  <linearGradient
+                    id="guestGradient"
+                    x1="0"
+                    y1="0"
+                    x2="0"
+                    y2="1"
+                  >
+                    <stop
+                      offset="5%"
+                      stopColor="#3b82f6"
+                      stopOpacity={0.3}
+                    />
+                    <stop
+                      offset="95%"
+                      stopColor="#3b82f6"
+                      stopOpacity={0}
+                    />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="#e5e7eb"
+                  vertical={false}
+                />
+                <XAxis dataKey="day" stroke="#9ca3af" fontSize={12} />
+                <YAxis stroke="#9ca3af" fontSize={12} />
+                <Tooltip
+                  contentStyle={{
+                    background: 'white',
+                    border: '1px solid #e5e7eb',
+                    borderRadius: '8px',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                  }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="guests"
+                  stroke="#3b82f6"
+                  strokeWidth={2}
+                  fill="url(#guestGradient)"
+                  dot={{ fill: '#3b82f6', r: 4 }}
+                  activeDot={{ r: 6 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+            <div className={styles.chartFooter}>
+              <span className={styles.guestCount}>880 Guests</span>
+            </div>
+          </div>
+
+          <div className={styles.chartCard}>
+            <div className={styles.chartHeader}>
+              <div>
+                <h3>Revenue</h3>
+                <p className={styles.chartSubtitle}>Last 6 Months</p>
+              </div>
+              <select className={styles.chartSelect}>
+                <option>Last 6 Months</option>
+                <option>Last Year</option>
+                <option>All Time</option>
+              </select>
+            </div>
+            <ResponsiveContainer width="100%" height={280}>
+              <LineChart data={revenueData}>
+                <defs>
+                  <linearGradient
+                    id="revenueGradient"
+                    x1="0"
+                    y1="0"
+                    x2="0"
+                    y2="1"
+                  >
+                    <stop
+                      offset="5%"
+                      stopColor="#3b82f6"
+                      stopOpacity={0.3}
+                    />
+                    <stop
+                      offset="95%"
+                      stopColor="#3b82f6"
+                      stopOpacity={0}
+                    />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="#e5e7eb"
+                  vertical={false}
+                />
+                <XAxis dataKey="month" stroke="#9ca3af" fontSize={12} />
+                <YAxis stroke="#9ca3af" fontSize={12} />
+                <Tooltip
+                  contentStyle={{
+                    background: 'white',
+                    border: '1px solid #e5e7eb',
+                    borderRadius: '8px',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                  }}
+                  formatter={(value) => `R ${Number(value).toLocaleString()}`}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="revenue"
+                  stroke="#3b82f6"
+                  strokeWidth={2}
+                  fill="url(#revenueGradient)"
+                  dot={{ fill: '#3b82f6', r: 4 }}
+                  activeDot={{ r: 6 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+            <div className={styles.chartFooter}>
+              <span className={styles.revenueAmount}>R 28,164</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Charts Row 2 */}
+        <div className={styles.chartsRow}>
+          <div className={styles.chartCard}>
+            <div className={styles.chartHeader}>
+              <div>
+                <h3>Bookings</h3>
+                <p className={styles.chartSubtitle}>This Year</p>
+              </div>
+              <div className={styles.legendRow}>
+                <div className={styles.legendItem}>
+                  <span
+                    className={styles.legendDot}
+                    style={{ background: '#3b82f6' }}
+                  ></span>
+                  <span>Booked</span>
+                </div>
+                <div className={styles.legendItem}>
+                  <span
+                    className={styles.legendDot}
+                    style={{ background: '#e5e7eb' }}
+                  ></span>
+                  <span>Cancelled</span>
+                </div>
+              </div>
+            </div>
+            <ResponsiveContainer width="100%" height={280}>
+              <BarChart data={bookingsMonthly}>
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="#e5e7eb"
+                  vertical={false}
+                />
+                <XAxis dataKey="month" stroke="#9ca3af" fontSize={12} />
+                <YAxis stroke="#9ca3af" fontSize={12} />
+                <Tooltip
+                  contentStyle={{
+                    background: 'white',
+                    border: '1px solid #e5e7eb',
+                    borderRadius: '8px',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                  }}
+                />
+                <Bar dataKey="booked" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="cancelled" fill="#e5e7eb" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+            <div className={styles.chartFooter}>
+              <div className={styles.bookingStats}>
+                <span>
+                  Booked: <strong>6,164</strong>
+                </span>
+                <span>
+                  Cancelled: <strong>926</strong>
+                </span>
+              </div>
+            </div>
+          </div>
+
           <div className={styles.chartCard}>
             <div className={styles.chartHeader}>
               <div>
@@ -328,10 +514,10 @@ if (loadingBookings) {
                   </Pie>
                   <Tooltip
                     contentStyle={{
-                      background: "white",
-                      border: "1px solid #e5e7eb",
-                      borderRadius: "8px",
-                      boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                      background: 'white',
+                      border: '1px solid #e5e7eb',
+                      borderRadius: '8px',
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
                     }}
                   />
                 </PieChart>
@@ -356,9 +542,7 @@ if (loadingBookings) {
                     </span>
                   </div>
                   <span className={styles.platformPercent}>
-                    {((platform.value / totalPlatformBookings) * 100).toFixed(
-                      0
-                    )}
+                    {((platform.value / totalPlatformBookings) * 100).toFixed(0)}
                     %
                   </span>
                 </div>
@@ -367,10 +551,9 @@ if (loadingBookings) {
           </div>
         </div>
 
-
         {/* Booking List */}
         <div className={styles.tableSection}>
-          <div className={styles.tablHeader}>
+          <div className={styles.tableHeader}>
             <h3>Booking List</h3>
             <div className={styles.tableActions}>
               <select className={styles.tableSelect}>
@@ -422,7 +605,8 @@ if (loadingBookings) {
             </table>
           </div>
         </div>
-      
+      </div>
+
       {/* Right Sidebar */}
       <div className={styles.rightSidebar}>
         {/* Room Occupancy */}
@@ -443,26 +627,26 @@ if (loadingBookings) {
           <div className={styles.occupancyBar}>
             <div
               className={styles.occupancySegment}
-              style={{ width: "38%", background: "#3b82f6" }}
+              style={{ width: '38%', background: '#3b82f6' }}
             ></div>
             <div
               className={styles.occupancySegment}
-              style={{ width: "18%", background: "#22c55e" }}
+              style={{ width: '18%', background: '#22c55e' }}
             ></div>
             <div
               className={styles.occupancySegment}
-              style={{ width: "34%", background: "#f59e0b" }}
+              style={{ width: '34%', background: '#f59e0b' }}
             ></div>
             <div
               className={styles.occupancySegment}
-              style={{ width: "10%", background: "#e5e7eb" }}
+              style={{ width: '10%', background: '#e5e7eb' }}
             ></div>
           </div>
           <div className={styles.occupancyStats}>
             <div className={styles.occupancyStat}>
               <span
                 className={styles.occupancyDot}
-                style={{ background: "#3b82f6" }}
+                style={{ background: '#3b82f6' }}
               ></span>
               <div>
                 <div className={styles.occupancyNumber}>98</div>
@@ -472,7 +656,7 @@ if (loadingBookings) {
             <div className={styles.occupancyStat}>
               <span
                 className={styles.occupancyDot}
-                style={{ background: "#22c55e" }}
+                style={{ background: '#22c55e' }}
               ></span>
               <div>
                 <div className={styles.occupancyNumber}>45</div>
@@ -482,7 +666,7 @@ if (loadingBookings) {
             <div className={styles.occupancyStat}>
               <span
                 className={styles.occupancyDot}
-                style={{ background: "#f59e0b" }}
+                style={{ background: '#f59e0b' }}
               ></span>
               <div>
                 <div className={styles.occupancyNumber}>86</div>
@@ -492,7 +676,7 @@ if (loadingBookings) {
             <div className={styles.occupancyStat}>
               <span
                 className={styles.occupancyDot}
-                style={{ background: "#e5e7eb" }}
+                style={{ background: '#e5e7eb' }}
               ></span>
               <div>
                 <div className={styles.occupancyNumber}>27</div>
@@ -512,17 +696,23 @@ if (loadingBookings) {
             <div className={styles.overallScore}>8.9</div>
             <div>
               <div className={styles.ratingLabel}>Excellent</div>
-              <div className={styles.ratingCount}>1,458 verified reviews</div>
+              <div className={styles.ratingCount}>
+                1,458 verified reviews
+              </div>
             </div>
           </div>
           <div className={styles.ratingsList}>
             {ratings.map((rating, index) => (
               <div key={index} className={styles.ratingItem}>
-                <div className={styles.ratingCategory}>{rating.category}</div>
+                <div className={styles.ratingCategory}>
+                  {rating.category}
+                </div>
                 <div className={styles.ratingBarContainer}>
                   <div
                     className={styles.ratingBar}
-                    style={{ width: `${(rating.score / 10) * 100}%` }}
+                    style={{
+                      width: `${(rating.score / 10) * 100}%`,
+                    }}
                   ></div>
                 </div>
                 <div className={styles.ratingScore}>{rating.score}</div>
@@ -541,7 +731,10 @@ if (loadingBookings) {
             {recentActivities.map((activity) => {
               const Icon = activity.icon;
               return (
-                <div key={activity.id} className={styles.activityItem}>
+                <div
+                  key={activity.id}
+                  className={styles.activityItem}
+                >
                   <div
                     className={styles.activityIcon}
                     style={{
@@ -558,7 +751,9 @@ if (loadingBookings) {
                     <div className={styles.activityDetail}>
                       {activity.detail}
                     </div>
-                    <div className={styles.activityTime}>{activity.time}</div>
+                    <div className={styles.activityTime}>
+                      {activity.time}
+                    </div>
                   </div>
                 </div>
               );
@@ -570,4 +765,5 @@ if (loadingBookings) {
   );
 }
 
+}
 export default DashboardOverview;
