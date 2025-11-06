@@ -166,40 +166,11 @@
   margin-bottom: 8px;
 }
 
-.locationIcon {
-  color: #10b981;
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
-}
-
 .locationText {
   font-size: 15px;
   color: #ffffff;
   font-weight: 500;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-}
-
-.pointsRow {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.pointsIcon {
-  font-size: 20px;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
-}
-
-.pointsText {
-  font-size: 16px;
-  font-weight: 700;
-  color: #ffffff;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-}
-
-.infoIcon {
-  color: rgba(255, 255, 255, 0.7);
-  cursor: pointer;
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
 }
 
 .moreButton {
@@ -222,7 +193,6 @@
   background: rgba(255, 255, 255, 0.3);
 }
 
-/* Tabs Section */
 .tabsContainer {
   background: #ffffff;
   border-bottom: 1px solid #e5e7eb;
@@ -260,12 +230,11 @@
 }
 
 .tabActive {
-  color: #1f293773;
+  color: #1f2937;
   border-bottom-color: #0e141d;
   font-weight: 600;
 }
 
-/* Content Section */
 .contentSection {
   padding: 40px;
   min-height: 400px;
@@ -288,8 +257,7 @@
   font-size: 16px;
 }
 
-.settingsContent,
-.timelineContent {
+.settingsContent {
   max-width: 800px;
   margin: 0 auto;
 }
@@ -478,15 +446,255 @@
   color: #6b7280;
 }
 
-.timelineContent h2,
-.settingsContent h2 {
+.notificationsContent {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.overviewSection {
+  margin-bottom: 48px;
+}
+
+.overviewTitle {
   font-size: 24px;
   font-weight: 700;
   color: #1f2937;
+  margin: 0 0 24px 0;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+}
+
+.statCard {
+  background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  transition: all 0.2s ease;
+}
+
+.statCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.statIcon {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  flex-shrink: 0;
+}
+
+.statContent {
+  flex: 1;
+}
+
+.statValue {
+  font-size: 32px;
+  font-weight: 700;
+  color: #1f2937;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.statLabel {
+  font-size: 14px;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.notificationsHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin-bottom: 24px;
 }
 
-/* Dark Mode */
+.notificationsHeader h2 {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0;
+}
+
+.notificationsActions {
+  display: flex;
+  gap: 12px;
+}
+
+.clearButton {
+  padding: 10px 20px;
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.clearButton:hover:not(:disabled) {
+  background: #e5e7eb;
+  border-color: #9ca3af;
+}
+
+.clearButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.tableContainer {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.notificationsTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.notificationsTable thead {
+  background: #f9fafb;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.notificationsTable th {
+  padding: 16px 20px;
+  text-align: left;
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.notificationsTable tbody tr {
+  border-bottom: 1px solid #f3f4f6;
+  transition: background-color 0.15s ease;
+}
+
+.notificationsTable tbody tr:hover {
+  background: #fafbfc;
+}
+
+.notificationsTable tbody tr:last-child {
+  border-bottom: none;
+}
+
+.notificationsTable td {
+  padding: 20px;
+  font-size: 14px;
+  color: #1f2937;
+  vertical-align: middle;
+}
+
+.typeBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
+.typeBadgeBooking {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.typeBadgeProfile {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.typeBadgeInfo {
+  background: #e0e7ff;
+  color: #3730a3;
+}
+
+.messageCell {
+  max-width: 500px;
+}
+
+.notifMessage {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: #1f2937;
+  line-height: 1.5;
+}
+
+.bookingPreview {
+  margin-top: 8px;
+  padding: 8px 12px;
+  background: #f9fafb;
+  border-left: 3px solid #3b82f6;
+  border-radius: 4px;
+}
+
+.bookingInfo {
+  font-size: 13px;
+  color: #6b7280;
+  display: block;
+}
+
+.dateCell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.timeCell {
+  font-size: 12px;
+  font-weight: 400;
+  color: #9ca3af;
+}
+
+.deleteButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.deleteButton:hover {
+  background: #fee2e2;
+  border-color: #fca5a5;
+  transform: scale(1.05);
+}
+
+.deleteButton:active {
+  transform: scale(0.95);
+}
+
 .dark .profileContainer {
   background: #111827;
 }
@@ -514,8 +722,8 @@
 }
 
 .dark .settingsHeader h2,
-.dark .settingsContent h2,
-.dark .timelineContent h2 {
+.dark .overviewTitle,
+.dark .notificationsHeader h2 {
   color: #f3f4f6;
 }
 
@@ -569,11 +777,111 @@
   color: #9ca3af;
 }
 
-/* Responsive */
+.dark .statCard {
+  background: linear-gradient(135deg, #374151 0%, #1f2937 100%);
+  border-color: #4b5563;
+}
+
+.dark .statValue {
+  color: #f3f4f6;
+}
+
+.dark .statLabel {
+  color: #9ca3af;
+}
+
+.dark .clearButton {
+  background: #374151;
+  color: #d1d5db;
+  border-color: #4b5563;
+}
+
+.dark .clearButton:hover:not(:disabled) {
+  background: #4b5563;
+  border-color: #6b7280;
+}
+
+.dark .tableContainer {
+  background: #374151;
+  border-color: #4b5563;
+}
+
+.dark .notificationsTable thead {
+  background: #1f2937;
+  border-bottom-color: #4b5563;
+}
+
+.dark .notificationsTable th {
+  color: #d1d5db;
+}
+
+.dark .notificationsTable tbody tr {
+  border-bottom-color: #4b5563;
+}
+
+.dark .notificationsTable tbody tr:hover {
+  background: #4b5563;
+}
+
+.dark .notificationsTable td {
+  color: #f3f4f6;
+}
+
+.dark .typeBadgeBooking {
+  background: #1e3a8a;
+  color: #93c5fd;
+}
+
+.dark .typeBadgeProfile {
+  background: #064e3b;
+  color: #6ee7b7;
+}
+
+.dark .typeBadgeInfo {
+  background: #312e81;
+  color: #a5b4fc;
+}
+
+.dark .notifMessage {
+  color: #f3f4f6;
+}
+
+.dark .bookingPreview {
+  background: #1f2937;
+  border-left-color: #3b82f6;
+}
+
+.dark .bookingInfo {
+  color: #9ca3af;
+}
+
+.dark .dateCell {
+  color: #d1d5db;
+}
+
+.dark .timeCell {
+  color: #6b7280;
+}
+
+.dark .deleteButton {
+  background: #7f1d1d;
+  color: #fca5a5;
+  border-color: #991b1b;
+}
+
+.dark .deleteButton:hover {
+  background: #991b1b;
+  border-color: #b91c1c;
+}
+
 @media (max-width: 1024px) {
   .bookingsGrid {
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 20px;
+  }
+
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
@@ -639,5 +947,22 @@
 
   .settingsCard {
     padding: 24px;
+  }
+
+  .statsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .tableContainer {
+    overflow-x: auto;
+  }
+
+  .notificationsTable {
+    min-width: 700px;
+  }
+
+  .notificationsTable th,
+  .notificationsTable td {
+    padding: 12px;
   }
 }

@@ -5,10 +5,12 @@ import {
   Edit,
   Info,
   LogOut,
-  Mail,
-  Phone,
-  Calendar,
   Loader,
+  Trash2,
+  CheckCircle,
+  Clock,
+  Calendar,
+  Bell,
 } from "lucide-react";
 import { BookingCard } from "./BookingCard/BookingCard";
 import { useAuth } from "../context/AuthContext";
@@ -31,13 +33,14 @@ interface Booking {
   status?: "upcoming" | "completed";
 }
 
-type TabView = "timeline" | "history" | "new" | "favourites" | "settings";
+type TabView = "history" | "new" | "favourites" | "settings";
 
 type NotificationItem = {
   id: number;
   message: string;
   type: string;
-  date: string; 
+  date: string;
+  booking?: Booking;
 };
 
 const Profile: React.FC = () => {
@@ -46,26 +49,21 @@ const Profile: React.FC = () => {
   const [currentTab, setCurrentTab] = useState<TabView>("history");
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [loyaltyPoints] = useState(2840);
-
   const [profileImage, setProfileImage] = useState<string | null>(
     user?.profileImage || null
   );
   const [coverImage, setCoverImage] = useState<string | null>(
     user?.coverImage || null
   );
-
   const [formData, setFormData] = useState({
     firstname: user?.firstname || "",
     lastname: user?.lastname || "",
     email: user?.email || "",
     contact: user?.contact || "",
   });
-
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
 
   const storageKey = user?.email ? `notifications_${user.email}` : null;
@@ -93,10 +91,8 @@ const Profile: React.FC = () => {
         setNotifications([]);
       }
     } else {
-      
       setNotifications([]);
     }
-    
   }, [user?.email]);
 
   useEffect(() => {
@@ -108,16 +104,16 @@ const Profile: React.FC = () => {
     }
   }, [notifications, storageKey]);
 
-  const addNotification = (message: string, type: string = "info") => {
+  const addNotification = (message: string, type: string = "info", booking?: Booking) => {
     if (!user?.email) return;
     const newNotif: NotificationItem = {
       id: Date.now() + Math.floor(Math.random() * 1000),
       message,
       type,
       date: new Date().toISOString(),
+      booking,
     };
     setNotifications((prev) => [newNotif, ...prev]);
-  
   };
 
   const deleteNotification = (id: number) => {
@@ -156,27 +152,20 @@ const Profile: React.FC = () => {
           const oldIds = bookings.map((b) => b.id);
           const newIds = enriched.map((b) => b.id);
 
-          const added = newIds.filter((id) => !oldIds.includes(id));
-          const removed = oldIds.filter((id) => !newIds.includes(id));
+          const addedIds = newIds.filter((id) => !oldIds.includes(id));
+          const removedIds = oldIds.filter((id) => !newIds.includes(id));
 
-          if (added.length > 0) {
-            addNotification(
-              `You have ${added.length} new booking${added.length > 1 ? "s" : ""}.`,
-              "booking"
-            );
-          } else if (removed.length > 0) {
-            addNotification(
-              `You have ${removed.length} booking${removed.length > 1 ? "s" : ""} removed or cancelled.`,
-              "booking"
-            );
-          } else if (enriched.length !== bookings.length) {
-           
-            addNotification("Your bookings were updated.", "booking");
-          }
+          addedIds.forEach((id) => {
+            const booking = enriched.find((b) => b.id === id);
+            if (booking) addNotification("You have a new booking.", "booking", booking);
+          });
+
+          removedIds.forEach((id) => {
+            addNotification("A booking was removed or cancelled.", "booking");
+          });
 
           setBookings(enriched);
         } else {
-          // no data
           if (bookings.length > 0) {
             addNotification("Your bookings list is now empty.", "booking");
           }
@@ -184,7 +173,6 @@ const Profile: React.FC = () => {
         }
       } catch (err) {
         console.error("Error fetching bookings:", err);
-        
         setBookings([]);
       } finally {
         setIsLoading(false);
@@ -192,7 +180,6 @@ const Profile: React.FC = () => {
     };
 
     fetchUserBookings();
-    
   }, [user?.email]);
 
   const handleCoverUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -247,34 +234,52 @@ const Profile: React.FC = () => {
   };
 
   const handleLogout = () => {
-  
     setNotifications([]);
     logout();
   };
 
   const getTabBookings = () => {
     switch (currentTab) {
-      case "history":
-        return bookings.filter((b) => b.status === "completed");
       case "new":
         return bookings.filter((b) => b.status === "upcoming");
       case "favourites":
         return bookings.slice(0, 7);
       default:
-        return bookings;
+        return bookings.filter((b) => b.status === "completed");
     }
   };
 
   const tabBookings = getTabBookings();
   const upcomingCount = bookings.filter((b) => b.status === "upcoming").length;
- 
   const historyCount = notifications.length;
   const favouritesCount = 7;
+  const completedCount = bookings.filter((b) => b.status === "completed").length;
+
+  const getTypeIcon = (type: string) => {
+    switch (type.toLowerCase()) {
+      case "booking":
+        return <Calendar size={16} />;
+      case "profile":
+        return <User size={16} />;
+      default:
+        return <Bell size={16} />;
+    }
+  };
+
+  const getTypeBadgeClass = (type: string) => {
+    switch (type.toLowerCase()) {
+      case "booking":
+        return styles.typeBadgeBooking;
+      case "profile":
+        return styles.typeBadgeProfile;
+      default:
+        return styles.typeBadgeInfo;
+    }
+  };
 
   return (
     <div className={`${styles.profileContainer} ${isDarkMode ? styles.dark : ""}`}>
       <div className={styles.profileWrapper}>
-      
         <div className={styles.coverSection}>
           <div
             className={styles.coverImage}
@@ -334,7 +339,6 @@ const Profile: React.FC = () => {
                     <Edit size={16} />
                   </button>
                 </div>
-
                 <div className={styles.locationRow}>
                   <span className={styles.locationText}>
                     {formData.contact || "Location not set"}
@@ -351,12 +355,6 @@ const Profile: React.FC = () => {
 
         <div className={styles.tabsContainer}>
           <nav className={styles.tabs}>
-            <button
-              className={`${styles.tab} ${currentTab === "timeline" ? styles.tabActive : ""}`}
-              onClick={() => setCurrentTab("timeline")}
-            >
-              Timeline
-            </button>
             <button
               className={`${styles.tab} ${currentTab === "history" ? styles.tabActive : ""}`}
               onClick={() => setCurrentTab("history")}
@@ -406,10 +404,7 @@ const Profile: React.FC = () => {
                       type="text"
                       value={formData.firstname}
                       onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          firstname: e.target.value,
-                        })
+                        setFormData({ ...formData, firstname: e.target.value })
                       }
                       placeholder="Enter first name"
                     />
@@ -422,10 +417,7 @@ const Profile: React.FC = () => {
                       type="text"
                       value={formData.lastname}
                       onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          lastname: e.target.value,
-                        })
+                        setFormData({ ...formData, lastname: e.target.value })
                       }
                       placeholder="Enter last name"
                     />
@@ -437,7 +429,9 @@ const Profile: React.FC = () => {
                       id="email"
                       type="email"
                       value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({ ...formData, email: e.target.value })
+                      }
                       placeholder="Enter email"
                     />
                   </div>
@@ -448,14 +442,20 @@ const Profile: React.FC = () => {
                       id="contact"
                       type="text"
                       value={formData.contact}
-                      onChange={(e) => setFormData({ ...formData, contact: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({ ...formData, contact: e.target.value })
+                      }
                       placeholder="Enter phone or location"
                     />
                   </div>
                 </div>
 
                 <div className={styles.formActions}>
-                  <button className={styles.saveButton} onClick={handleSaveSettings} disabled={isSaving}>
+                  <button
+                    className={styles.saveButton}
+                    onClick={handleSaveSettings}
+                    disabled={isSaving}
+                  >
                     {isSaving ? (
                       <>
                         <Loader size={16} className={styles.spinIcon} />
@@ -468,17 +468,53 @@ const Profile: React.FC = () => {
                 </div>
               </div>
             </div>
-          ) : currentTab === "timeline" ? (
-            <div className={styles.timelineContent}>
-              <div className={styles.emptyState}>
-                <Calendar size={64} className={styles.emptyIcon} />
-                <h3>Timeline</h3>
-                <p>Your activity timeline will appear here</p>
-              </div>
-            </div>
           ) : currentTab === "history" ? (
-           
             <div className={styles.notificationsContent}>
+              <div className={styles.overviewSection}>
+                <h2 className={styles.overviewTitle}>Overview</h2>
+                <div className={styles.statsGrid}>
+                  <div className={styles.statCard}>
+                    <div className={styles.statIcon}>
+                      <Calendar size={24} />
+                    </div>
+                    <div className={styles.statContent}>
+                      <div className={styles.statValue}>{upcomingCount}</div>
+                      <div className={styles.statLabel}>Upcoming Bookings</div>
+                    </div>
+                  </div>
+
+                  <div className={styles.statCard}>
+                    <div className={styles.statIcon}>
+                      <CheckCircle size={24} />
+                    </div>
+                    <div className={styles.statContent}>
+                      <div className={styles.statValue}>{completedCount}</div>
+                      <div className={styles.statLabel}>Completed Stays</div>
+                    </div>
+                  </div>
+
+                  <div className={styles.statCard}>
+                    <div className={styles.statIcon}>
+                      <Bell size={24} />
+                    </div>
+                    <div className={styles.statContent}>
+                      <div className={styles.statValue}>{notifications.length}</div>
+                      <div className={styles.statLabel}>Notifications</div>
+                    </div>
+                  </div>
+
+                  <div className={styles.statCard}>
+                    <div className={styles.statIcon}>
+                      <Clock size={24} />
+                    </div>
+                    <div className={styles.statContent}>
+                      <div className={styles.statValue}>{bookings.length}</div>
+                      <div className={styles.statLabel}>Total Bookings</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               <div className={styles.notificationsHeader}>
                 <h2>Notifications</h2>
                 <div className={styles.notificationsActions}>
@@ -495,33 +531,53 @@ const Profile: React.FC = () => {
               </div>
 
               {notifications.length > 0 ? (
-                <div className={styles.notificationsTableWrap}>
+                <div className={styles.tableContainer}>
                   <table className={styles.notificationsTable}>
                     <thead>
                       <tr>
-                        <th style={{ width: "60%" }}>Notification</th>
-                        <th style={{ width: "20%" }}>Type</th>
-                        <th style={{ width: "20%" }}>Date</th>
-                        <th aria-hidden />
+                        <th>Type</th>
+                        <th>Message</th>
+                        <th>Date</th>
+                        <th>Actions</th>
                       </tr>
                     </thead>
                     <tbody>
                       {notifications.map((n) => (
-                        <tr key={n.id}>
-                          <td className={styles.notifMessage}>
-                            <div className={styles.notifText}>{n.message}</div>
+                        <tr key={n.id} className={styles.notificationRow}>
+                          <td>
+                            <div className={`${styles.typeBadge} ${getTypeBadgeClass(n.type)}`}>
+                              {getTypeIcon(n.type)}
+                              <span>{n.type}</span>
+                            </div>
                           </td>
-                          <td className={styles.notifType}>{n.type}</td>
-                          <td className={styles.notifDate}>
-                            {new Date(n.date).toLocaleString()}
+                          <td>
+                            <div className={styles.messageCell}>
+                              <p className={styles.notifMessage}>{n.message}</p>
+                              {n.booking && (
+                                <div className={styles.bookingPreview}>
+                                  <span className={styles.bookingInfo}>
+                                    {n.booking.room_name || `Room #${n.booking.room_id}`} -
+                                    Check-in: {new Date(n.booking.check_in).toLocaleDateString()}
+                                  </span>
+                                </div>
+                              )}
+                            </div>
                           </td>
-                          <td className={styles.notifActions}>
+                          <td>
+                            <span className={styles.dateCell}>
+                              {new Date(n.date).toLocaleDateString()}
+                              <span className={styles.timeCell}>
+                                {new Date(n.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                              </span>
+                            </span>
+                          </td>
+                          <td>
                             <button
-                              className={styles.deleteNotifButton}
+                              className={styles.deleteButton}
                               onClick={() => deleteNotification(n.id)}
                               title="Delete notification"
                             >
-                              ✕
+                              <Trash2 size={18} />
                             </button>
                           </td>
                         </tr>
