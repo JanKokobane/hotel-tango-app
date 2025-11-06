@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, MapPin, User, Clock } from 'lucide-react';
+import { Calendar, MapPin, User, Clock, Heart } from 'lucide-react';
 import styles from './BookingCard.module.css';
 
 interface BookingCardProps {
@@ -10,8 +10,11 @@ interface BookingCardProps {
   checkOut: string;
   guests: number;
   status: 'upcoming' | 'completed' | 'cancelled';
+  paymentStatus: 'paid' | 'pending';
   imageUrl: string;
   price: number;
+  isFavorite?: boolean;
+  onToggleFavorite?: () => void;
 }
 
 export const BookingCard = ({
@@ -21,19 +24,35 @@ export const BookingCard = ({
   checkOut,
   guests,
   status,
+  paymentStatus,
   imageUrl,
   price,
+  isFavorite = false,
+  onToggleFavorite,
 }: BookingCardProps) => {
   const getBadgeClass = () => {
     switch (status) {
-      case 'upcoming': return styles.badgeUpcoming;
-      case 'completed': return styles.badgeCompleted;
-      case 'cancelled': return styles.badgeCancelled;
-      default: return '';
+      case 'upcoming':
+        return styles.badgeUpcoming;
+      case 'completed':
+        return styles.badgeCompleted;
+      case 'cancelled':
+        return styles.badgeCancelled;
+      default:
+        return '';
     }
   };
 
-  const formatDate = (dateString: string) => new Date(dateString).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  const getPaymentClass = () => {
+    return paymentStatus === 'paid' ? styles.paymentPaid : styles.paymentPending;
+  };
+
+  const formatDate = (dateString: string) =>
+    new Date(dateString).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    });
 
   return (
     <div className={styles.card}>
@@ -41,13 +60,27 @@ export const BookingCard = ({
         <div className={styles.imageContainer}>
           <img src={imageUrl} alt={roomType} className={styles.image} />
           <span className={`${styles.badge} ${getBadgeClass()}`}>{status}</span>
+          {onToggleFavorite && (
+            <button
+              className={`${styles.favoriteButton} ${isFavorite ? styles.favoriteActive : ''}`}
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleFavorite();
+              }}
+              aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+            >
+              <Heart size={20} fill={isFavorite ? 'currentColor' : 'none'} />
+            </button>
+          )}
         </div>
 
         <div className={styles.details}>
           <div className={styles.header}>
             <div className={styles.roomInfo}>
               <h3>{roomType}</h3>
-              <p className={styles.roomLocation}><MapPin size={16} /> Room {roomNumber}</p>
+              <p className={styles.roomLocation}>
+                <MapPin size={16} /> Room {roomNumber}
+              </p>
             </div>
             <div className={styles.priceContainer}>
               <p className={styles.price}>R{price}</p>
@@ -76,9 +109,15 @@ export const BookingCard = ({
               <User className={styles.infoIcon} size={20} />
               <div>
                 <p className={styles.infoLabel}>Guests</p>
-                <p className={styles.infoValue}>{guests} {guests === 1 ? 'Guest' : 'Guests'}</p>
+                <p className={styles.infoValue}>
+                  {guests} {guests === 1 ? 'Guest' : 'Guests'}
+                </p>
               </div>
             </div>
+          </div>
+
+          <div className={`${styles.paymentStatus} ${getPaymentClass()}`}>
+            {paymentStatus === 'paid' ? 'Paid' : 'Pending Payment'}
           </div>
         </div>
       </div>

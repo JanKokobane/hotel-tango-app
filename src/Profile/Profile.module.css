@@ -430,6 +430,8 @@
   font-size: 14px;
   color: #6b7280;
   margin: 0;
+  max-width: 400px;
+  text-align: center;
 }
 
 .loadingState {
@@ -623,6 +625,11 @@
 .typeBadgeProfile {
   background: #d1fae5;
   color: #065f46;
+}
+
+.typeBadgeFavorite {
+  background: #fee2e2;
+  color: #991b1b;
 }
 
 .typeBadgeInfo {
@@ -835,6 +842,11 @@
 .dark .typeBadgeProfile {
   background: #064e3b;
   color: #6ee7b7;
+}
+
+.dark .typeBadgeFavorite {
+  background: #7f1d1d;
+  color: #fca5a5;
 }
 
 .dark .typeBadgeInfo {

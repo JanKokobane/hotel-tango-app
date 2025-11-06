@@ -48,6 +48,40 @@
   z-index: 1;
 }
 
+.favoriteButton {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.95);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 2;
+  color: #6b7280;
+  backdrop-filter: blur(10px);
+}
+
+.favoriteButton:hover {
+  transform: scale(1.1);
+  background: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.favoriteActive {
+  color: #ef4444;
+  background: rgba(254, 226, 226, 0.95);
+}
+
+.favoriteActive:hover {
+  background: #fee2e2;
+}
+
 .badgeUpcoming {
   background: rgba(16, 185, 129, 0.95);
   color: #ffffff;
@@ -186,3 +220,23 @@
     height: 180px;
   }
 }
+
+.paymentStatus {
+  font-weight: 600;
+  margin-top: 12px;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  display: inline-block;
+}
+
+.paymentPaid {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.paymentPending {
+  background-color: #fff3cd;
+  color: #856404;
+}
+

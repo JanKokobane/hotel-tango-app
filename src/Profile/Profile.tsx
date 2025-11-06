@@ -17,49 +17,39 @@ import { useAuth } from "../context/AuthContext";
 import { useDarkMode } from "../context/DarkModeContext";
 import styles from "./Profile.module.css";
 
+type TabView = "history" | "new" | "favourites" | "settings";
 interface Booking {
-  id: string;
-  room_id: number;
-  room_name?: string;
-  room_image?: string;
-  full_name: string;
-  phone: string;
-  email: string;
+  id: number;
+  room_name: string;
   check_in: string;
   check_out: string;
-  nights: number;
-  total_price: string;
-  created_at: string;
-  status?: "upcoming" | "completed";
+  total_price: number;
+  status: string;
+  payment_status: 'paid' | 'pending'; 
+  room_image?: string;
 }
 
-type TabView = "history" | "new" | "favourites" | "settings";
-
-type NotificationItem = {
+interface NotificationItem {
   id: number;
   message: string;
   type: string;
   date: string;
   booking?: Booking;
-};
+}
 
-const Profile: React.FC = () => {
+export default function Profile() {
   const { user, logout, updateProfile } = useAuth();
   const { isDarkMode } = useDarkMode();
   const [currentTab, setCurrentTab] = useState<TabView>("history");
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [profileImage, setProfileImage] = useState<string | null>(
-    user?.profileImage || null
-  );
-  const [coverImage, setCoverImage] = useState<string | null>(
-    user?.coverImage || null
-  );
+  const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [coverImage, setCoverImage] = useState<string | null>(null);
   const [formData, setFormData] = useState({
-    firstname: user?.firstname || "",
-    lastname: user?.lastname || "",
-    email: user?.email || "",
-    contact: user?.contact || "",
+    firstname: "",
+    lastname: "",
+    email: "",
+    contact: "",
   });
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -67,31 +57,35 @@ const Profile: React.FC = () => {
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
 
   const storageKey = user?.email ? `notifications_${user.email}` : null;
+  const seenBookingsKey = user?.email ? `seenBookings_${user.email}` : null;
+  const favoritesKey = user?.email ? `favorites_${user.email}` : null;
 
   useEffect(() => {
-    if (user) {
+    if (user?.email) {
+      
       setFormData({
         firstname: user.firstname || "",
         lastname: user.lastname || "",
         email: user.email || "",
         contact: user.contact || "",
       });
-      setProfileImage(user.profileImage || null);
-      setCoverImage(user.coverImage || null);
+
+      const storedProfile = localStorage.getItem(`profileImage_${user.email}`);
+      const storedCover = localStorage.getItem(`coverImage_${user.email}`);
+      
+      setProfileImage(storedProfile || user.profileImage || null);
+      setCoverImage(storedCover || user.coverImage || null);
 
       try {
-        if (storageKey) {
-          const raw = localStorage.getItem(storageKey);
-          setNotifications(raw ? JSON.parse(raw) : []);
-        } else {
-          setNotifications([]);
-        }
-      } catch (err) {
-        console.error("Failed to load notifications:", err);
+        const raw = localStorage.getItem(`notifications_${user.email}`);
+        setNotifications(raw ? JSON.parse(raw) : []);
+      } catch {
         setNotifications([]);
       }
     } else {
       setNotifications([]);
+      setProfileImage(null);
+      setCoverImage(null);
     }
   }, [user?.email]);
 
@@ -99,9 +93,7 @@ const Profile: React.FC = () => {
     if (!storageKey) return;
     try {
       localStorage.setItem(storageKey, JSON.stringify(notifications));
-    } catch (err) {
-      console.error("Failed to save notifications:", err);
-    }
+    } catch {}
   }, [notifications, storageKey]);
 
   const addNotification = (message: string, type: string = "info", booking?: Booking) => {
@@ -113,15 +105,28 @@ const Profile: React.FC = () => {
       date: new Date().toISOString(),
       booking,
     };
-    setNotifications((prev) => [newNotif, ...prev]);
+    setNotifications((prev) => {
+      const updated = [newNotif, ...prev];
+      if (storageKey) {
+        localStorage.setItem(storageKey, JSON.stringify(updated));
+      }
+      return updated;
+    });
   };
 
   const deleteNotification = (id: number) => {
-    setNotifications((prev) => prev.filter((n) => n.id !== id));
+    setNotifications((prev) => {
+      const updated = prev.filter((n) => n.id !== id);
+      if (storageKey) {
+        localStorage.setItem(storageKey, JSON.stringify(updated));
+      }
+      return updated;
+    });
   };
 
   const clearNotifications = () => {
     setNotifications([]);
+    if (storageKey) localStorage.removeItem(storageKey);
   };
 
   useEffect(() => {
@@ -130,9 +135,7 @@ const Profile: React.FC = () => {
       try {
         setIsLoading(true);
         const response = await fetch(
-          `https://tango-hotel-backend.onrender.com/api/bookings/user/${encodeURIComponent(
-            user.email
-          )}`
+          `https://tango-hotel-backend.onrender.com/api/bookings/user/${encodeURIComponent(user.email)}`
         );
         const data = await response.json();
 
@@ -143,52 +146,54 @@ const Profile: React.FC = () => {
             return {
               ...b,
               status: checkOut >= now ? "upcoming" : "completed",
-              room_image:
-                b.room_image ||
-                "https://via.placeholder.com/400x250?text=No+Image",
+              payment_status: b.payment_status || 'pending', 
+              room_image: b.room_image || "https://via.placeholder.com/400x250?text=No+Image",
             };
           });
 
-          const oldIds = bookings.map((b) => b.id);
-          const newIds = enriched.map((b) => b.id);
 
-          const addedIds = newIds.filter((id) => !oldIds.includes(id));
-          const removedIds = oldIds.filter((id) => !newIds.includes(id));
+          const seenRaw = seenBookingsKey ? localStorage.getItem(seenBookingsKey) : null;
+          const seen = seenRaw ? new Set(JSON.parse(seenRaw)) : new Set<string>();
 
-          addedIds.forEach((id) => {
-            const booking = enriched.find((b) => b.id === id);
-            if (booking) addNotification("You have a new booking.", "booking", booking);
-          });
-
-          removedIds.forEach((id) => {
-            addNotification("A booking was removed or cancelled.", "booking");
-          });
+          const newOnes = enriched.filter((b) => !seen.has(String(b.id)));
+          if (newOnes.length > 0) {
+            newOnes.forEach((booking) => {
+              addNotification("You have a new booking.", "booking", booking);
+              seen.add(String(booking.id));
+            });
+            if (seenBookingsKey)
+              localStorage.setItem(seenBookingsKey, JSON.stringify([...seen]));
+          }
 
           setBookings(enriched);
         } else {
-          if (bookings.length > 0) {
-            addNotification("Your bookings list is now empty.", "booking");
-          }
           setBookings([]);
         }
-      } catch (err) {
-        console.error("Error fetching bookings:", err);
+      } catch {
         setBookings([]);
       } finally {
         setIsLoading(false);
       }
     };
-
+    
     fetchUserBookings();
+
+    const handleNewBooking = () => {
+      fetchUserBookings();
+    };
+    
+    window.addEventListener('newBooking', handleNewBooking);
+    return () => window.removeEventListener('newBooking', handleNewBooking);
   }, [user?.email]);
 
   const handleCoverUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
+    if (file && user?.email) {
       const reader = new FileReader();
       reader.onload = (event) => {
         const imageData = event.target?.result as string;
         setCoverImage(imageData);
+        localStorage.setItem(`coverImage_${user.email}`, imageData);
         updateProfile({ coverImage: imageData });
         setSuccessMessage("Cover photo updated successfully");
         addNotification("Cover photo updated.", "profile");
@@ -200,11 +205,12 @@ const Profile: React.FC = () => {
 
   const handleProfileImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
+    if (file && user?.email) {
       const reader = new FileReader();
       reader.onload = (event) => {
         const imageData = event.target?.result as string;
         setProfileImage(imageData);
+        localStorage.setItem(`profileImage_${user.email}`, imageData);
         updateProfile({ profileImage: imageData });
         setSuccessMessage("Profile photo updated successfully");
         addNotification("Profile photo updated.", "profile");
@@ -218,13 +224,15 @@ const Profile: React.FC = () => {
     setIsSaving(true);
     setError(null);
     try {
-      await updateProfile({
-        ...formData,
-        profileImage,
-        coverImage,
-      });
+    
+      if (user?.email) {
+        localStorage.setItem(`profileImage_${user.email}`, profileImage || '');
+        localStorage.setItem(`coverImage_${user.email}`, coverImage || '');
+      }
+      
+      await updateProfile({ ...formData, profileImage, coverImage });
       setSuccessMessage("Profile updated successfully");
-      addNotification("Profile details updated.", "profile");
+      addNotification("Profile information updated successfully.", "profile");
       setTimeout(() => setSuccessMessage(null), 3000);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to update profile");
@@ -233,7 +241,48 @@ const Profile: React.FC = () => {
     }
   };
 
+  const toggleFavorite = (bookingId: string) => {
+    if (!user?.email || !favoritesKey) return;
+    
+    try {
+      const raw = localStorage.getItem(favoritesKey);
+      const favorites = raw ? new Set<string>(JSON.parse(raw)) : new Set<string>();
+      
+      if (favorites.has(bookingId)) {
+        favorites.delete(bookingId);
+        addNotification("Removed from favorites.", "favorite");
+      } else {
+        favorites.add(bookingId);
+        addNotification("Added to favorites.", "favorite");
+      }
+      
+      localStorage.setItem(favoritesKey, JSON.stringify([...favorites]));
+      setBookings([...bookings]);
+    } catch (error) {
+      console.error('Error toggling favorite:', error);
+    }
+  };
+
+  const isFavorite = (bookingId: string): boolean => {
+    if (!user?.email || !favoritesKey) return false;
+    try {
+      const raw = localStorage.getItem(favoritesKey);
+      const favorites = raw ? new Set<string>(JSON.parse(raw)) : new Set<string>();
+      return favorites.has(bookingId);
+    } catch {
+      return false;
+    }
+  };
+
   const handleLogout = () => {
+    if (user?.email) {
+      localStorage.removeItem(`profileImage_${user.email}`);
+      localStorage.removeItem(`coverImage_${user.email}`);
+      localStorage.removeItem(`notifications_${user.email}`);
+      localStorage.removeItem(`seenBookings_${user.email}`);
+    }
+    setProfileImage(null);
+    setCoverImage(null);
     setNotifications([]);
     logout();
   };
@@ -243,17 +292,18 @@ const Profile: React.FC = () => {
       case "new":
         return bookings.filter((b) => b.status === "upcoming");
       case "favourites":
-        return bookings.slice(0, 7);
+        if (!favoritesKey) return [];
+        try {
+          const raw = localStorage.getItem(favoritesKey);
+          const favoriteIds = raw ? new Set<string>(JSON.parse(raw)) : new Set<string>();
+          return bookings.filter((b) => favoriteIds.has(String(b.id)));
+        } catch {
+          return [];
+        }
       default:
         return bookings.filter((b) => b.status === "completed");
     }
   };
-
-  const tabBookings = getTabBookings();
-  const upcomingCount = bookings.filter((b) => b.status === "upcoming").length;
-  const historyCount = notifications.length;
-  const favouritesCount = 7;
-  const completedCount = bookings.filter((b) => b.status === "completed").length;
 
   const getTypeIcon = (type: string) => {
     switch (type.toLowerCase()) {
@@ -272,12 +322,29 @@ const Profile: React.FC = () => {
         return styles.typeBadgeBooking;
       case "profile":
         return styles.typeBadgeProfile;
+      case "favorite":
+        return styles.typeBadgeFavorite;
       default:
         return styles.typeBadgeInfo;
     }
   };
 
-  return (
+  const tabBookings = getTabBookings();
+  const upcomingCount = bookings.filter((b) => b.status === "upcoming").length;
+  const completedCount = bookings.filter((b) => b.status === "completed").length;
+  
+  const getFavoritesCount = () => {
+    if (!favoritesKey) return 0;
+    try {
+      const raw = localStorage.getItem(favoritesKey);
+      const favorites = raw ? JSON.parse(raw) : [];
+      return favorites.length;
+    } catch {
+      return 0;
+    }
+  };
+
+    return (
     <div className={`${styles.profileContainer} ${isDarkMode ? styles.dark : ""}`}>
       <div className={styles.profileWrapper}>
         <div className={styles.coverSection}>
@@ -353,13 +420,14 @@ const Profile: React.FC = () => {
           </div>
         </div>
 
+
         <div className={styles.tabsContainer}>
           <nav className={styles.tabs}>
             <button
               className={`${styles.tab} ${currentTab === "history" ? styles.tabActive : ""}`}
               onClick={() => setCurrentTab("history")}
             >
-              Notifications ({historyCount})
+              Notifications ({notifications.length})
             </button>
             <button
               className={`${styles.tab} ${currentTab === "new" ? styles.tabActive : ""}`}
@@ -371,7 +439,7 @@ const Profile: React.FC = () => {
               className={`${styles.tab} ${currentTab === "favourites" ? styles.tabActive : ""}`}
               onClick={() => setCurrentTab("favourites")}
             >
-              My Favourites ({favouritesCount})
+              My Favourites ({getFavoritesCount()})
             </button>
             <button
               className={`${styles.tab} ${currentTab === "settings" ? styles.tabActive : ""}`}
@@ -382,10 +450,12 @@ const Profile: React.FC = () => {
           </nav>
         </div>
 
+   
         <div className={styles.contentSection}>
           {successMessage && <div className={styles.successMessage}>{successMessage}</div>}
 
           {currentTab === "settings" ? (
+      
             <div className={styles.settingsContent}>
               <div className={styles.settingsHeader}>
                 <h2>Account Settings</h2>
@@ -556,8 +626,9 @@ const Profile: React.FC = () => {
                               {n.booking && (
                                 <div className={styles.bookingPreview}>
                                   <span className={styles.bookingInfo}>
-                                    {n.booking.room_name || `Room #${n.booking.room_id}`} -
-                                    Check-in: {new Date(n.booking.check_in).toLocaleDateString()}
+                                    {n.booking.room_name || `Room #${n.booking.id}`} -
+                                    Check-in:{" "}
+                                    {new Date(n.booking.check_in).toLocaleDateString()}
                                   </span>
                                 </div>
                               )}
@@ -565,9 +636,12 @@ const Profile: React.FC = () => {
                           </td>
                           <td>
                             <span className={styles.dateCell}>
-                              {new Date(n.date).toLocaleDateString()}
+                              {new Date(n.date).toLocaleDateString()}{" "}
                               <span className={styles.timeCell}>
-                                {new Date(n.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                {new Date(n.date).toLocaleTimeString([], {
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                })}
                               </span>
                             </span>
                           </td>
@@ -594,38 +668,55 @@ const Profile: React.FC = () => {
               )}
             </div>
           ) : isLoading ? (
+            
             <div className={styles.loadingState}>
               <Loader size={40} className={styles.spinIcon} />
               <p>Loading bookings...</p>
             </div>
           ) : (
+            
             <div className={styles.bookingsGrid}>
               {tabBookings.length > 0 ? (
-                tabBookings.map((booking) => (
-                  <BookingCard
-                    key={booking.id}
-                    id={booking.id}
-                    roomType={booking.room_name || `Room #${booking.room_id}`}
-                    roomNumber={String(booking.room_id)}
-                    checkIn={booking.check_in}
-                    checkOut={booking.check_out}
-                    guests={1}
-                    status={booking.status || "upcoming"}
-                    price={Number(booking.total_price)}
-                    imageUrl={booking.room_image || ""}
-                  />
-                ))
+                tabBookings.map((booking) => {
+                  const bookingId = String(booking.id);
+
+                  let bookingStatus: "upcoming" | "completed" | "cancelled" = "upcoming";
+                  if (booking.status === "completed") bookingStatus = "completed";
+                  else if (booking.status === "cancelled") bookingStatus = "cancelled";
+
+                  return (
+                    <BookingCard
+                       key={booking.id}
+                        id={String(booking.id)}
+                        roomType={booking.room_name}
+                        roomNumber={String(booking.id)}
+                        checkIn={booking.check_in}
+                        checkOut={booking.check_out}
+                        guests={1}
+                        status={booking.status as 'upcoming' | 'completed' | 'cancelled'}
+                        paymentStatus={booking.payment_status} 
+                        imageUrl={booking.room_image || ''}
+                        price={booking.total_price}
+                        isFavorite={isFavorite(String(booking.id))}
+                        onToggleFavorite={() => toggleFavorite(String(booking.id))}                  />
+                  );
+                })
               ) : (
                 <div className={styles.emptyState}>
-                  <p>No bookings found</p>
+                  <Info size={48} className={styles.emptyIcon} />
+                  <h3>No bookings found</h3>
+                  <p>
+                    {currentTab === "favourites" 
+                      ? "You haven't added any favorites yet. Click the heart icon on any booking to add it here."
+                      : "No bookings available in this category."}
+                  </p>
                 </div>
               )}
             </div>
+
           )}
         </div>
       </div>
     </div>
   );
-};
-
-export default Profile;
+}
