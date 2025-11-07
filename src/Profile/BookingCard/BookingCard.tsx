@@ -15,7 +15,8 @@ interface BookingCardProps {
   price: number;
   isFavorite?: boolean;
   onToggleFavorite?: () => void;
-  onPayNow?: () => void; // ✅ Add this prop
+  onPayNow?: () => void;
+  onCancelBooking?: () => void;
 }
 
 export const BookingCard = ({
@@ -32,6 +33,7 @@ export const BookingCard = ({
   isFavorite = false,
   onToggleFavorite,
   onPayNow,
+  onCancelBooking,
 }: BookingCardProps) => {
   const getBadgeClass = () => {
     switch (status) {
@@ -58,7 +60,11 @@ export const BookingCard = ({
     });
 
   const handlePayNow = () => {
-    if (onPayNow) onPayNow(); // ✅ Trigger parent handler
+    if (onPayNow) onPayNow();
+  };
+
+  const handleCancelBooking = () => {
+    if (onCancelBooking) onCancelBooking();
   };
 
   return (
@@ -130,6 +136,12 @@ export const BookingCard = ({
           {paymentStatus === 'unpaid' && (
             <button className={styles.payNowButton} onClick={handlePayNow}>
               Pay Now
+            </button>
+          )}
+
+          {status === 'upcoming' && (
+            <button className={styles.cancelButton} onClick={handleCancelBooking}>
+              Cancel Booking
             </button>
           )}
         </div>

@@ -239,7 +239,6 @@
   color: #856404;
 }
 
-
 .payNowButton {
   display: inline-block;
   margin-top: 12px;
@@ -256,4 +255,20 @@
 
 .payNowButton:hover {
   background-color: gold;
+}
+
+.cancelButton {
+  background-color: #fee2e2;
+  color: #991b1b;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background-color 0.2s ease;
+}
+
+.cancelButton:hover {
+  background-color: #fecaca;
 }

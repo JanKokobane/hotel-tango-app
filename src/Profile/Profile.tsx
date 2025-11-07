@@ -18,8 +18,6 @@ import { useDarkMode } from "../context/DarkModeContext";
 import styles from "./Profile.module.css";
 import CheckoutPage from "../Pages/RoomsPage/PaymentGateWay/CheckoutPage";
 
-
-
 type TabView = "history" | "new" | "favourites" | "settings";
 interface Booking {
   id: number;
@@ -352,6 +350,36 @@ export default function Profile() {
       return 0;
     }
   };
+
+  const handleCancelBooking = (id: string) => {
+  const now = new Date();
+  const cancelledBooking = bookings.find((b) => b.id.toString() === id);
+
+  if (!cancelledBooking) return;
+
+  // Update status in state
+  setBookings((prev) =>
+    prev.map((b) =>
+      b.id.toString() === id ? { ...b, status: 'cancelled' } : b
+    )
+  );
+
+  // Push notification
+  const notification: NotificationItem = {
+    id: now.getTime(),
+    message: 'Booking cancelled successfully!',
+    type: 'success',
+    date: now.toISOString(),
+    booking: { ...cancelledBooking, status: 'cancelled' }, 
+  };
+
+  setNotifications((prev) => [...prev, notification]);
+
+  setTimeout(() => {
+    setNotifications((prev) => prev.filter((n) => n.id !== notification.id));
+  }, 3000);
+};
+
 
     return (
     <div className={`${styles.profileContainer} ${isDarkMode ? styles.dark : ""}`}>
@@ -694,20 +722,22 @@ export default function Profile() {
                   else if (booking.status === "cancelled") bookingStatus = "cancelled";
 
                   return (
-                    <BookingCard
-                      key={booking.id}
-                      id={booking.id.toString()}
-                      roomType={booking.room_name}
-                      roomNumber={"101"} 
-                      checkIn={booking.check_in}
-                      checkOut={booking.check_out}
-                      guests={1} 
-                      status={booking.status as 'upcoming' | 'completed' | 'cancelled'}
-                      paymentStatus={booking.payment_status as 'paid' | 'pending' | 'unpaid'}
-                      imageUrl={booking.room_image || ""}
-                      price={booking.total_price}
-                      onPayNow={() => setSelectedBooking(booking)}
-                    />
+                   <BookingCard
+                    key={booking.id}
+                    id={booking.id.toString()}
+                    roomType={booking.room_name}
+                    roomNumber={"101"} 
+                    checkIn={booking.check_in}
+                    checkOut={booking.check_out}
+                    guests={1} 
+                    status={booking.status as 'upcoming' | 'completed' | 'cancelled'}
+                    paymentStatus={booking.payment_status as 'paid' | 'pending' | 'unpaid'}
+                    imageUrl={booking.room_image || ""}
+                    price={booking.total_price}
+                    onPayNow={() => setSelectedBooking(booking)}
+                    onCancelBooking={() => handleCancelBooking(booking.id.toString())}
+                  />
+
 
                   );
                 })
@@ -721,12 +751,14 @@ export default function Profile() {
                       : "No bookings available in this category."}
                   </p>
                 </div>
+
+                
               )}
             </div>
 
           )}
 
-      </div>
+                </div>
       </div>
       
       {selectedBooking && (
