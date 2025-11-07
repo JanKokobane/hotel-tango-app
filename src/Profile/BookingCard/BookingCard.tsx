@@ -68,7 +68,7 @@ export const BookingCard = ({
   };
 
   return (
-    <div className={styles.card}>
+    <div className={`${styles.card} ${status === 'cancelled' ? styles.cancelled : ''}`}>
       <div className={styles.cardContent}>
         <div className={styles.imageContainer}>
           <img src={imageUrl} alt={roomType} className={styles.image} />
@@ -133,7 +133,7 @@ export const BookingCard = ({
             {paymentStatus === 'paid' ? 'Paid' : 'Pending Payment'}
           </div>
 
-          {paymentStatus === 'unpaid' && (
+          {paymentStatus === 'unpaid' && status !== 'cancelled' && (
             <button className={styles.payNowButton} onClick={handlePayNow}>
               Pay Now
             </button>

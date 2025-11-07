@@ -16,7 +16,6 @@ import { BookingCard } from "./BookingCard/BookingCard";
 import { useAuth } from "../context/AuthContext";
 import { useDarkMode } from "../context/DarkModeContext";
 import styles from "./Profile.module.css";
-import CheckoutPage from "../Pages/RoomsPage/PaymentGateWay/CheckoutPage";
 
 type TabView = "history" | "new" | "favourites" | "settings";
 interface Booking {
@@ -150,14 +149,20 @@ export default function Profile() {
           const now = new Date();
           const enriched: Booking[] = data.map((b: any) => {
             const checkOut = new Date(b.check_out);
+            const derivedStatus: 'upcoming' | 'completed' | 'cancelled' =
+  b.status === 'cancelled' || b.payment_status === 'cancelled'
+    ? 'cancelled'
+    : checkOut >= now
+    ? 'upcoming'
+    : 'completed';
+
             return {
               ...b,
-              status: checkOut >= now ? "upcoming" : "completed",
+              status: derivedStatus,
               payment_status: b.payment_status || 'pending', 
               room_image: b.room_image || "https://via.placeholder.com/400x250?text=No+Image",
             };
           });
-
 
           const seenRaw = seenBookingsKey ? localStorage.getItem(seenBookingsKey) : null;
           const seen = seenRaw ? new Set(JSON.parse(seenRaw)) : new Set<string>();
@@ -231,7 +236,6 @@ export default function Profile() {
     setIsSaving(true);
     setError(null);
     try {
-    
       if (user?.email) {
         localStorage.setItem(`profileImage_${user.email}`, profileImage || '');
         localStorage.setItem(`coverImage_${user.email}`, coverImage || '');
@@ -297,7 +301,8 @@ export default function Profile() {
   const getTabBookings = () => {
     switch (currentTab) {
       case "new":
-        return bookings.filter((b) => b.status === "upcoming");
+       
+        return bookings.filter((b) => b.status === "upcoming" || b.status === "cancelled");
       case "favourites":
         if (!favoritesKey) return [];
         try {
@@ -308,6 +313,7 @@ export default function Profile() {
           return [];
         }
       default:
+        
         return bookings.filter((b) => b.status === "completed");
     }
   };
@@ -351,37 +357,123 @@ export default function Profile() {
     }
   };
 
-  const handleCancelBooking = (id: string) => {
+const handleCancelBooking = async (id: string) => {
   const now = new Date();
-  const cancelledBooking = bookings.find((b) => b.id.toString() === id);
 
+  const cancelledBooking = bookings.find((b) => b.id.toString() === id);
   if (!cancelledBooking) return;
 
-  // Update status in state
+  const previousStatus = cancelledBooking.status;
+
+  // Optimistic update
   setBookings((prev) =>
     prev.map((b) =>
-      b.id.toString() === id ? { ...b, status: 'cancelled' } : b
+      b.id.toString() === id ? { ...b, status: "cancelled" as const } : b
     )
   );
 
-  // Push notification
-  const notification: NotificationItem = {
-    id: now.getTime(),
-    message: 'Booking cancelled successfully!',
-    type: 'success',
-    date: now.toISOString(),
-    booking: { ...cancelledBooking, status: 'cancelled' }, 
-  };
+  try {
+    const res = await fetch(
+      `https://tango-hotel-backend.onrender.com/api/bookings/${encodeURIComponent(id)}/cancel`,
+      {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+      }
+    );
 
-  setNotifications((prev) => [...prev, notification]);
+    if (!res.ok) {
+      throw new Error(`Cancel request failed: ${res.status}`);
+    }
 
-  setTimeout(() => {
-    setNotifications((prev) => prev.filter((n) => n.id !== notification.id));
-  }, 3000);
+    const data = await res.json();
+    console.log("Booking cancelled successfully:", data);
+
+    // Ensure state reflects backend structure (`payment_status`)
+    const updatedBooking = {
+      ...cancelledBooking,
+      status: data.booking?.payment_status || "cancelled",
+      payment_status: data.booking?.payment_status || "cancelled",
+    };
+
+    // Sync frontend state with backend response
+    setBookings((prev) =>
+      prev.map((b) => (b.id.toString() === id ? updatedBooking : b))
+    );
+
+    const notification: NotificationItem = {
+      id: now.getTime(),
+      message: "Booking cancelled successfully!",
+      type: "success",
+      date: now.toISOString(),
+      booking: updatedBooking,
+    };
+
+    setNotifications((prev) => [...prev, notification]);
+
+    setTimeout(() => {
+      setNotifications((prev) => prev.filter((n) => n.id !== notification.id));
+    }, 3000);
+  } catch (error) {
+    console.error("Error cancelling booking:", error);
+
+    // Rollback on failure
+    setBookings((prev) =>
+      prev.map((b) =>
+        b.id.toString() === id ? { ...b, status: previousStatus } : b
+      )
+    );
+
+    const notification: NotificationItem = {
+      id: now.getTime(),
+      message: "Failed to cancel booking. Please try again.",
+      type: "error",
+      date: now.toISOString(),
+      booking: cancelledBooking,
+    };
+
+    setNotifications((prev) => [...prev, notification]);
+
+    setTimeout(() => {
+      setNotifications((prev) => prev.filter((n) => n.id !== notification.id));
+    }, 3000);
+  }
+};
+
+const handlePayNow = async (booking: any) => {
+  try {
+    if (!booking || booking.payment_status === "paid") {
+      alert("This booking is already paid.");
+      return;
+    }
+
+    const response = await fetch(
+      `https://tango-hotel-backend.onrender.com/api/payments/create-session`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          booking_id: booking.id,
+          email: booking.email,
+          amount: booking.total_price,
+        }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (data.url) {
+      window.location.href = data.url;
+    } else {
+      alert("Unable to initiate payment. Please try again later.");
+    }
+  } catch (error) {
+    console.error("Payment initiation failed:", error);
+    alert("Something went wrong while processing your payment.");
+  }
 };
 
 
-    return (
+  return (
     <div className={`${styles.profileContainer} ${isDarkMode ? styles.dark : ""}`}>
       <div className={styles.profileWrapper}>
         <div className={styles.coverSection}>
@@ -457,7 +549,6 @@ export default function Profile() {
           </div>
         </div>
 
-
         <div className={styles.tabsContainer}>
           <nav className={styles.tabs}>
             <button
@@ -487,12 +578,10 @@ export default function Profile() {
           </nav>
         </div>
 
-   
         <div className={styles.contentSection}>
           {successMessage && <div className={styles.successMessage}>{successMessage}</div>}
 
           {currentTab === "settings" ? (
-      
             <div className={styles.settingsContent}>
               <div className={styles.settingsHeader}>
                 <h2>Account Settings</h2>
@@ -705,40 +794,34 @@ export default function Profile() {
               )}
             </div>
           ) : isLoading ? (
-            
             <div className={styles.loadingState}>
               <Loader size={40} className={styles.spinIcon} />
               <p>Loading bookings...</p>
             </div>
           ) : (
-            
             <div className={styles.bookingsGrid}>
               {tabBookings.length > 0 ? (
                 tabBookings.map((booking) => {
                   const bookingId = String(booking.id);
 
-                  let bookingStatus: "upcoming" | "completed" | "cancelled" = "upcoming";
-                  if (booking.status === "completed") bookingStatus = "completed";
-                  else if (booking.status === "cancelled") bookingStatus = "cancelled";
-
                   return (
-                   <BookingCard
-                    key={booking.id}
-                    id={booking.id.toString()}
-                    roomType={booking.room_name}
-                    roomNumber={"101"} 
-                    checkIn={booking.check_in}
-                    checkOut={booking.check_out}
-                    guests={1} 
-                    status={booking.status as 'upcoming' | 'completed' | 'cancelled'}
-                    paymentStatus={booking.payment_status as 'paid' | 'pending' | 'unpaid'}
-                    imageUrl={booking.room_image || ""}
-                    price={booking.total_price}
-                    onPayNow={() => setSelectedBooking(booking)}
-                    onCancelBooking={() => handleCancelBooking(booking.id.toString())}
-                  />
-
-
+                    <BookingCard
+                      key={booking.id}
+                      id={bookingId}
+                      roomType={booking.room_name}
+                      roomNumber={"101"} 
+                      checkIn={booking.check_in}
+                      checkOut={booking.check_out}
+                      guests={1} 
+                      status={booking.status}
+                      paymentStatus={booking.payment_status}
+                      imageUrl={booking.room_image || ""}
+                      price={booking.total_price}
+                      isFavorite={isFavorite(bookingId)}
+                      onToggleFavorite={() => toggleFavorite(bookingId)}
+                      onPayNow={() => handlePayNow(booking)}
+                      onCancelBooking={() => handleCancelBooking(bookingId)}
+                    />
                   );
                 })
               ) : (
@@ -751,35 +834,11 @@ export default function Profile() {
                       : "No bookings available in this category."}
                   </p>
                 </div>
-
-                
               )}
             </div>
-
           )}
-
-                </div>
+        </div>
       </div>
-      
-      {selectedBooking && (
-          <CheckoutPage
-            bookingData={{
-              ...selectedBooking,
-              id: String(selectedBooking.id),
-              room_id: selectedBooking.room_id ?? 0, 
-              room_name: selectedBooking.room_name || 'Unknown Room',
-              total_price: selectedBooking.total_price,
-              full_name: selectedBooking.full_name || '',
-              phone: selectedBooking.phone || '',
-              email: selectedBooking.email || '',
-              nights: selectedBooking.nights || 1,
-              check_in: selectedBooking.check_in,
-              check_out: selectedBooking.check_out
-            }}
-            onBack={() => setSelectedBooking(null)}
-            onPaymentComplete={() => setSelectedBooking(null)}
-          />
-        )}
     </div>
   );
 }
