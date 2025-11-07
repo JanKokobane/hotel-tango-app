@@ -10,6 +10,12 @@ interface RoomsSectionProps {
   compact?: boolean;
 }
 
+interface RoomsSectionProps {
+  onAddRoom: () => void;
+  onEditRoom: (room: Room) => void;
+  onDeleteRoom: (roomId: string) => void; 
+}
+
 const API_BASE_URL = "https://tango-hotel-backend.onrender.com";
 
 function RoomsSection({

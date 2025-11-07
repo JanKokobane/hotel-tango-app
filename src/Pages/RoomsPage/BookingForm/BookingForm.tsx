@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { Calendar } from "../../../Components/ui/Calender";
 import styles from "./BookingForm.module.css";
+import CheckoutPage from "../PaymentGateWay/CheckoutPage"; 
 
 interface Room {
   id: string;
@@ -37,8 +38,9 @@ const BookingForm = ({ room, onClose }: BookingFormProps) => {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPayment, setShowPayment] = useState(false);
+  const [savedBooking, setSavedBooking] = useState<any>(null);
 
-  // Calculate stay duration
   const calculateNights = () => {
     if (!checkIn || !checkOut) return 0;
     const diffTime = Math.abs(checkOut.getTime() - checkIn.getTime());
@@ -61,7 +63,7 @@ const BookingForm = ({ room, onClose }: BookingFormProps) => {
 
     const bookingData = {
       room_id: Number(room.id),
-      room_name: room.name, // ✅ include room name
+      room_name: room.name,
       full_name: fullName.trim(),
       phone: phone.trim(),
       email: email.trim(),
@@ -69,6 +71,7 @@ const BookingForm = ({ room, onClose }: BookingFormProps) => {
       check_out: checkOut.toISOString().split("T")[0],
       total_price: totalPrice,
       nights,
+      payment_status: "unpaid",
     };
 
     try {
@@ -90,12 +93,11 @@ const BookingForm = ({ room, onClose }: BookingFormProps) => {
       }
 
       const result = await res.json();
-      alert(
-        `✅ Booking confirmed for ${room.name}! Reference: ${
-          result.booking?.id || "N/A"
-        }`
-      );
-      onClose();
+      console.log("✅ Booking successful:", result);
+
+      // Some APIs return { booking: {...} } and some return {...}
+      setSavedBooking(result.booking || result);
+      setShowPayment(true);
     } catch (err) {
       console.error("❌ Booking error:", err);
       setError("Network error. Please try again.");
@@ -103,6 +105,24 @@ const BookingForm = ({ room, onClose }: BookingFormProps) => {
       setLoading(false);
     }
   };
+
+  // ✅ Payment page render (after booking success)
+  if (showPayment && savedBooking) {
+    console.log("🧾 Rendering CheckoutPage with booking:", savedBooking);
+
+    return (
+      <div style={{ padding: "2rem" }}>
+        <h1>Redirecting to payment...</h1>
+        <CheckoutPage
+          bookingData={savedBooking}
+          onBack={() => setShowPayment(false)}
+          onPaymentComplete={() => {
+            onClose();
+          }}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className={styles.pageContainer}>
@@ -132,11 +152,9 @@ const BookingForm = ({ room, onClose }: BookingFormProps) => {
           <form onSubmit={handleSubmit} className={styles.form}>
             {error && <p className={styles.generalError}>{error}</p>}
 
-            {/* Full Name */}
             <div className={styles.formGroup}>
               <label className={styles.label}>
-                <User size={14} />
-                Full Name
+                <User size={14} /> Full Name
               </label>
               <input
                 type="text"
@@ -148,11 +166,9 @@ const BookingForm = ({ room, onClose }: BookingFormProps) => {
               />
             </div>
 
-            {/* Phone */}
             <div className={styles.formGroup}>
               <label className={styles.label}>
-                <Phone size={14} />
-                Phone Number
+                <Phone size={14} /> Phone Number
               </label>
               <input
                 type="tel"
@@ -164,11 +180,9 @@ const BookingForm = ({ room, onClose }: BookingFormProps) => {
               />
             </div>
 
-            {/* Email */}
             <div className={styles.formGroup}>
               <label className={styles.label}>
-                <Mail size={14} />
-                Email Address
+                <Mail size={14} /> Email Address
               </label>
               <input
                 type="email"
@@ -184,12 +198,10 @@ const BookingForm = ({ room, onClose }: BookingFormProps) => {
               <span>Select Dates</span>
             </div>
 
-            {/* Check-in / Check-out */}
             <div className={styles.dateRow}>
               <div className={styles.formGroup}>
                 <label className={styles.label}>
-                  <CalendarIcon size={14} />
-                  Check-in
+                  <CalendarIcon size={14} /> Check-in
                 </label>
                 <div className={styles.calendarWrapper}>
                   <Calendar
@@ -204,8 +216,7 @@ const BookingForm = ({ room, onClose }: BookingFormProps) => {
 
               <div className={styles.formGroup}>
                 <label className={styles.label}>
-                  <CalendarIcon size={14} />
-                  Check-out
+                  <CalendarIcon size={14} /> Check-out
                 </label>
                 <div className={styles.calendarWrapper}>
                   <Calendar
@@ -219,7 +230,6 @@ const BookingForm = ({ room, onClose }: BookingFormProps) => {
               </div>
             </div>
 
-            {/* Price Breakdown */}
             {nights > 0 && (
               <div className={styles.priceBreakdown}>
                 <div className={styles.breakdownRow}>
@@ -239,7 +249,6 @@ const BookingForm = ({ room, onClose }: BookingFormProps) => {
               </div>
             )}
 
-            {/* Submit */}
             <button
               type="submit"
               className={styles.submitButton}
