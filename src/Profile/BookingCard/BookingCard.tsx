@@ -10,14 +10,16 @@ interface BookingCardProps {
   checkOut: string;
   guests: number;
   status: 'upcoming' | 'completed' | 'cancelled';
-  paymentStatus: 'paid' | 'pending';
+  paymentStatus: 'paid' | 'pending' | 'unpaid';
   imageUrl: string;
   price: number;
   isFavorite?: boolean;
   onToggleFavorite?: () => void;
+  onPayNow?: () => void; // ✅ Add this prop
 }
 
 export const BookingCard = ({
+  id,
   roomType,
   roomNumber,
   checkIn,
@@ -29,6 +31,7 @@ export const BookingCard = ({
   price,
   isFavorite = false,
   onToggleFavorite,
+  onPayNow,
 }: BookingCardProps) => {
   const getBadgeClass = () => {
     switch (status) {
@@ -53,6 +56,10 @@ export const BookingCard = ({
       day: 'numeric',
       year: 'numeric',
     });
+
+  const handlePayNow = () => {
+    if (onPayNow) onPayNow(); // ✅ Trigger parent handler
+  };
 
   return (
     <div className={styles.card}>
@@ -119,6 +126,12 @@ export const BookingCard = ({
           <div className={`${styles.paymentStatus} ${getPaymentClass()}`}>
             {paymentStatus === 'paid' ? 'Paid' : 'Pending Payment'}
           </div>
+
+          {paymentStatus === 'unpaid' && (
+            <button className={styles.payNowButton} onClick={handlePayNow}>
+              Pay Now
+            </button>
+          )}
         </div>
       </div>
     </div>

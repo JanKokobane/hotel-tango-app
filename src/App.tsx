@@ -27,8 +27,6 @@ import AdminDashboard from "./Admin/AdminDashboard";
 import ProtectedRoute from "./ProtectedRoute";
 import RoomsPage from "./Pages/RoomsPage/RoomsPage";
 import Profile from "./Profile/Profile";
-
-// ✅ New AdminProtectedRoute import
 import AdminProtectedRoute from "./Admin/components/AdminProtectedRoute";
 
 function PublicLayout() {

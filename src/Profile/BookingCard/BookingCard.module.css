@@ -183,7 +183,6 @@
   margin: 0;
 }
 
-/* Dark mode */
 :global(.dark) .card {
   background: #1f2937;
   border-color: #374151;
@@ -231,8 +230,8 @@
 }
 
 .paymentPaid {
-  background-color: #d4edda;
-  color: #155724;
+  background-color: #12c73d;
+  color: #ffffff;
 }
 
 .paymentPending {
@@ -240,3 +239,21 @@
   color: #856404;
 }
 
+
+.payNowButton {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 8px 16px;
+  background-color: goldenrod;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-left: 0.3rem;
+  transition: background-color 0.3s ease;
+}
+
+.payNowButton:hover {
+  background-color: gold;
+}

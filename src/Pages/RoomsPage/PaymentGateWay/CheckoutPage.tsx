@@ -10,10 +10,11 @@ import {
 } from "lucide-react";
 import PayPalButton from "./PayPalButton";
 import styles from "./CheckoutPage.module.css";
+import { useLocation, useNavigate } from "react-router-dom";
 
 interface CheckoutPageProps {
   bookingData: {
-    id: string; // ✅ Added booking ID here
+    id: string; 
     room_id: number;
     room_name: string;
     full_name: string;
@@ -90,6 +91,19 @@ const CheckoutPage = ({
   };
 
   const amountInUSD = (totalPrice / 18).toFixed(2);
+
+
+const location = useLocation();
+const navigate = useNavigate();
+
+bookingData = bookingData || location.state;
+onBack = onBack || (() => navigate(-1));
+onPaymentComplete = onPaymentComplete || (() => navigate("/profile"));
+
+
+if (!bookingData) {
+  return <div className={styles.pageContainer}>No booking data received.</div>;
+}
 
   return (
     <div className={styles.pageContainer}>
@@ -212,7 +226,7 @@ const CheckoutPage = ({
                     amount={amountInUSD}
                     onSuccess={onPaymentComplete}
                     bookingData={{
-                      id: bookingData.id, // ✅ Added here
+                      id: bookingData.id, 
                       room_id: bookingData.room_id,
                       room_name: bookingData.room_name,
                       full_name: bookingData.full_name,

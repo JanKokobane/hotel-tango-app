@@ -16,16 +16,24 @@ import { BookingCard } from "./BookingCard/BookingCard";
 import { useAuth } from "../context/AuthContext";
 import { useDarkMode } from "../context/DarkModeContext";
 import styles from "./Profile.module.css";
+import CheckoutPage from "../Pages/RoomsPage/PaymentGateWay/CheckoutPage";
+
+
 
 type TabView = "history" | "new" | "favourites" | "settings";
 interface Booking {
   id: number;
+  room_id?: number;
   room_name: string;
+  full_name?: string;
+  phone?: string;
+  email?: string;
   check_in: string;
   check_out: string;
   total_price: number;
-  status: string;
-  payment_status: 'paid' | 'pending'; 
+  nights?: number;
+  status: 'upcoming' | 'completed' | 'cancelled';
+  payment_status: 'paid' | 'pending' | 'unpaid';
   room_image?: string;
 }
 
@@ -38,6 +46,7 @@ interface NotificationItem {
 }
 
 export default function Profile() {
+  const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
   const { user, logout, updateProfile } = useAuth();
   const { isDarkMode } = useDarkMode();
   const [currentTab, setCurrentTab] = useState<TabView>("history");
@@ -686,19 +695,20 @@ export default function Profile() {
 
                   return (
                     <BookingCard
-                       key={booking.id}
-                        id={String(booking.id)}
-                        roomType={booking.room_name}
-                        roomNumber={String(booking.id)}
-                        checkIn={booking.check_in}
-                        checkOut={booking.check_out}
-                        guests={1}
-                        status={booking.status as 'upcoming' | 'completed' | 'cancelled'}
-                        paymentStatus={booking.payment_status} 
-                        imageUrl={booking.room_image || ''}
-                        price={booking.total_price}
-                        isFavorite={isFavorite(String(booking.id))}
-                        onToggleFavorite={() => toggleFavorite(String(booking.id))}                  />
+                      key={booking.id}
+                      id={booking.id.toString()}
+                      roomType={booking.room_name}
+                      roomNumber={"101"} 
+                      checkIn={booking.check_in}
+                      checkOut={booking.check_out}
+                      guests={1} 
+                      status={booking.status as 'upcoming' | 'completed' | 'cancelled'}
+                      paymentStatus={booking.payment_status as 'paid' | 'pending' | 'unpaid'}
+                      imageUrl={booking.room_image || ""}
+                      price={booking.total_price}
+                      onPayNow={() => setSelectedBooking(booking)}
+                    />
+
                   );
                 })
               ) : (
@@ -715,8 +725,29 @@ export default function Profile() {
             </div>
 
           )}
-        </div>
+
       </div>
+      </div>
+      
+      {selectedBooking && (
+          <CheckoutPage
+            bookingData={{
+              ...selectedBooking,
+              id: String(selectedBooking.id),
+              room_id: selectedBooking.room_id ?? 0, 
+              room_name: selectedBooking.room_name || 'Unknown Room',
+              total_price: selectedBooking.total_price,
+              full_name: selectedBooking.full_name || '',
+              phone: selectedBooking.phone || '',
+              email: selectedBooking.email || '',
+              nights: selectedBooking.nights || 1,
+              check_in: selectedBooking.check_in,
+              check_out: selectedBooking.check_out
+            }}
+            onBack={() => setSelectedBooking(null)}
+            onPaymentComplete={() => setSelectedBooking(null)}
+          />
+        )}
     </div>
   );
 }
