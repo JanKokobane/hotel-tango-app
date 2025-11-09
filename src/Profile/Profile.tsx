@@ -49,8 +49,6 @@ export default function Profile() {
   const [currentTab, setCurrentTab] = useState<TabView>("history");
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [profileImage, setProfileImage] = useState<string | null>(null);
-  const [coverImage, setCoverImage] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     firstname: "",
     lastname: "",
@@ -66,6 +64,20 @@ export default function Profile() {
   const seenBookingsKey = user?.email ? `seenBookings_${user.email}` : null;
   const favoritesKey = user?.email ? `favorites_${user.email}` : null;
 
+  const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [coverImage, setCoverImage] = useState<string | null>(null);
+
+      useEffect(() => {
+        const fetchImages = async () => {
+          const res = await fetch(`https://tango-hotel-backend.onrender.com/api/users/${user.id}`);
+          const data = await res.json();
+          setProfileImage(data.user.profile_image);
+          setCoverImage(data.user.cover_image);
+        };
+        if (user?.id) fetchImages();
+      }, [user]);
+
+
   useEffect(() => {
     if (user?.email) {
       
@@ -76,12 +88,7 @@ export default function Profile() {
         contact: user.contact || "",
       });
 
-      const storedProfile = localStorage.getItem(`profileImage_${user.email}`);
-      const storedCover = localStorage.getItem(`coverImage_${user.email}`);
-      
-      setProfileImage(storedProfile || user.profileImage || null);
-      setCoverImage(storedCover || user.coverImage || null);
-
+    
       try {
         const raw = localStorage.getItem(`notifications_${user.email}`);
         setNotifications(raw ? JSON.parse(raw) : []);
@@ -150,11 +157,11 @@ export default function Profile() {
           const enriched: Booking[] = data.map((b: any) => {
             const checkOut = new Date(b.check_out);
             const derivedStatus: 'upcoming' | 'completed' | 'cancelled' =
-  b.status === 'cancelled' || b.payment_status === 'cancelled'
-    ? 'cancelled'
-    : checkOut >= now
-    ? 'upcoming'
-    : 'completed';
+          b.status === 'cancelled' || b.payment_status === 'cancelled'
+            ? 'cancelled'
+            : checkOut >= now
+            ? 'upcoming'
+            : 'completed';
 
             return {
               ...b,
@@ -198,39 +205,41 @@ export default function Profile() {
     return () => window.removeEventListener('newBooking', handleNewBooking);
   }, [user?.email]);
 
-  const handleCoverUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file && user?.email) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const imageData = event.target?.result as string;
-        setCoverImage(imageData);
-        localStorage.setItem(`coverImage_${user.email}`, imageData);
-        updateProfile({ coverImage: imageData });
-        setSuccessMessage("Cover photo updated successfully");
-        addNotification("Cover photo updated.", "profile");
-        setTimeout(() => setSuccessMessage(null), 3000);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
 
-  const handleProfileImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file && user?.email) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const imageData = event.target?.result as string;
-        setProfileImage(imageData);
-        localStorage.setItem(`profileImage_${user.email}`, imageData);
-        updateProfile({ profileImage: imageData });
-        setSuccessMessage("Profile photo updated successfully");
-        addNotification("Profile photo updated.", "profile");
-        setTimeout(() => setSuccessMessage(null), 3000);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+ const handleProfileImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const file = e.target.files?.[0];
+  if (file && user?.email) {
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      const imageData = event.target?.result as string;
+      setProfileImage(imageData);
+      await fetch('https://tango-hotel-backend.onrender.com/api/users/profile-image', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: user.email, profileImage: imageData }),
+      });
+    };
+    reader.readAsDataURL(file);
+  }
+};
+
+const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const file = e.target.files?.[0];
+  if (file && user?.email) {
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      const imageData = event.target?.result as string;
+      setCoverImage(imageData);
+      await fetch('https://tango-hotel-backend.onrender.com/api/users/cover-image', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: user.email, coverImage: imageData }),
+        });
+    };
+    reader.readAsDataURL(file);
+  }
+};
+
 
   const handleSaveSettings = async () => {
     setIsSaving(true);
@@ -365,7 +374,6 @@ const handleCancelBooking = async (id: string) => {
 
   const previousStatus = cancelledBooking.status;
 
-  // Optimistic update
   setBookings((prev) =>
     prev.map((b) =>
       b.id.toString() === id ? { ...b, status: "cancelled" as const } : b
@@ -388,14 +396,12 @@ const handleCancelBooking = async (id: string) => {
     const data = await res.json();
     console.log("Booking cancelled successfully:", data);
 
-    // Ensure state reflects backend structure (`payment_status`)
     const updatedBooking = {
       ...cancelledBooking,
       status: data.booking?.payment_status || "cancelled",
       payment_status: data.booking?.payment_status || "cancelled",
     };
 
-    // Sync frontend state with backend response
     setBookings((prev) =>
       prev.map((b) => (b.id.toString() === id ? updatedBooking : b))
     );
@@ -416,7 +422,6 @@ const handleCancelBooking = async (id: string) => {
   } catch (error) {
     console.error("Error cancelling booking:", error);
 
-    // Rollback on failure
     setBookings((prev) =>
       prev.map((b) =>
         b.id.toString() === id ? { ...b, status: previousStatus } : b
@@ -471,7 +476,6 @@ const handlePayNow = async (booking: any) => {
     alert("Something went wrong while processing your payment.");
   }
 };
-
 
   return (
     <div className={`${styles.profileContainer} ${isDarkMode ? styles.dark : ""}`}>
