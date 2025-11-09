@@ -66,16 +66,25 @@ export default function Profile() {
 
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [coverImage, setCoverImage] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
-      useEffect(() => {
-        const fetchImages = async () => {
-          const res = await fetch(`https://tango-hotel-backend.onrender.com/api/users/${user.id}`);
-          const data = await res.json();
-          setProfileImage(data.user.profile_image);
-          setCoverImage(data.user.cover_image);
-        };
-        if (user?.id) fetchImages();
-      }, [user]);
+useEffect(() => {
+  if (!user?.id) return;
+  const fetchImages = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch(`https://tango-hotel-backend.onrender.com/api/users/${user.id}`);
+      const data = await res.json();
+      setProfileImage(data.user.profile_image);
+      setCoverImage(data.user.cover_image);
+    } catch (err) {
+      console.error("Error fetching images:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+  fetchImages();
+}, [user?.id]);
 
 
   useEffect(() => {
@@ -208,37 +217,50 @@ export default function Profile() {
 
  const handleProfileImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
   const file = e.target.files?.[0];
-  if (file && user?.email) {
-    const reader = new FileReader();
-    reader.onload = async (event) => {
-      const imageData = event.target?.result as string;
-      setProfileImage(imageData);
+  if (!file || !user?.email) return;
+
+  const reader = new FileReader();
+  reader.onload = async (event) => {
+    const imageData = event.target?.result as string;
+
+    setProfileImage(imageData);
+
+    try {
       await fetch('https://tango-hotel-backend.onrender.com/api/users/profile-image', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: user.email, profileImage: imageData }),
       });
-    };
-    reader.readAsDataURL(file);
-  }
+    } catch (err) {
+      console.error("Error updating profile image:", err);
+    }
+  };
+  reader.readAsDataURL(file);
 };
 
 const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
   const file = e.target.files?.[0];
-  if (file && user?.email) {
-    const reader = new FileReader();
-    reader.onload = async (event) => {
-      const imageData = event.target?.result as string;
-      setCoverImage(imageData);
+  if (!file || !user?.email) return;
+
+  const reader = new FileReader();
+  reader.onload = async (event) => {
+    const imageData = event.target?.result as string;
+
+    setCoverImage(imageData);
+
+    try {
       await fetch('https://tango-hotel-backend.onrender.com/api/users/cover-image', {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: user.email, coverImage: imageData }),
-        });
-    };
-    reader.readAsDataURL(file);
-  }
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: user.email, coverImage: imageData }),
+      });
+    } catch (err) {
+      console.error("Error updating cover image:", err);
+    }
+  };
+  reader.readAsDataURL(file);
 };
+
 
 
   const handleSaveSettings = async () => {
