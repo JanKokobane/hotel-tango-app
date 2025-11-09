@@ -41,6 +41,7 @@ interface Room {
 interface RoomDetailModalProps {
   room: Room;
   onClose: () => void;
+  mode?: 'view' | 'book'; 
 }
 
 const RoomDetailModal: React.FC<RoomDetailModalProps> = ({ room, onClose }) => {
@@ -119,7 +120,6 @@ const RoomDetailModal: React.FC<RoomDetailModalProps> = ({ room, onClose }) => {
       totalPrice
     });
 
-    // Reset fields after submit
     setFullName('');
     setEmail('');
     setCheckIn('');
@@ -135,7 +135,7 @@ const RoomDetailModal: React.FC<RoomDetailModalProps> = ({ room, onClose }) => {
         </button>
 
         <div className={styles.modalGrid}>
-          {/* LEFT COLUMN */}
+        
           <div className={styles.leftColumn}>
             <div className={styles.imageContainer}>
               <img 
@@ -249,7 +249,6 @@ const RoomDetailModal: React.FC<RoomDetailModalProps> = ({ room, onClose }) => {
             </div>
           </div>
 
-          {/* RIGHT COLUMN (Booking Form) */}
           <div className={styles.rightColumn}>
             <div className={styles.bookingCard}>
               <div className={styles.priceHeader}>
@@ -258,7 +257,7 @@ const RoomDetailModal: React.FC<RoomDetailModalProps> = ({ room, onClose }) => {
               </div>
 
               <form onSubmit={handleBooking} className={styles.bookingForm}>
-                {/* Full Name */}
+          
                 <div className={styles.formGroup}>
                   <label className={styles.formLabel}>Full Name</label>
                   <input
@@ -271,7 +270,7 @@ const RoomDetailModal: React.FC<RoomDetailModalProps> = ({ room, onClose }) => {
                   />
                 </div>
 
-                {/* Email */}
+          
                 <div className={styles.formGroup}>
                   <label className={styles.formLabel}>Email Address</label>
                   <input
@@ -284,7 +283,6 @@ const RoomDetailModal: React.FC<RoomDetailModalProps> = ({ room, onClose }) => {
                   />
                 </div>
 
-                {/* Check-in */}
                 <div className={styles.formGroup}>
                   <label className={styles.formLabel}>
                     <Calendar size={16} />
@@ -300,7 +298,6 @@ const RoomDetailModal: React.FC<RoomDetailModalProps> = ({ room, onClose }) => {
                   />
                 </div>
 
-                {/* Check-out */}
                 <div className={styles.formGroup}>
                   <label className={styles.formLabel}>
                     <Calendar size={16} />
@@ -316,7 +313,6 @@ const RoomDetailModal: React.FC<RoomDetailModalProps> = ({ room, onClose }) => {
                   />
                 </div>
 
-                {/* Guests */}
                 <div className={styles.formGroup}>
                   <label className={styles.formLabel}>
                     <Users size={16} />
@@ -336,7 +332,6 @@ const RoomDetailModal: React.FC<RoomDetailModalProps> = ({ room, onClose }) => {
                   </select>
                 </div>
 
-                {/* Price Breakdown */}
                 {checkIn && checkOut && (
                   <div className={styles.priceBreakdown}>
                     <div className={styles.breakdownRow}>

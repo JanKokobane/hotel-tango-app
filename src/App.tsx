@@ -5,6 +5,7 @@ import {
   useLocation,
 } from "react-router-dom";
 import React from "react";
+
 import Navbar from "./Components/Navbar/Navbar";
 import Hero from "./Pages/Hero";
 import { RoomsSection } from "./Components/RoomsSection/RoomsSection";
@@ -28,6 +29,7 @@ import ProtectedRoute from "./ProtectedRoute";
 import RoomsPage from "./Pages/RoomsPage/RoomsPage";
 import Profile from "./Profile/Profile";
 import AdminProtectedRoute from "./Admin/components/AdminProtectedRoute";
+import CheckoutPage from "./Pages/RoomsPage/PaymentGateWay/CheckoutPage"; // ✅ Added
 
 function PublicLayout() {
   const location = useLocation();
@@ -123,6 +125,28 @@ function App() {
             </ProtectedRoute>
           }
         />
+       <Route
+  path="/checkout"
+  element={
+    <ProtectedRoute>
+      <CheckoutPage
+        onBack={() => window.history.back()}
+        onPaymentComplete={() => window.location.replace("/profile")} bookingData={{
+          id: "",
+          room_id: 0,
+          room_name: "",
+          full_name: "",
+          phone: "",
+          email: "",
+          check_in: "",
+          check_out: "",
+          total_price: "",
+          nights: 0
+        }}      />
+    </ProtectedRoute>
+  }
+/>
+
       </Routes>
     </Router>
   );

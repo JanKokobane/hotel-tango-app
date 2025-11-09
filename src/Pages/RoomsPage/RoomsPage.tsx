@@ -3,7 +3,6 @@ import { Star, Users, Bed, Wifi, Coffee, Tv, Wind, Droplet, Search, SlidersHoriz
 import styles from './RoomsPage.module.css';
 import RoomDetailModal from './RoomDetailModal/RoomDetailModal';
 import React from 'react';
-import { Link } from 'react-router-dom';
 import BookingForm from './BookingForm/BookingForm';
 
 export interface Room {

@@ -16,6 +16,7 @@ import { BookingCard } from "./BookingCard/BookingCard";
 import { useAuth } from "../context/AuthContext";
 import { useDarkMode } from "../context/DarkModeContext";
 import styles from "./Profile.module.css";
+import { useNavigate } from "react-router-dom";
 
 type TabView = "history" | "new" | "favourites" | "settings";
 interface Booking {
@@ -67,6 +68,8 @@ export default function Profile() {
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [coverImage, setCoverImage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  const navigate = useNavigate();
 
 useEffect(() => {
   if (!user?.id) return;
@@ -260,8 +263,6 @@ const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
   };
   reader.readAsDataURL(file);
 };
-
-
 
   const handleSaveSettings = async () => {
     setIsSaving(true);
@@ -466,38 +467,15 @@ const handleCancelBooking = async (id: string) => {
   }
 };
 
-const handlePayNow = async (booking: any) => {
-  try {
-    if (!booking || booking.payment_status === "paid") {
-      alert("This booking is already paid.");
-      return;
-    }
-
-    const response = await fetch(
-      `https://tango-hotel-backend.onrender.com/api/payments/create-session`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          booking_id: booking.id,
-          email: booking.email,
-          amount: booking.total_price,
-        }),
-      }
-    );
-
-    const data = await response.json();
-
-    if (data.url) {
-      window.location.href = data.url;
-    } else {
-      alert("Unable to initiate payment. Please try again later.");
-    }
-  } catch (error) {
-    console.error("Payment initiation failed:", error);
-    alert("Something went wrong while processing your payment.");
+const handlePayNow = (booking: Booking) => {
+  if (!booking || booking.payment_status === "paid") {
+    alert("This booking is already paid or invalid.");
+    return;
   }
+
+  navigate("/checkout", { state: booking });
 };
+
 
   return (
     <div className={`${styles.profileContainer} ${isDarkMode ? styles.dark : ""}`}>
@@ -845,7 +823,7 @@ const handlePayNow = async (booking: any) => {
                       price={booking.total_price}
                       isFavorite={isFavorite(bookingId)}
                       onToggleFavorite={() => toggleFavorite(bookingId)}
-                      onPayNow={() => handlePayNow(booking)}
+                      onPayNow={() => handlePayNow(booking)} 
                       onCancelBooking={() => handleCancelBooking(bookingId)}
                     />
                   );
