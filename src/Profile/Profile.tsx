@@ -468,13 +468,42 @@ const handleCancelBooking = async (id: string) => {
 };
 
 const handlePayNow = (booking: Booking) => {
-  if (!booking || booking.payment_status === "paid") {
-    alert("This booking is already paid or invalid.");
+    if (!booking || booking.payment_status === "paid" || booking.status === "cancelled") {
+  alert("This booking is already paid, cancelled, or invalid.");
+  return;
+}
+
+    navigate("/checkout", { state: { booking } }); 
+  };
+
+
+  
+const handleDeleteBooking = async (id: string) => {
+  const booking = bookings.find((b) => b.id.toString() === id);
+  if (!booking) return;
+
+  if (booking.status !== "cancelled") {
+    alert("Only cancelled bookings can be deleted.");
     return;
   }
 
-  navigate("/checkout", { state: booking });
+  if (!confirm("Are you sure you want to permanently delete this booking?")) return;
+
+  try {
+    const res = await fetch(`https://tango-hotel-backend.onrender.com/api/bookings/${id}`, {
+      method: "DELETE",
+    });
+
+    if (!res.ok) throw new Error("Failed to delete booking");
+
+    setBookings((prev) => prev.filter((b) => b.id.toString() !== id));
+    addNotification("Cancelled booking deleted successfully.", "booking");
+  } catch (error) {
+    console.error("Error deleting booking:", error);
+    alert("Failed to delete booking. Please try again.");
+  }
 };
+
 
 
   return (
@@ -809,23 +838,25 @@ const handlePayNow = (booking: Booking) => {
                   const bookingId = String(booking.id);
 
                   return (
-                    <BookingCard
+                   <BookingCard
                       key={booking.id}
                       id={bookingId}
                       roomType={booking.room_name}
-                      roomNumber={"101"} 
+                      roomNumber={"101"}
                       checkIn={booking.check_in}
                       checkOut={booking.check_out}
-                      guests={1} 
+                      guests={1}
                       status={booking.status}
                       paymentStatus={booking.payment_status}
                       imageUrl={booking.room_image || ""}
                       price={booking.total_price}
                       isFavorite={isFavorite(bookingId)}
                       onToggleFavorite={() => toggleFavorite(bookingId)}
-                      onPayNow={() => handlePayNow(booking)} 
+                      onPayNow={() => handlePayNow(booking)}
                       onCancelBooking={() => handleCancelBooking(bookingId)}
+                      onDeleteBooking={() => handleDeleteBooking(bookingId)}  
                     />
+
                   );
                 })
               ) : (

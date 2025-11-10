@@ -1,6 +1,6 @@
-import React from 'react';
-import { Calendar, MapPin, User, Clock, Heart } from 'lucide-react';
-import styles from './BookingCard.module.css';
+import React from "react";
+import { Calendar, MapPin, User, Clock, Heart, Trash2 } from "lucide-react";
+import styles from "./BookingCard.module.css";
 
 interface BookingCardProps {
   id: string;
@@ -9,14 +9,15 @@ interface BookingCardProps {
   checkIn: string;
   checkOut: string;
   guests: number;
-  status: 'upcoming' | 'completed' | 'cancelled';
-  paymentStatus: 'paid' | 'pending' | 'unpaid';
+  status: "upcoming" | "completed" | "cancelled";
+  paymentStatus: "paid" | "pending" | "unpaid";
   imageUrl: string;
   price: number;
   isFavorite?: boolean;
   onToggleFavorite?: () => void;
   onPayNow?: () => void;
   onCancelBooking?: () => void;
+  onDeleteBooking?: (id: string) => void; 
 }
 
 export const BookingCard = ({
@@ -34,55 +35,62 @@ export const BookingCard = ({
   onToggleFavorite,
   onPayNow,
   onCancelBooking,
+  onDeleteBooking,
 }: BookingCardProps) => {
+
   const getBadgeClass = () => {
     switch (status) {
-      case 'upcoming':
+      case "upcoming":
         return styles.badgeUpcoming;
-      case 'completed':
+      case "completed":
         return styles.badgeCompleted;
-      case 'cancelled':
+      case "cancelled":
         return styles.badgeCancelled;
       default:
-        return '';
+        return "";
     }
   };
 
-  const getPaymentClass = () => {
-    return paymentStatus === 'paid' ? styles.paymentPaid : styles.paymentPending;
-  };
+  const getPaymentClass = () =>
+    paymentStatus === "paid" ? styles.paymentPaid : styles.paymentPending;
 
   const formatDate = (dateString: string) =>
-    new Date(dateString).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
+    new Date(dateString).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
     });
 
-  const handlePayNow = () => {
-    if (onPayNow) onPayNow();
-  };
-
-  const handleCancelBooking = () => {
-    if (onCancelBooking) onCancelBooking();
-  };
+  const handlePayNow = () => onPayNow?.();
+  const handleCancelBooking = () => onCancelBooking?.();
+  const handleDeleteBooking = () => onDeleteBooking?.(id); 
 
   return (
-    <div className={`${styles.card} ${status === 'cancelled' ? styles.cancelled : ''}`}>
+    <div
+      className={`${styles.card} ${
+        status === "cancelled" ? styles.cancelled : ""
+      }`}
+    >
       <div className={styles.cardContent}>
+   
         <div className={styles.imageContainer}>
           <img src={imageUrl} alt={roomType} className={styles.image} />
           <span className={`${styles.badge} ${getBadgeClass()}`}>{status}</span>
+
           {onToggleFavorite && (
             <button
-              className={`${styles.favoriteButton} ${isFavorite ? styles.favoriteActive : ''}`}
+              className={`${styles.favoriteButton} ${
+                isFavorite ? styles.favoriteActive : ""
+              }`}
               onClick={(e) => {
                 e.stopPropagation();
                 onToggleFavorite();
               }}
-              aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+              aria-label={
+                isFavorite ? "Remove from favorites" : "Add to favorites"
+              }
             >
-              <Heart size={20} fill={isFavorite ? 'currentColor' : 'none'} />
+              <Heart size={20} fill={isFavorite ? "currentColor" : "none"} />
             </button>
           )}
         </div>
@@ -123,27 +131,37 @@ export const BookingCard = ({
               <div>
                 <p className={styles.infoLabel}>Guests</p>
                 <p className={styles.infoValue}>
-                  {guests} {guests === 1 ? 'Guest' : 'Guests'}
+                  {guests} {guests === 1 ? "Guest" : "Guests"}
                 </p>
               </div>
             </div>
           </div>
 
-          <div className={`${styles.paymentStatus} ${getPaymentClass()}`}>
-            {paymentStatus === 'paid' ? 'Paid' : 'Pending Payment'}
-          </div>
+          {status !== "cancelled" && (
+            <div className={`${styles.paymentStatus} ${getPaymentClass()}`}>
+              {paymentStatus === "paid" ? "Paid" : "Pending Payment"}
+            </div>
+          )}
 
-          {paymentStatus === 'unpaid' && status !== 'cancelled' && (
+
+          {paymentStatus !== "paid" && status !== "cancelled" && (
             <button className={styles.payNowButton} onClick={handlePayNow}>
               Pay Now
             </button>
           )}
 
-          {status === 'upcoming' && (
+          {status === "upcoming" && (
             <button className={styles.cancelButton} onClick={handleCancelBooking}>
               Cancel Booking
             </button>
           )}
+
+          {status === "cancelled" && (
+            <button className={styles.deleteButton} onClick={handleDeleteBooking}>
+              <Trash2 size={18} /> Delete
+            </button>
+          )}
+
         </div>
       </div>
     </div>

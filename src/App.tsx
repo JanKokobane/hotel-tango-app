@@ -29,7 +29,7 @@ import ProtectedRoute from "./ProtectedRoute";
 import RoomsPage from "./Pages/RoomsPage/RoomsPage";
 import Profile from "./Profile/Profile";
 import AdminProtectedRoute from "./Admin/components/AdminProtectedRoute";
-import CheckoutPage from "./Pages/RoomsPage/PaymentGateWay/CheckoutPage"; // ✅ Added
+import CheckoutPage from "./Pages/RoomsPage/PaymentGateWay/CheckoutPage"; 
 
 function PublicLayout() {
   const location = useLocation();
@@ -100,11 +100,10 @@ function App() {
   return (
     <Router>
       <Routes>
-        {/* Public routes */}
+
         <Route path="/*" element={<PublicLayout />} />
         <Route path="/rooms" element={<RoomsPage />} />
 
-        {/* Admin routes */}
         <Route path="/admin/adminreg" element={<AdminReg />} />
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route
@@ -116,7 +115,6 @@ function App() {
           }
         />
 
-        {/* User protected routes */}
         <Route
           path="/profile"
           element={
@@ -146,7 +144,6 @@ function App() {
     </ProtectedRoute>
   }
 />
-
       </Routes>
     </Router>
   );
