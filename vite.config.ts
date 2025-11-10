@@ -8,9 +8,9 @@ export default defineConfig({
     port: 5173,
     strictPort: true,
     hmr: {
-      protocol: 'wss',
-      host: 'symmetrical-fiesta-4jg5vq9g45wg3jj67-5173.app.github.dev',
-      port: 443,
-    },
+      protocol: 'ws',
+      host: 'localhost',
+      port: 5173,
+    }
   },
 });
