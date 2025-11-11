@@ -83,7 +83,7 @@ function PayPalButton({ amount, onSuccess, bookingData }: PayPalButtonProps) {
 
           try {
             await fetch(
-              "https://tango-hotel-backend.onrender.com/api/bookings/verify-payment",
+              "https://tango-hotel-backend.onrender.com/api/payments/verify-payment",
               {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },

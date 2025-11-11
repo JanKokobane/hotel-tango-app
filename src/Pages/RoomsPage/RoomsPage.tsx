@@ -1,5 +1,17 @@
 import { useEffect, useState } from 'react';
-import { Star, Users, Bed, Wifi, Coffee, Tv, Wind, Droplet, Search, SlidersHorizontal, X } from 'lucide-react';
+import {
+  Star,
+  Users,
+  Bed,
+  Wifi,
+  Coffee,
+  Tv,
+  Wind,
+  Droplet,
+  Search,
+  SlidersHorizontal,
+  X,
+} from 'lucide-react';
 import styles from './RoomsPage.module.css';
 import RoomDetailModal from './RoomDetailModal/RoomDetailModal';
 import React from 'react';
@@ -25,7 +37,7 @@ const RoomsPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
-  const [modalMode, setModalMode] = useState<'view' | 'book' | null>(null); 
+  const [modalMode, setModalMode] = useState<'view' | 'book' | null>(null);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [showFilters, setShowFilters] = useState(false);
@@ -33,7 +45,8 @@ const RoomsPage = () => {
   const [selectedType, setSelectedType] = useState('all');
   const [selectedCapacity, setSelectedCapacity] = useState('all');
 
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://tango-hotel-backend.onrender.com';
+  const API_BASE_URL =
+    import.meta.env.VITE_API_BASE_URL || 'https://tango-hotel-backend.onrender.com';
 
   useEffect(() => {
     const fetchRooms = async () => {
@@ -92,7 +105,6 @@ const RoomsPage = () => {
     setFilteredRooms(filtered);
   }, [searchTerm, priceRange, selectedType, selectedCapacity, rooms]);
 
-  
   const getAmenityIcon = (amenity: string) => {
     const lower = amenity.toLowerCase();
     if (lower.includes('wifi')) return <Wifi size={16} />;
@@ -255,14 +267,22 @@ const RoomsPage = () => {
               <div key={room.id} className={styles.card}>
                 <div className={styles.imageWrapper}>
                   <img
-                    src={room.image || 'https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=600'}
+                    src={
+                      room.image ||
+                      'https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=600'
+                    }
                     alt={room.name}
                     className={styles.image}
                   />
-                  {room.status.toLowerCase() === 'available' && (
+
+                  {/* ✅ Room Status Badges */}
+                  {room.status?.toLowerCase() === 'available' && (
                     <span className={styles.badge}>Available</span>
                   )}
-                  {room.status.toLowerCase() === 'featured' && (
+                  {room.status?.toLowerCase() === 'booked' && (
+                    <span className={`${styles.badge} ${styles.bookedBadge}`}>Booked</span>
+                  )}
+                  {room.status?.toLowerCase() === 'featured' && (
                     <span className={`${styles.badge} ${styles.featuredBadge}`}>Featured</span>
                   )}
                 </div>
@@ -293,12 +313,15 @@ const RoomsPage = () => {
                   </p>
 
                   <div className={styles.amenities}>
-                    {room.amenities?.split(',').slice(0, 4).map((amenity, i) => (
-                      <span key={i} className={styles.amenityTag}>
-                        {getAmenityIcon(amenity)}
-                        {amenity.trim()}
-                      </span>
-                    ))}
+                    {room.amenities
+                      ?.split(',')
+                      .slice(0, 4)
+                      .map((amenity, i) => (
+                        <span key={i} className={styles.amenityTag}>
+                          {getAmenityIcon(amenity)}
+                          {amenity.trim()}
+                        </span>
+                      ))}
                   </div>
 
                   <div className={styles.cardFooter}>
@@ -306,19 +329,24 @@ const RoomsPage = () => {
                       <span className={styles.price}>R{room.price}</span>
                       <span className={styles.priceLabel}>/ night</span>
                     </div>
+
                     <div className={styles.actionButtons}>
                       <button
                         className={styles.detailsBtn}
-                        onClick={() => handleViewDetails(room)} 
+                        onClick={() => handleViewDetails(room)}
                       >
                         View Details
                       </button>
 
+                      {/* ✅ Book Now Button Logic */}
                       <button
                         className={styles.bookButton}
-                        onClick={() => handleBookNow(room)} 
+                        onClick={() => handleBookNow(room)}
+                        disabled={room.status?.toLowerCase() === 'booked'}
                       >
-                        Book Now
+                        {room.status?.toLowerCase() === 'booked'
+                          ? 'Unavailable'
+                          : 'Book Now'}
                       </button>
                     </div>
                   </div>

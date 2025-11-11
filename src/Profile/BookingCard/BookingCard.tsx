@@ -144,11 +144,11 @@ export const BookingCard = ({
           )}
 
 
-          {paymentStatus !== "paid" && status !== "cancelled" && (
+          {/* {paymentStatus !== "paid" && status !== "cancelled" && (
             <button className={styles.payNowButton} onClick={handlePayNow}>
               Pay Now
             </button>
-          )}
+          )} */}
 
           {status === "upcoming" && (
             <button className={styles.cancelButton} onClick={handleCancelBooking}>

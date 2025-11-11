@@ -154,68 +154,69 @@ useEffect(() => {
     if (storageKey) localStorage.removeItem(storageKey);
   };
 
-  useEffect(() => {
-    const fetchUserBookings = async () => {
-      if (!user?.email) return;
-      try {
-        setIsLoading(true);
-        const response = await fetch(
-          `https://tango-hotel-backend.onrender.com/api/bookings/user/${encodeURIComponent(user.email)}`
-        );
-        const data = await response.json();
+ useEffect(() => {
+  const fetchUserBookings = async () => {
+    if (!user?.email) return;
+    try {
+      setIsLoading(true);
+      const response = await fetch(
+        `https://tango-hotel-backend.onrender.com/api/bookings/user/${encodeURIComponent(user.email)}`
+      );
+      const data = await response.json();
 
-        if (Array.isArray(data)) {
-          const now = new Date();
-          const enriched: Booking[] = data.map((b: any) => {
-            const checkOut = new Date(b.check_out);
-            const derivedStatus: 'upcoming' | 'completed' | 'cancelled' =
-          b.status === 'cancelled' || b.payment_status === 'cancelled'
-            ? 'cancelled'
-            : checkOut >= now
-            ? 'upcoming'
-            : 'completed';
+      if (Array.isArray(data)) {
+        const now = new Date();
+        const enriched: Booking[] = data.map((b: any) => {
+          const checkOut = new Date(b.check_out);
+          const derivedStatus: 'upcoming' | 'completed' | 'cancelled' =
+            b.status === 'cancelled' || b.payment_status === 'cancelled'
+              ? 'cancelled'
+              : checkOut >= now
+              ? 'upcoming'
+              : 'completed';
 
-            return {
-              ...b,
-              status: derivedStatus,
-              payment_status: b.payment_status || 'pending', 
-              room_image: b.room_image || "https://via.placeholder.com/400x250?text=No+Image",
-            };
+          return {
+            ...b,
+            status: derivedStatus,
+            // Updated payment_status logic:
+            payment_status: b.payment_status === 'paid' ? 'paid' : b.payment_status || 'pending',
+            room_image: b.room_image || "https://via.placeholder.com/400x250?text=No+Image",
+          };
+        });
+
+        const seenRaw = seenBookingsKey ? localStorage.getItem(seenBookingsKey) : null;
+        const seen = seenRaw ? new Set(JSON.parse(seenRaw)) : new Set<string>();
+
+        const newOnes = enriched.filter((b) => !seen.has(String(b.id)));
+        if (newOnes.length > 0) {
+          newOnes.forEach((booking) => {
+            addNotification("You have a new booking.", "booking", booking);
+            seen.add(String(booking.id));
           });
-
-          const seenRaw = seenBookingsKey ? localStorage.getItem(seenBookingsKey) : null;
-          const seen = seenRaw ? new Set(JSON.parse(seenRaw)) : new Set<string>();
-
-          const newOnes = enriched.filter((b) => !seen.has(String(b.id)));
-          if (newOnes.length > 0) {
-            newOnes.forEach((booking) => {
-              addNotification("You have a new booking.", "booking", booking);
-              seen.add(String(booking.id));
-            });
-            if (seenBookingsKey)
-              localStorage.setItem(seenBookingsKey, JSON.stringify([...seen]));
-          }
-
-          setBookings(enriched);
-        } else {
-          setBookings([]);
+          if (seenBookingsKey)
+            localStorage.setItem(seenBookingsKey, JSON.stringify([...seen]));
         }
-      } catch {
-        setBookings([]);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    
-    fetchUserBookings();
 
-    const handleNewBooking = () => {
-      fetchUserBookings();
-    };
-    
-    window.addEventListener('newBooking', handleNewBooking);
-    return () => window.removeEventListener('newBooking', handleNewBooking);
-  }, [user?.email]);
+        setBookings(enriched);
+      } else {
+        setBookings([]);
+      }
+    } catch {
+      setBookings([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  fetchUserBookings();
+
+  const handleNewBooking = () => {
+    fetchUserBookings();
+  };
+
+  window.addEventListener('newBooking', handleNewBooking);
+  return () => window.removeEventListener('newBooking', handleNewBooking);
+}, [user?.email]);
 
 
  const handleProfileImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -473,11 +474,11 @@ const handlePayNow = (booking: Booking) => {
   return;
 }
 
-    navigate("/checkout", { state: { booking } }); 
+    navigate(`/checkout/${booking.id}`);
+
   };
 
 
-  
 const handleDeleteBooking = async (id: string) => {
   const booking = bookings.find((b) => b.id.toString() === id);
   if (!booking) return;
@@ -503,8 +504,6 @@ const handleDeleteBooking = async (id: string) => {
     alert("Failed to delete booking. Please try again.");
   }
 };
-
-
 
   return (
     <div className={`${styles.profileContainer} ${isDarkMode ? styles.dark : ""}`}>
