@@ -89,10 +89,14 @@ export const RoomsSection: React.FC = () => {
           </p>
         </div>
         <div className={styles.headerActions}>
-          <button className={styles.findMoreBtn}>
+          
+        {/* <Link to="/rooms">
+            <button className={styles.findMoreBtn}>
             FIND MORE ROOMS
             <ArrowRight size={16} />
           </button>
+        </Link> */}
+
         </div>
       </div>
 
@@ -120,7 +124,7 @@ export const RoomsSection: React.FC = () => {
                   <p className={styles.roomPrice}>{room.price}</p>
 
                   <Link to="/rooms">
-                    <button className={styles.button}>More Rooms</button>
+                    <button className={styles.button}>View More Rooms</button>
                   </Link>
 
                 </div>

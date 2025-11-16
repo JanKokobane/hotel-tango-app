@@ -55,6 +55,9 @@ const RoomDetailModal: React.FC<RoomDetailModalProps> = ({ room, onClose }) => {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
 
+  const [currentRoomId, setCurrentRoomId] = useState<number | null>(null);
+
+
   const getAmenityIcon = (amenity: string) => {
     const lower = amenity.toLowerCase();
 
@@ -95,19 +98,6 @@ const RoomDetailModal: React.FC<RoomDetailModalProps> = ({ room, onClose }) => {
 
   const totalPrice = calculateNights() * room.price;
 
-  const handleSubmitReview = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log({
-      userName,
-      rating: userRating,
-      review: reviewText,
-      roomId: room.id
-    });
-    setUserName('');
-    setUserRating(0);
-    setReviewText('');
-  };
-
   const handleBooking = (e: React.FormEvent) => {
     e.preventDefault();
     console.log({
@@ -126,6 +116,47 @@ const RoomDetailModal: React.FC<RoomDetailModalProps> = ({ room, onClose }) => {
     setCheckOut('');
     setGuests(1);
   };
+
+
+ const handleSubmitReview = async (e: { preventDefault: () => void }) => {
+  e.preventDefault();
+
+  if (!userName || !userRating || !reviewText) {
+    alert("Please fill in all fields");
+    return;
+  }
+
+  try {
+    const response = await fetch("http://localhost:3000/api/submit-review", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: userName,
+          rating: userRating,
+          experience: reviewText,
+          room_id: Number(room.id),
+        }),
+      });
+
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "Failed to submit review");
+    }
+
+    alert("Review submitted!");
+    setUserName("");
+    setUserRating(0);
+    setReviewText("");
+
+  } catch (err) {
+    console.error("Review submit error:", err);
+    alert("Failed to submit review");
+  }
+};
+
+  
 
   return (
     <div className={styles.modalOverlay} onClick={onClose}>
@@ -202,6 +233,7 @@ const RoomDetailModal: React.FC<RoomDetailModalProps> = ({ room, onClose }) => {
                 </div>
               </div>
 
+
               <div className={styles.reviewSection}>
                 <h3 className={styles.sectionTitle}>Leave a Review</h3>
                 <form onSubmit={handleSubmitReview} className={styles.reviewForm}>
@@ -248,6 +280,9 @@ const RoomDetailModal: React.FC<RoomDetailModalProps> = ({ room, onClose }) => {
               </div>
             </div>
           </div>
+
+
+
 
           <div className={styles.rightColumn}>
             <div className={styles.bookingCard}>
@@ -367,3 +402,7 @@ const RoomDetailModal: React.FC<RoomDetailModalProps> = ({ room, onClose }) => {
 };
 
 export default RoomDetailModal;
+function fetchRoomReviews(selectedRoomId: any) {
+  throw new Error('Function not implemented.');
+}
+
