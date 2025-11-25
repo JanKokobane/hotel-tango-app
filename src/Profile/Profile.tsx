@@ -18,7 +18,8 @@ import { useDarkMode } from "../context/DarkModeContext";
 import styles from "./Profile.module.css";
 import { useNavigate } from "react-router-dom";
 
-type TabView = "history" | "new" | "favourites" | "settings";
+type TabView = "history" | "new" | "favourites" | "settings" | "reservations";
+
 interface Booking {
   id: number;
   room_id?: number;
@@ -30,9 +31,25 @@ interface Booking {
   check_out: string;
   total_price: number;
   nights?: number;
-  status: 'upcoming' | 'completed' | 'cancelled';
-  payment_status: 'paid' | 'pending' | 'unpaid';
+  status: "upcoming" | "completed" | "cancelled";
+  payment_status: "paid" | "pending" | "unpaid";
   room_image?: string;
+}
+
+interface Reservation {
+  remainingMs: number;
+  isExpired: any;
+  reservation_id?: number;
+  full_name: string;
+  email: string;
+  room_id: number;
+  check_in: string;
+  check_out: string;
+  guests: number;
+  total_price: number;
+  status?: string;
+  created_at?: string;
+  expires_at?: string;
 }
 
 interface NotificationItem {
@@ -45,6 +62,10 @@ interface NotificationItem {
 
 export default function Profile() {
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
+
+  const [reservations, setReservations] = useState<Reservation[]>([]);
+  const [isLoadingReservations, setIsLoadingReservations] = useState(true);
+
   const { user, logout, updateProfile } = useAuth();
   const { isDarkMode } = useDarkMode();
   const [currentTab, setCurrentTab] = useState<TabView>("history");
@@ -71,28 +92,28 @@ export default function Profile() {
 
   const navigate = useNavigate();
 
-useEffect(() => {
-  if (!user?.id) return;
-  const fetchImages = async () => {
-    try {
-      setLoading(true);
-      const res = await fetch(`https://tango-hotel-backend.onrender.com/api/users/${user.id}`);
-      const data = await res.json();
-      setProfileImage(data.user.profile_image);
-      setCoverImage(data.user.cover_image);
-    } catch (err) {
-      console.error("Error fetching images:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-  fetchImages();
-}, [user?.id]);
-
+  useEffect(() => {
+    if (!user?.id) return;
+    const fetchImages = async () => {
+      try {
+        setLoading(true);
+        const res = await fetch(
+          `https://tango-hotel-backend.onrender.com/api/users/${user.id}`
+        );
+        const data = await res.json();
+        setProfileImage(data.user.profile_image);
+        setCoverImage(data.user.cover_image);
+      } catch (err) {
+        console.error("Error fetching images:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchImages();
+  }, [user?.id]);
 
   useEffect(() => {
     if (user?.email) {
-      
       setFormData({
         firstname: user.firstname || "",
         lastname: user.lastname || "",
@@ -100,7 +121,6 @@ useEffect(() => {
         contact: user.contact || "",
       });
 
-    
       try {
         const raw = localStorage.getItem(`notifications_${user.email}`);
         setNotifications(raw ? JSON.parse(raw) : []);
@@ -121,7 +141,11 @@ useEffect(() => {
     } catch {}
   }, [notifications, storageKey]);
 
-  const addNotification = (message: string, type: string = "info", booking?: Booking) => {
+  const addNotification = (
+    message: string,
+    type: string = "info",
+    booking?: Booking
+  ) => {
     if (!user?.email) return;
     const newNotif: NotificationItem = {
       id: Date.now() + Math.floor(Math.random() * 1000),
@@ -154,126 +178,146 @@ useEffect(() => {
     if (storageKey) localStorage.removeItem(storageKey);
   };
 
- useEffect(() => {
-  const fetchUserBookings = async () => {
-    if (!user?.email) return;
-    try {
-      setIsLoading(true);
-      const response = await fetch(
-        `https://tango-hotel-backend.onrender.com/api/bookings/user/${encodeURIComponent(user.email)}`
-      );
-      const data = await response.json();
+  useEffect(() => {
+    const fetchUserBookings = async () => {
+      if (!user?.email) return;
+      try {
+        setIsLoading(true);
+        const response = await fetch(
+          `https://tango-hotel-backend.onrender.com/api/bookings/user/${encodeURIComponent(
+            user.email
+          )}`
+        );
+        const data = await response.json();
 
-      if (Array.isArray(data)) {
-        const now = new Date();
-        const enriched: Booking[] = data.map((b: any) => {
-          const checkOut = new Date(b.check_out);
-          const derivedStatus: 'upcoming' | 'completed' | 'cancelled' =
-            b.status === 'cancelled' || b.payment_status === 'cancelled'
-              ? 'cancelled'
-              : checkOut >= now
-              ? 'upcoming'
-              : 'completed';
+        if (Array.isArray(data)) {
+          const now = new Date();
+          const enriched: Booking[] = data.map((b: any) => {
+            const checkOut = new Date(b.check_out);
+            const derivedStatus: "upcoming" | "completed" | "cancelled" =
+              b.status === "cancelled" || b.payment_status === "cancelled"
+                ? "cancelled"
+                : checkOut >= now
+                ? "upcoming"
+                : "completed";
 
-          return {
-            ...b,
-            status: derivedStatus,
-            // Updated payment_status logic:
-            payment_status: b.payment_status === 'paid' ? 'paid' : b.payment_status || 'pending',
-            room_image: b.room_image || "https://via.placeholder.com/400x250?text=No+Image",
-          };
-        });
-
-        const seenRaw = seenBookingsKey ? localStorage.getItem(seenBookingsKey) : null;
-        const seen = seenRaw ? new Set(JSON.parse(seenRaw)) : new Set<string>();
-
-        const newOnes = enriched.filter((b) => !seen.has(String(b.id)));
-        if (newOnes.length > 0) {
-          newOnes.forEach((booking) => {
-            addNotification("You have a new booking.", "booking", booking);
-            seen.add(String(booking.id));
+            return {
+              ...b,
+              status: derivedStatus,
+              payment_status:
+                b.payment_status === "paid"
+                  ? "paid"
+                  : b.payment_status || "pending",
+              room_image:
+                b.room_image ||
+                "https://via.placeholder.com/400x250?text=No+Image",
+            };
           });
-          if (seenBookingsKey)
-            localStorage.setItem(seenBookingsKey, JSON.stringify([...seen]));
+
+          const seenRaw = seenBookingsKey
+            ? localStorage.getItem(seenBookingsKey)
+            : null;
+          const seen = seenRaw
+            ? new Set(JSON.parse(seenRaw))
+            : new Set<string>();
+
+          const newOnes = enriched.filter((b) => !seen.has(String(b.id)));
+          if (newOnes.length > 0) {
+            newOnes.forEach((booking) => {
+              addNotification("You have a new booking.", "booking", booking);
+              seen.add(String(booking.id));
+            });
+            if (seenBookingsKey)
+              localStorage.setItem(seenBookingsKey, JSON.stringify([...seen]));
+          }
+
+          setBookings(enriched);
+        } else {
+          setBookings([]);
         }
-
-        setBookings(enriched);
-      } else {
+      } catch {
         setBookings([]);
+      } finally {
+        setIsLoading(false);
       }
-    } catch {
-      setBookings([]);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    };
 
-  fetchUserBookings();
-
-  const handleNewBooking = () => {
     fetchUserBookings();
+
+    const handleNewBooking = () => {
+      fetchUserBookings();
+    };
+
+    window.addEventListener("newBooking", handleNewBooking);
+    return () => window.removeEventListener("newBooking", handleNewBooking);
+  }, [user?.email]);
+
+  const handleProfileImageUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file || !user?.email) return;
+
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      const imageData = event.target?.result as string;
+
+      setProfileImage(imageData);
+
+      try {
+        await fetch(
+          "https://tango-hotel-backend.onrender.com/api/users/profile-image",
+          {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              email: user.email,
+              profileImage: imageData,
+            }),
+          }
+        );
+      } catch (err) {
+        console.error("Error updating profile image:", err);
+      }
+    };
+    reader.readAsDataURL(file);
   };
 
-  window.addEventListener('newBooking', handleNewBooking);
-  return () => window.removeEventListener('newBooking', handleNewBooking);
-}, [user?.email]);
+  const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user?.email) return;
 
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      const imageData = event.target?.result as string;
 
- const handleProfileImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-  const file = e.target.files?.[0];
-  if (!file || !user?.email) return;
+      setCoverImage(imageData);
 
-  const reader = new FileReader();
-  reader.onload = async (event) => {
-    const imageData = event.target?.result as string;
-
-    setProfileImage(imageData);
-
-    try {
-      await fetch('https://tango-hotel-backend.onrender.com/api/users/profile-image', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: user.email, profileImage: imageData }),
-      });
-    } catch (err) {
-      console.error("Error updating profile image:", err);
-    }
+      try {
+        await fetch(
+          "https://tango-hotel-backend.onrender.com/api/users/cover-image",
+          {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email: user.email, coverImage: imageData }),
+          }
+        );
+      } catch (err) {
+        console.error("Error updating cover image:", err);
+      }
+    };
+    reader.readAsDataURL(file);
   };
-  reader.readAsDataURL(file);
-};
-
-const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-  const file = e.target.files?.[0];
-  if (!file || !user?.email) return;
-
-  const reader = new FileReader();
-  reader.onload = async (event) => {
-    const imageData = event.target?.result as string;
-
-    setCoverImage(imageData);
-
-    try {
-      await fetch('https://tango-hotel-backend.onrender.com/api/users/cover-image', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: user.email, coverImage: imageData }),
-      });
-    } catch (err) {
-      console.error("Error updating cover image:", err);
-    }
-  };
-  reader.readAsDataURL(file);
-};
 
   const handleSaveSettings = async () => {
     setIsSaving(true);
     setError(null);
     try {
       if (user?.email) {
-        localStorage.setItem(`profileImage_${user.email}`, profileImage || '');
-        localStorage.setItem(`coverImage_${user.email}`, coverImage || '');
+        localStorage.setItem(`profileImage_${user.email}`, profileImage || "");
+        localStorage.setItem(`coverImage_${user.email}`, coverImage || "");
       }
-      
+
       await updateProfile({ ...formData, profileImage, coverImage });
       setSuccessMessage("Profile updated successfully");
       addNotification("Profile information updated successfully.", "profile");
@@ -287,11 +331,13 @@ const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
 
   const toggleFavorite = (bookingId: string) => {
     if (!user?.email || !favoritesKey) return;
-    
+
     try {
       const raw = localStorage.getItem(favoritesKey);
-      const favorites = raw ? new Set<string>(JSON.parse(raw)) : new Set<string>();
-      
+      const favorites = raw
+        ? new Set<string>(JSON.parse(raw))
+        : new Set<string>();
+
       if (favorites.has(bookingId)) {
         favorites.delete(bookingId);
         addNotification("Removed from favorites.", "favorite");
@@ -299,11 +345,11 @@ const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         favorites.add(bookingId);
         addNotification("Added to favorites.", "favorite");
       }
-      
+
       localStorage.setItem(favoritesKey, JSON.stringify([...favorites]));
       setBookings([...bookings]);
     } catch (error) {
-      console.error('Error toggling favorite:', error);
+      console.error("Error toggling favorite:", error);
     }
   };
 
@@ -311,7 +357,9 @@ const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!user?.email || !favoritesKey) return false;
     try {
       const raw = localStorage.getItem(favoritesKey);
-      const favorites = raw ? new Set<string>(JSON.parse(raw)) : new Set<string>();
+      const favorites = raw
+        ? new Set<string>(JSON.parse(raw))
+        : new Set<string>();
       return favorites.has(bookingId);
     } catch {
       return false;
@@ -334,19 +382,21 @@ const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
   const getTabBookings = () => {
     switch (currentTab) {
       case "new":
-       
-        return bookings.filter((b) => b.status === "upcoming" || b.status === "cancelled");
+        return bookings.filter(
+          (b) => b.status === "upcoming" || b.status === "cancelled"
+        );
       case "favourites":
         if (!favoritesKey) return [];
         try {
           const raw = localStorage.getItem(favoritesKey);
-          const favoriteIds = raw ? new Set<string>(JSON.parse(raw)) : new Set<string>();
+          const favoriteIds = raw
+            ? new Set<string>(JSON.parse(raw))
+            : new Set<string>();
           return bookings.filter((b) => favoriteIds.has(String(b.id)));
         } catch {
           return [];
         }
       default:
-        
         return bookings.filter((b) => b.status === "completed");
     }
   };
@@ -377,8 +427,10 @@ const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
 
   const tabBookings = getTabBookings();
   const upcomingCount = bookings.filter((b) => b.status === "upcoming").length;
-  const completedCount = bookings.filter((b) => b.status === "completed").length;
-  
+  const completedCount = bookings.filter(
+    (b) => b.status === "completed"
+  ).length;
+
   const getFavoritesCount = () => {
     if (!favoritesKey) return 0;
     try {
@@ -390,123 +442,220 @@ const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     }
   };
 
-const handleCancelBooking = async (id: string) => {
-  const now = new Date();
+  const handleCancelBooking = async (id: string) => {
+    const now = new Date();
 
-  const cancelledBooking = bookings.find((b) => b.id.toString() === id);
-  if (!cancelledBooking) return;
+    const cancelledBooking = bookings.find((b) => b.id.toString() === id);
+    if (!cancelledBooking) return;
 
-  const previousStatus = cancelledBooking.status;
-
-  setBookings((prev) =>
-    prev.map((b) =>
-      b.id.toString() === id ? { ...b, status: "cancelled" as const } : b
-    )
-  );
-
-  try {
-    const res = await fetch(
-      `https://tango-hotel-backend.onrender.com/api/bookings/${encodeURIComponent(id)}/cancel`,
-      {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-      }
-    );
-
-    if (!res.ok) {
-      throw new Error(`Cancel request failed: ${res.status}`);
-    }
-
-    const data = await res.json();
-    console.log("Booking cancelled successfully:", data);
-
-    const updatedBooking = {
-      ...cancelledBooking,
-      status: data.booking?.payment_status || "cancelled",
-      payment_status: data.booking?.payment_status || "cancelled",
-    };
-
-    setBookings((prev) =>
-      prev.map((b) => (b.id.toString() === id ? updatedBooking : b))
-    );
-
-    const notification: NotificationItem = {
-      id: now.getTime(),
-      message: "Booking cancelled successfully!",
-      type: "success",
-      date: now.toISOString(),
-      booking: updatedBooking,
-    };
-
-    setNotifications((prev) => [...prev, notification]);
-
-    setTimeout(() => {
-      setNotifications((prev) => prev.filter((n) => n.id !== notification.id));
-    }, 3000);
-  } catch (error) {
-    console.error("Error cancelling booking:", error);
+    const previousStatus = cancelledBooking.status;
 
     setBookings((prev) =>
       prev.map((b) =>
-        b.id.toString() === id ? { ...b, status: previousStatus } : b
+        b.id.toString() === id ? { ...b, status: "cancelled" as const } : b
       )
     );
 
-    const notification: NotificationItem = {
-      id: now.getTime(),
-      message: "Failed to cancel booking. Please try again.",
-      type: "error",
-      date: now.toISOString(),
-      booking: cancelledBooking,
-    };
+    try {
+      const res = await fetch(
+        `https://tango-hotel-backend.onrender.com/api/bookings/${encodeURIComponent(
+          id
+        )}/cancel`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
 
-    setNotifications((prev) => [...prev, notification]);
+      if (!res.ok) {
+        throw new Error(`Cancel request failed: ${res.status}`);
+      }
 
-    setTimeout(() => {
-      setNotifications((prev) => prev.filter((n) => n.id !== notification.id));
-    }, 3000);
-  }
-};
+      const data = await res.json();
+      console.log("Booking cancelled successfully:", data);
 
-const handlePayNow = (booking: Booking) => {
-    if (!booking || booking.payment_status === "paid" || booking.status === "cancelled") {
-  alert("This booking is already paid, cancelled, or invalid.");
-  return;
-}
+      const updatedBooking = {
+        ...cancelledBooking,
+        status: data.booking?.payment_status || "cancelled",
+        payment_status: data.booking?.payment_status || "cancelled",
+      };
 
-    navigate(`/checkout/${booking.id}`);
+      setBookings((prev) =>
+        prev.map((b) => (b.id.toString() === id ? updatedBooking : b))
+      );
 
+      const notification: NotificationItem = {
+        id: now.getTime(),
+        message: "Booking cancelled successfully!",
+        type: "success",
+        date: now.toISOString(),
+        booking: updatedBooking,
+      };
+
+      setNotifications((prev) => [...prev, notification]);
+
+      setTimeout(() => {
+        setNotifications((prev) =>
+          prev.filter((n) => n.id !== notification.id)
+        );
+      }, 3000);
+    } catch (error) {
+      console.error("Error cancelling booking:", error);
+
+      setBookings((prev) =>
+        prev.map((b) =>
+          b.id.toString() === id ? { ...b, status: previousStatus } : b
+        )
+      );
+
+      const notification: NotificationItem = {
+        id: now.getTime(),
+        message: "Failed to cancel booking. Please try again.",
+        type: "error",
+        date: now.toISOString(),
+        booking: cancelledBooking,
+      };
+
+      setNotifications((prev) => [...prev, notification]);
+
+      setTimeout(() => {
+        setNotifications((prev) =>
+          prev.filter((n) => n.id !== notification.id)
+        );
+      }, 3000);
+    }
   };
 
+  const handlePayNow = (booking: Booking) => {
+    if (
+      !booking ||
+      booking.payment_status === "paid" ||
+      booking.status === "cancelled"
+    ) {
+      alert("This booking is already paid, cancelled, or invalid.");
+      return;
+    }
 
-const handleDeleteBooking = async (id: string) => {
-  const booking = bookings.find((b) => b.id.toString() === id);
-  if (!booking) return;
+    navigate(`/checkout/${booking.id}`);
+  };
 
-  if (booking.status !== "cancelled") {
-    alert("Only cancelled bookings can be deleted.");
-    return;
-  }
+  const useCountdown = (initialMs: number) => {
+    const [timeLeft, setTimeLeft] = useState(initialMs);
 
-  if (!confirm("Are you sure you want to permanently delete this booking?")) return;
+    useEffect(() => {
+      if (timeLeft <= 0) return;
 
-  try {
-    const res = await fetch(`https://tango-hotel-backend.onrender.com/api/bookings/${id}`, {
-      method: "DELETE",
-    });
+      const interval = setInterval(() => {
+        setTimeLeft((prev) => (prev > 1000 ? prev - 1000 : 0));
+      }, 1000);
 
-    if (!res.ok) throw new Error("Failed to delete booking");
+      return () => clearInterval(interval);
+    }, [timeLeft]);
 
-    setBookings((prev) => prev.filter((b) => b.id.toString() !== id));
-    addNotification("Cancelled booking deleted successfully.", "booking");
-  } catch (error) {
-    console.error("Error deleting booking:", error);
-    alert("Failed to delete booking. Please try again.");
-  }
-};
+    const formatTime = (ms: number) => {
+      const minutes = Math.floor(ms / 60000);
+      const seconds = Math.floor((ms % 60000) / 1000);
+      return `${minutes.toString().padStart(2, "0")}:${seconds
+        .toString()
+        .padStart(2, "0")}`;
+    };
+
+    return formatTime(timeLeft);
+  };
+
+  const handleDeleteBooking = async (id: string) => {
+    const booking = bookings.find((b) => b.id.toString() === id);
+    if (!booking) return;
+
+    if (booking.status !== "cancelled") {
+      alert("Only cancelled bookings can be deleted.");
+      return;
+    }
+
+    if (!confirm("Are you sure you want to permanently delete this booking?"))
+      return;
+
+    try {
+      const res = await fetch(
+        `https://tango-hotel-backend.onrender.com/api/bookings/${id}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      if (!res.ok) throw new Error("Failed to delete booking");
+
+      setBookings((prev) => prev.filter((b) => b.id.toString() !== id));
+      addNotification("Cancelled booking deleted successfully.", "booking");
+    } catch (error) {
+      console.error("Error deleting booking:", error);
+      alert("Failed to delete booking. Please try again.");
+    }
+  };
+
+  useEffect(() => {
+    if (!user?.email) return;
+
+    const fetchReservations = async () => {
+      setIsLoadingReservations(true);
+      try {
+        const res = await fetch(
+          `https://tango-hotel-backend.onrender.com/api/reservations/user/${encodeURIComponent(
+            user.email
+          )}`
+        );
+        const data: Reservation[] = await res.json();
+
+        const now = new Date();
+        const enriched = data.map((r) => {
+          const createdAt = new Date(r.created_at ?? Date.now());
+          const expiresAt = new Date(createdAt.getTime() + 30 * 60 * 1000);
+          const remainingMs = expiresAt.getTime() - now.getTime();
+          return {
+            ...r,
+            expiresAt,
+            remainingMs: remainingMs > 0 ? remainingMs : 0,
+            isExpired: remainingMs <= 0,
+          };
+        });
+
+        setReservations(enriched);
+      } catch (err) {
+        console.error("Failed to fetch reservations:", err);
+        setReservations([]);
+      } finally {
+        setIsLoadingReservations(false);
+      }
+    };
+
+    fetchReservations();
+  }, [user?.email]);
+
+  const handleDelete = async (id: number | undefined) => {
+    if (!id) return;
+
+    if (!window.confirm("Are you sure you want to delete this reservation?"))
+      return;
+
+    try {
+      const res = await fetch(
+        `https://tango-hotel-backend.onrender.com/api/reservations/${id}`,
+        { method: "DELETE" }
+      );
+
+      if (!res.ok) throw new Error("Delete failed");
+
+      setReservations((prev) => prev.filter((r) => r.reservation_id !== id));
+    } catch (err) {
+      console.error("Delete error:", err);
+      alert("Failed to delete reservation.");
+    }
+  };
 
   return (
-    <div className={`${styles.profileContainer} ${isDarkMode ? styles.dark : ""}`}>
+    <div
+      className={`${styles.profileContainer} ${isDarkMode ? styles.dark : ""}`}
+    >
       <div className={styles.profileWrapper}>
         <div className={styles.coverSection}>
           <div
@@ -536,7 +685,9 @@ const handleDeleteBooking = async (id: string) => {
                   <div
                     className={styles.avatar}
                     style={{
-                      backgroundImage: profileImage ? `url(${profileImage})` : undefined,
+                      backgroundImage: profileImage
+                        ? `url(${profileImage})`
+                        : undefined,
                       backgroundSize: "cover",
                       backgroundPosition: "center",
                     }}
@@ -584,25 +735,51 @@ const handleDeleteBooking = async (id: string) => {
         <div className={styles.tabsContainer}>
           <nav className={styles.tabs}>
             <button
-              className={`${styles.tab} ${currentTab === "history" ? styles.tabActive : ""}`}
+              className={`${styles.tab} ${
+                currentTab === "history" ? styles.tabActive : ""
+              }`}
               onClick={() => setCurrentTab("history")}
             >
               Notifications ({notifications.length})
             </button>
+
             <button
-              className={`${styles.tab} ${currentTab === "new" ? styles.tabActive : ""}`}
+              className={`${styles.tab} ${
+                currentTab === "new" ? styles.tabActive : ""
+              }`}
               onClick={() => setCurrentTab("new")}
             >
               New Bookings ({upcomingCount})
             </button>
+
             <button
-              className={`${styles.tab} ${currentTab === "favourites" ? styles.tabActive : ""}`}
+              className={`${styles.tab} ${
+                currentTab === "favourites" ? styles.tabActive : ""
+              }`}
               onClick={() => setCurrentTab("favourites")}
             >
               My Favourites ({getFavoritesCount()})
             </button>
+
             <button
-              className={`${styles.tab} ${currentTab === "settings" ? styles.tabActive : ""}`}
+              className={`${styles.tab} ${
+                currentTab === "reservations" ? styles.tabActive : ""
+              }`}
+              onClick={() => setCurrentTab("reservations")}
+            >
+              Reservations (
+              {
+                bookings.filter(
+                  (b) => b.status === "upcoming" && b.payment_status !== "paid"
+                ).length
+              }
+              )
+            </button>
+
+            <button
+              className={`${styles.tab} ${
+                currentTab === "settings" ? styles.tabActive : ""
+              }`}
               onClick={() => setCurrentTab("settings")}
             >
               Account Settings
@@ -611,9 +788,93 @@ const handleDeleteBooking = async (id: string) => {
         </div>
 
         <div className={styles.contentSection}>
-          {successMessage && <div className={styles.successMessage}>{successMessage}</div>}
+          {successMessage && (
+            <div className={styles.successMessage}>{successMessage}</div>
+          )}
 
-          {currentTab === "settings" ? (
+          {currentTab === "reservations" ? (
+            <div className={styles.reservationsSection}>
+              <h2 className={styles.sectionTitle}>My Reservations</h2>
+
+              {reservations.length > 0 ? (
+                <div className={styles.reservationsTableWrapper}>
+                  <table className={styles.reservationsTable}>
+                    <thead>
+                      <tr>
+                        <th>Guest Name</th>
+                        <th>Check-in</th>
+                        <th>Check-out</th>
+                        <th>Guests</th>
+                        <th>Total Price</th>
+                        <th>Status</th>
+                        <th>Countdown</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+
+                    <tbody>
+                      {reservations.map((r) => {
+                        const remainingTime = r.remainingMs
+                          ? Math.floor(r.remainingMs / 1000)
+                          : 0;
+
+                        const minutes = Math.floor(remainingTime / 60);
+                        const seconds = remainingTime % 60;
+
+                        return (
+                          <tr key={r.reservation_id}>
+                            <td>{r.full_name}</td>
+                            <td>{new Date(r.check_in).toLocaleDateString()}</td>
+                            <td>
+                              {new Date(r.check_out).toLocaleDateString()}
+                            </td>
+                            <td>{r.guests}</td>
+                            <td>R {r.total_price}</td>
+
+                            <td>
+                              <span
+                                className={`${styles.statusBadge} ${
+                                  r.isExpired ? styles.expired : styles.upcoming
+                                }`}
+                              >
+                                {r.isExpired ? "Expired" : "Upcoming"}
+                              </span>
+                            </td>
+
+                            <td>
+                              {!r.isExpired ? (
+                                <span className={styles.countdown}>
+                                  {minutes.toString().padStart(2, "0")}:
+                                  {seconds.toString().padStart(2, "0")}
+                                </span>
+                              ) : (
+                                "-"
+                              )}
+                            </td>
+
+                            <td>
+                              <button
+                                className={styles.deleteButton}
+                                onClick={() => handleDelete(r.reservation_id)}
+                              >
+                                Delete
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <div className={styles.emptyState}>
+                  <Info size={48} className={styles.emptyIcon} />
+                  <h3>No reservations</h3>
+                  <p>Your reservations will appear here.</p>
+                </div>
+              )}
+            </div>
+          ) : currentTab === "settings" ? (
             <div className={styles.settingsContent}>
               <div className={styles.settingsHeader}>
                 <h2>Account Settings</h2>
@@ -726,7 +987,9 @@ const handleDeleteBooking = async (id: string) => {
                       <Bell size={24} />
                     </div>
                     <div className={styles.statContent}>
-                      <div className={styles.statValue}>{notifications.length}</div>
+                      <div className={styles.statValue}>
+                        {notifications.length}
+                      </div>
                       <div className={styles.statLabel}>Notifications</div>
                     </div>
                   </div>
@@ -749,7 +1012,8 @@ const handleDeleteBooking = async (id: string) => {
                   <button
                     className={styles.clearButton}
                     onClick={() => {
-                      if (confirm("Clear all notifications?")) clearNotifications();
+                      if (confirm("Clear all notifications?"))
+                        clearNotifications();
                     }}
                     disabled={notifications.length === 0}
                   >
@@ -773,7 +1037,11 @@ const handleDeleteBooking = async (id: string) => {
                       {notifications.map((n) => (
                         <tr key={n.id} className={styles.notificationRow}>
                           <td>
-                            <div className={`${styles.typeBadge} ${getTypeBadgeClass(n.type)}`}>
+                            <div
+                              className={`${
+                                styles.typeBadge
+                              } ${getTypeBadgeClass(n.type)}`}
+                            >
                               {getTypeIcon(n.type)}
                               <span>{n.type}</span>
                             </div>
@@ -784,9 +1052,12 @@ const handleDeleteBooking = async (id: string) => {
                               {n.booking && (
                                 <div className={styles.bookingPreview}>
                                   <span className={styles.bookingInfo}>
-                                    {n.booking.room_name || `Room #${n.booking.id}`} -
-                                    Check-in:{" "}
-                                    {new Date(n.booking.check_in).toLocaleDateString()}
+                                    {n.booking.room_name ||
+                                      `Room #${n.booking.id}`}{" "}
+                                    - Check-in:{" "}
+                                    {new Date(
+                                      n.booking.check_in
+                                    ).toLocaleDateString()}
                                   </span>
                                 </div>
                               )}
@@ -837,7 +1108,7 @@ const handleDeleteBooking = async (id: string) => {
                   const bookingId = String(booking.id);
 
                   return (
-                   <BookingCard
+                    <BookingCard
                       key={booking.id}
                       id={bookingId}
                       roomType={booking.room_name}
@@ -853,9 +1124,8 @@ const handleDeleteBooking = async (id: string) => {
                       onToggleFavorite={() => toggleFavorite(bookingId)}
                       onPayNow={() => handlePayNow(booking)}
                       onCancelBooking={() => handleCancelBooking(bookingId)}
-                      onDeleteBooking={() => handleDeleteBooking(bookingId)}  
+                      onDeleteBooking={() => handleDeleteBooking(bookingId)}
                     />
-
                   );
                 })
               ) : (
@@ -863,7 +1133,7 @@ const handleDeleteBooking = async (id: string) => {
                   <Info size={48} className={styles.emptyIcon} />
                   <h3>No bookings found</h3>
                   <p>
-                    {currentTab === "favourites" 
+                    {currentTab === "favourites"
                       ? "You haven't added any favorites yet. Click the heart icon on any booking to add it here."
                       : "No bookings available in this category."}
                   </p>
