@@ -1,27 +1,5 @@
 import React, { useState } from 'react'; 
-import {
-  X,
-  Star,
-  Users,
-  Bed,
-  Wifi,
-  Coffee,
-  Tv,
-  Wind,
-  Droplet,
-  Calendar,
-  CreditCard,
-  Car,
-  Briefcase,
-  Utensils,
-  Dumbbell,
-  Flame,
-  ShowerHead,
-  PawPrint,
-  CigaretteOff,
-  Luggage,
-  Sparkles
-} from 'lucide-react';
+import {X,Star,Users,Bed,Wifi,Coffee,Tv,Wind,Droplet,Calendar,CreditCard,Car,Briefcase,Utensils,Dumbbell,Flame,ShowerHead,PawPrint,CigaretteOff,Luggage,Sparkles} from 'lucide-react';
 import styles from './RoomDetailModal.module.css';
 
 interface Room {
@@ -98,24 +76,7 @@ const RoomDetailModal: React.FC<RoomDetailModalProps> = ({ room, onClose }) => {
 
   const totalPrice = calculateNights() * room.price;
 
-  const handleBooking = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log({
-      roomId: room.id,
-      fullName,
-      email,
-      checkIn,
-      checkOut,
-      guests,
-      totalPrice
-    });
-
-    setFullName('');
-    setEmail('');
-    setCheckIn('');
-    setCheckOut('');
-    setGuests(1);
-  };
+  const [showReservationPopup, setShowReservationPopup] = useState(false);
 
 
  const handleSubmitReview = async (e: { preventDefault: () => void }) => {
@@ -127,17 +88,16 @@ const RoomDetailModal: React.FC<RoomDetailModalProps> = ({ room, onClose }) => {
   }
 
   try {
-    const response = await fetch("http://localhost:3000/api/submit-review", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: userName,
-          rating: userRating,
-          experience: reviewText,
-          room_id: Number(room.id),
-        }),
-      });
-
+    const response = await fetch("https://tango-hotel-backend.onrender.com/api/reviews/submit-review", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: userName,
+        rating: userRating,
+        experience: reviewText,
+        room_id: Number(room.id),
+      }),
+    });
 
     const data = await response.json();
 
@@ -156,7 +116,52 @@ const RoomDetailModal: React.FC<RoomDetailModalProps> = ({ room, onClose }) => {
   }
 };
 
-  
+const handleBooking = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  if (!fullName || !email || !checkIn || !checkOut) {
+    alert("Please fill all fields");
+    return;
+  }
+
+  const nights = calculateNights();
+  const totalPrice = nights * room.price;
+
+  try {
+    const res = await fetch("https://tango-hotel-backend.onrender.com/api/reservations", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        full_name: fullName,
+        email,
+        room_id: room.id,
+        check_in: checkIn,
+        check_out: checkOut,
+        guests,
+        total_price: totalPrice
+      })
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.error || "Failed to create reservation");
+    }
+
+    setShowReservationPopup(true);
+
+    setFullName("");
+    setEmail("");
+    setCheckIn("");
+    setCheckOut("");
+    setGuests(1);
+
+  } catch (err) {
+    console.error("Reservation error:", err);
+    alert("Failed to create reservation. Try again.");
+  }
+};
+
 
   return (
     <div className={styles.modalOverlay} onClick={onClose}>
@@ -281,8 +286,20 @@ const RoomDetailModal: React.FC<RoomDetailModalProps> = ({ room, onClose }) => {
             </div>
           </div>
 
-
-
+          {showReservationPopup && (
+            <div className={styles.popupOverlay}>
+              <div className={styles.popupContent}>
+                <h2>Reservation Created!</h2>
+                <p>Please complete payment within 30 minutes to secure your room.</p>
+                <button
+                  className={styles.popupCloseBtn}
+                  onClick={() => setShowReservationPopup(false)}
+                >
+                  OK
+                </button>
+              </div>
+            </div>
+          )}
 
           <div className={styles.rightColumn}>
             <div className={styles.bookingCard}>

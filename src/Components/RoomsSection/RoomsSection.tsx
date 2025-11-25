@@ -124,7 +124,7 @@ export const RoomsSection: React.FC = () => {
                   <p className={styles.roomPrice}>{room.price}</p>
 
                   <Link to="/rooms">
-                    <button className={styles.button}>View More Rooms</button>
+                    <button className={styles.button}>More Rooms</button>
                   </Link>
 
                 </div>

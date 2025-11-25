@@ -1,21 +1,10 @@
 import { useEffect, useState } from 'react';
-import {
-  Star,
-  Users,
-  Bed,
-  Wifi,
-  Coffee,
-  Tv,
-  Wind,
-  Droplet,
-  Search,
-  SlidersHorizontal,
-  X,
-} from 'lucide-react';
+import {Star,Users,Bed,Wifi,Coffee,Tv,Wind,Droplet,Search,SlidersHorizontal,X,} from 'lucide-react';
 import styles from './RoomsPage.module.css';
 import RoomDetailModal from './RoomDetailModal/RoomDetailModal';
 import React from 'react';
 import BookingForm from './BookingForm/BookingForm';
+import { useNavigate } from "react-router-dom";
 
 export interface Room {
   id: string;
@@ -44,6 +33,8 @@ const RoomsPage = () => {
   const [priceRange, setPriceRange] = useState({ min: 0, max: 10000 });
   const [selectedType, setSelectedType] = useState('all');
   const [selectedCapacity, setSelectedCapacity] = useState('all');
+
+  const navigate = useNavigate();
 
   const API_BASE_URL =
     import.meta.env.VITE_API_BASE_URL || 'https://tango-hotel-backend.onrender.com';
@@ -161,6 +152,15 @@ const RoomsPage = () => {
               Each space is designed to provide you with an unforgettable experience.
             </p>
           </div>
+        </div>
+
+        <div className={styles.backButtonContainer}>
+          <button
+            onClick={() => navigate("/")}
+            className={styles.backButton}
+          >
+            ← Back to Home
+          </button>
         </div>
 
         <div className={styles.searchSection}>
