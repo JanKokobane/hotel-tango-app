@@ -1,22 +1,45 @@
-import { useEffect, useState } from 'react';
-import { LayoutDashboard, Hotel, Calendar, Users, Settings, Bell, Search, Menu, X as CloseIcon, Star, FileText, MessageSquare, DollarSign, BarChart3
-} from 'lucide-react';
-import styles from './AdminDashboard.module.css';
-import DashboardOverview from './components/dashboard/DashboardOverview';
-import RoomsSection from './components/dashboard/RoomsSection';
-import BookingsSection from './components/dashboard/BookingsSection';
-import AnalyticsSection from './components/dashboard/AnalyticsSection';
-import RoomModal from './components/dashboard/RoomModal';
-import SettingsSection from './components/dashboard/SettingsSection';
-import InvoicesSection from './components/dashboard/InvoicesSection';
-import StaffsSection from './components/dashboard/StaffsSection';
-import ReportsSection from './components/dashboard/ReportsSection';
-import ReviewsSection from './components/dashboard/ReviewsSection';
-import React from 'react';
-import Logo from '.././assets/Logo.png'
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from "react";
+import {
+  LayoutDashboard,
+  Hotel,
+  Calendar,
+  Users,
+  Settings,
+  Bell,
+  Search,
+  Menu,
+  X as CloseIcon,
+  Star,
+  FileText,
+  MessageSquare,
+  DollarSign,
+  BarChart3,
+} from "lucide-react";
+import styles from "./AdminDashboard.module.css";
+import DashboardOverview from "./components/dashboard/DashboardOverview";
+import RoomsSection from "./components/dashboard/RoomsSection";
+import BookingsSection from "./components/dashboard/BookingsSection";
+import AnalyticsSection from "./components/dashboard/AnalyticsSection";
+import RoomModal from "./components/dashboard/RoomModal";
+import SettingsSection from "./components/dashboard/SettingsSection";
+import InvoicesSection from "./components/dashboard/InvoicesSection";
+import StaffsSection from "./components/dashboard/StaffsSection";
+import ReportsSection from "./components/dashboard/ReportsSection";
+import ReviewsSection from "./components/dashboard/ReviewsSection";
+import React from "react";
+import Logo from ".././assets/Logo.png";
+import { useNavigate } from "react-router-dom";
 
-type TabType = 'dashboard' | 'reservation' | 'rooms' | 'staffs' | 'analytics' | 'reports' | 'reviews' | 'invoices' | 'settings';
+type TabType =
+  | "dashboard"
+  | "reservation"
+  | "rooms"
+  | "staffs"
+  | "analytics"
+  | "reports"
+  | "reviews"
+  | "invoices"
+  | "settings";
 
 export interface Room {
   description: string;
@@ -25,27 +48,29 @@ export interface Room {
   name: string;
   type: string;
   price: number;
-  status: 'available' | 'occupied' | 'maintenance';
+  status: "available" | "occupied" | "maintenance";
   image: string;
   capacity: number;
 }
 
 function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState<TabType>('dashboard');
+  const [activeTab, setActiveTab] = useState<TabType>("dashboard");
   const [showRoomModal, setShowRoomModal] = useState(false);
   const [editingRoom, setEditingRoom] = useState<Room | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const [adminName, setAdminName] = useState(localStorage.getItem('adminName') || '');
-  const [adminInitials, setAdminInitials] = useState('');
+  const [adminName, setAdminName] = useState(
+    localStorage.getItem("adminName") || ""
+  );
+  const [adminInitials, setAdminInitials] = useState("");
 
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    localStorage.removeItem('adminToken');
-    localStorage.removeItem('adminEmail');
-    localStorage.removeItem('adminName');
-    navigate('/admin/login');
+    localStorage.removeItem("adminToken");
+    localStorage.removeItem("adminEmail");
+    localStorage.removeItem("adminName");
+    navigate("/admin/login");
   };
 
   const handleAddRoom = () => {
@@ -63,39 +88,38 @@ function AdminDashboard() {
     setEditingRoom(null);
   };
 
-
   const handleDeleteRoom = (roomId: string) => {
-    if (confirm('Are you sure you want to delete this room?')) {
-      console.log('Deleting room:', roomId);
+    if (confirm("Are you sure you want to delete this room?")) {
+      console.log("Deleting room:", roomId);
     }
   };
 
   const renderContent = () => {
     switch (activeTab) {
-      case 'dashboard':
+      case "dashboard":
         return <DashboardOverview />;
-      case 'analytics':
+      case "analytics":
         return <AnalyticsSection detailed />;
-      case 'rooms':
+      case "rooms":
         return (
-        <RoomsSection
-          onAddRoom={handleAddRoom}
-          onEditRoom={handleEditRoom}
-          onDeleteRoom={handleDeleteRoom}
-        />
-      );
+          <RoomsSection
+            onAddRoom={handleAddRoom}
+            onEditRoom={handleEditRoom}
+            onDeleteRoom={handleDeleteRoom}
+          />
+        );
 
-      case 'reservation':
+      case "reservation":
         return <BookingsSection />;
-      case 'staffs':
+      case "staffs":
         return <StaffsSection />;
-      case 'reports':
+      case "reports":
         return <ReportsSection />;
-      case 'reviews':
+      case "reviews":
         return <ReviewsSection />;
-      case 'invoices':
+      case "invoices":
         return <InvoicesSection />;
-      case 'settings':
+      case "settings":
         return <SettingsSection />;
       default:
         return (
@@ -112,51 +136,54 @@ function AdminDashboard() {
 
   const getPageTitle = () => {
     switch (activeTab) {
-      case 'dashboard':
-        return 'Dashboard';
-      case 'reservation':
-        return 'Reservation';
-      case 'rooms':
-        return 'Rooms';
-      case 'staffs':
-        return 'Staffs';
-      case 'analytics':
-        return 'Analytics';
-      case 'reports':
-        return 'Reports';
-      case 'reviews':
-        return 'Reviews';
-      case 'invoices':
-        return 'Invoices';
-      case 'settings':
-        return 'Settings';
+      case "dashboard":
+        return "Dashboard";
+      case "reservation":
+        return "Reservation";
+      case "rooms":
+        return "Rooms";
+      case "staffs":
+        return "Staffs";
+      case "analytics":
+        return "Analytics";
+      case "reports":
+        return "Reports";
+      case "reviews":
+        return "Reviews";
+      case "invoices":
+        return "Invoices";
+      case "settings":
+        return "Settings";
       default:
-        return 'Dashboard';
+        return "Dashboard";
     }
   };
 
   useEffect(() => {
     const fetchAdminProfile = async () => {
-      const token = localStorage.getItem('adminToken');
+      const token = localStorage.getItem("adminToken");
       if (!token) return;
 
       try {
-        const res = await fetch('https://tango-hotel-backend.onrender.com/api/admin/profile', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const res = await fetch(
+          "https://tango-hotel-backend.onrender.com/api/admin/profile",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
-        if (!res.ok) throw new Error('Failed to fetch admin profile');
+        if (!res.ok) throw new Error("Failed to fetch admin profile");
 
         const data = await res.json();
         const fullName = data.admin.full_name;
         setAdminName(fullName);
 
         const initials = fullName
-          .split(' ')
+          .split(" ")
           .map((n: string) => n[0])
-          .join('');
+          .join("");
         setAdminInitials(initials.toUpperCase());
       } catch (err) {
         console.error(err);
@@ -168,7 +195,7 @@ function AdminDashboard() {
 
   return (
     <div className={styles.dashboard}>
-      <aside className={`${styles.sidebar} ${sidebarOpen ? styles.open : ''}`}>
+      <aside className={`${styles.sidebar} ${sidebarOpen ? styles.open : ""}`}>
         <div className={styles.sidebarHeader}>
           <div className={styles.logo}>
             <img src={Logo} alt="Logo" />
@@ -183,9 +210,11 @@ function AdminDashboard() {
 
         <nav className={styles.nav}>
           <div
-            className={`${styles.navItem} ${activeTab === 'dashboard' ? styles.active : ''}`}
+            className={`${styles.navItem} ${
+              activeTab === "dashboard" ? styles.active : ""
+            }`}
             onClick={() => {
-              setActiveTab('dashboard');
+              setActiveTab("dashboard");
               setSidebarOpen(false);
             }}
           >
@@ -193,9 +222,11 @@ function AdminDashboard() {
             <span>Dashboard</span>
           </div>
           <div
-            className={`${styles.navItem} ${activeTab === 'reservation' ? styles.active : ''}`}
+            className={`${styles.navItem} ${
+              activeTab === "reservation" ? styles.active : ""
+            }`}
             onClick={() => {
-              setActiveTab('reservation');
+              setActiveTab("reservation");
               setSidebarOpen(false);
             }}
           >
@@ -203,9 +234,11 @@ function AdminDashboard() {
             <span>Reservation</span>
           </div>
           <div
-            className={`${styles.navItem} ${activeTab === 'rooms' ? styles.active : ''}`}
+            className={`${styles.navItem} ${
+              activeTab === "rooms" ? styles.active : ""
+            }`}
             onClick={() => {
-              setActiveTab('rooms');
+              setActiveTab("rooms");
               setSidebarOpen(false);
             }}
           >
@@ -213,9 +246,11 @@ function AdminDashboard() {
             <span>Rooms</span>
           </div>
           <div
-            className={`${styles.navItem} ${activeTab === 'staffs' ? styles.active : ''}`}
+            className={`${styles.navItem} ${
+              activeTab === "staffs" ? styles.active : ""
+            }`}
             onClick={() => {
-              setActiveTab('staffs');
+              setActiveTab("staffs");
               setSidebarOpen(false);
             }}
           >
@@ -223,9 +258,11 @@ function AdminDashboard() {
             <span>Staffs</span>
           </div>
           <div
-            className={`${styles.navItem} ${activeTab === 'analytics' ? styles.active : ''}`}
+            className={`${styles.navItem} ${
+              activeTab === "analytics" ? styles.active : ""
+            }`}
             onClick={() => {
-              setActiveTab('analytics');
+              setActiveTab("analytics");
               setSidebarOpen(false);
             }}
           >
@@ -233,9 +270,11 @@ function AdminDashboard() {
             <span>Analytics</span>
           </div>
           <div
-            className={`${styles.navItem} ${activeTab === 'reports' ? styles.active : ''}`}
+            className={`${styles.navItem} ${
+              activeTab === "reports" ? styles.active : ""
+            }`}
             onClick={() => {
-              setActiveTab('reports');
+              setActiveTab("reports");
               setSidebarOpen(false);
             }}
           >
@@ -243,9 +282,11 @@ function AdminDashboard() {
             <span>Reports</span>
           </div>
           <div
-            className={`${styles.navItem} ${activeTab === 'reviews' ? styles.active : ''}`}
+            className={`${styles.navItem} ${
+              activeTab === "reviews" ? styles.active : ""
+            }`}
             onClick={() => {
-              setActiveTab('reviews');
+              setActiveTab("reviews");
               setSidebarOpen(false);
             }}
           >
@@ -253,9 +294,11 @@ function AdminDashboard() {
             <span>Reviews</span>
           </div>
           <div
-            className={`${styles.navItem} ${activeTab === 'invoices' ? styles.active : ''}`}
+            className={`${styles.navItem} ${
+              activeTab === "invoices" ? styles.active : ""
+            }`}
             onClick={() => {
-              setActiveTab('invoices');
+              setActiveTab("invoices");
               setSidebarOpen(false);
             }}
           >
@@ -263,9 +306,11 @@ function AdminDashboard() {
             <span>Invoices</span>
           </div>
           <div
-            className={`${styles.navItem} ${activeTab === 'settings' ? styles.active : ''}`}
+            className={`${styles.navItem} ${
+              activeTab === "settings" ? styles.active : ""
+            }`}
             onClick={() => {
-              setActiveTab('settings');
+              setActiveTab("settings");
               setSidebarOpen(false);
             }}
           >
@@ -298,28 +343,25 @@ function AdminDashboard() {
           </div>
 
           <div className={styles.topBarRight}>
-            <button className={styles.iconButton}>
+            {/* <button className={styles.iconButton}>
               <MessageSquare size={20} />
             </button>
             <button className={styles.iconButton}>
               <Bell size={20} />
               <span className={styles.notificationBadge}>2</span>
-            </button>
+            </button> */}
 
             <div className={styles.userProfile}>
-            {/* <div className={styles.adminAvatar}>{adminInitials}</div> */}
+              {/* <div className={styles.adminAvatar}>{adminInitials}</div> */}
               <div className={styles.userInfo}>
                 <div className={styles.userName}>{adminName}</div>
                 <div className={styles.userRole}>Admin</div>
               </div>
             </div>
-
           </div>
         </div>
 
-        <div className={styles.content}>
-          {renderContent()}
-        </div>
+        <div className={styles.content}>{renderContent()}</div>
       </main>
 
       {showRoomModal && (
@@ -331,10 +373,7 @@ function AdminDashboard() {
       )}
 
       {sidebarOpen && (
-        <div
-          className={styles.overlay}
-          onClick={() => setSidebarOpen(false)}
-        />
+        <div className={styles.overlay} onClick={() => setSidebarOpen(false)} />
       )}
     </div>
   );

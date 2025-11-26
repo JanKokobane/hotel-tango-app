@@ -355,10 +355,10 @@
   align-items: center;
   gap: 8px;
   padding: 12px 32px;
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  background: black;
   color: #ffffff;
   border: none;
-  border-radius: 8px;
+  border-radius: 1px;
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;

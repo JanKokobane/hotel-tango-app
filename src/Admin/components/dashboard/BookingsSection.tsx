@@ -48,7 +48,6 @@ function BookingsSection({ compact = false }: BookingsSectionProps) {
     fetchBookings();
   }, []);
 
-  // Handle delete booking
   const handleDelete = async (id: string) => {
     const confirmDelete = window.confirm(
       "Are you sure you want to delete this booking? This cannot be undone."
