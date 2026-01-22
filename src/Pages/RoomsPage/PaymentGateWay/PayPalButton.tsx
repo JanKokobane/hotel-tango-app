@@ -1,5 +1,4 @@
-import React from "react";
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 
 interface PayPalButtonProps {
   amount: string;
@@ -40,37 +39,13 @@ declare global {
 
 function PayPalButton({ amount, onSuccess, bookingData }: PayPalButtonProps) {
   useEffect(() => {
-    if (window.paypal) {
-      renderPayPalButton();
-      return;
-    }
+    let initialized = false; // guard against double initialization in Strict Mode
 
-    const script = document.createElement("script");
-    script.src = `https://www.paypal.com/sdk/js?client-id=${
-      import.meta.env.VITE_PAYPAL_CLIENT_ID
-    }&currency=USD`;
-    script.async = true;
+    const renderPayPalButton = () => {
+      if (!window.paypal || initialized) return;
+      initialized = true;
 
-    script.addEventListener("load", renderPayPalButton);
-    script.addEventListener("error", () => {
-      console.error("Failed to load PayPal SDK");
-    });
-
-    document.body.appendChild(script);
-
-    return () => {
-      if (script.parentNode) script.parentNode.removeChild(script);
-    };
-  }, [amount]);
-
-  const renderPayPalButton = () => {
-    if (!window.paypal) return;
-
-    const container = document.getElementById("paypal-button-container");
-    if (container) container.innerHTML = "";
-
-    window.paypal
-      .Buttons({
+      window.paypal.Buttons({
         createOrder: (data, actions) =>
           actions.order.create({
             purchase_units: [{ amount: { value: amount } }],
@@ -78,8 +53,8 @@ function PayPalButton({ amount, onSuccess, bookingData }: PayPalButtonProps) {
         onApprove: async (data, actions) => {
           const details = await actions.order.capture();
           console.log("Payment successful:", details);
-          console.log("✅ Payment verified successfully, sending to backend");
-          console.log("📦 Sending bookingData:", bookingData);
+          console.log("Payment verified successfully, sending to backend");
+          console.log("Sending bookingData:", bookingData);
 
           try {
             await fetch(
@@ -102,11 +77,30 @@ function PayPalButton({ amount, onSuccess, bookingData }: PayPalButtonProps) {
           console.error("PayPal error:", err);
           alert("Payment failed. Please try again.");
         },
-      })
-      .render("#paypal-button-container");
-  };
+      }).render("#paypal-button-container");
+    };
 
-  return <div id="paypal-button-container" />;
+    if (window.paypal) {
+      renderPayPalButton();
+    } else {
+      const script = document.createElement("script");
+      script.src = `https://www.paypal.com/sdk/js?client-id=${
+        import.meta.env.VITE_PAYPAL_CLIENT_ID
+      }&currency=USD`;
+      script.async = true;
+      script.onload = renderPayPalButton;
+      script.onerror = () => {
+        console.error("Failed to load PayPal SDK");
+      };
+      document.body.appendChild(script);
+
+      return () => {
+        if (script.parentNode) script.parentNode.removeChild(script);
+      };
+    }
+  }, []); // run once
+
+  return <div id="paypal-button-container"></div>;
 }
 
 export default PayPalButton;
